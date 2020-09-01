@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BoyAndGirl
+  m_Shader: {fileID: 4800000, guid: 21a0cedb8941740c4a5969222087064e, type: 3}
+  m_ShaderKeywords: _RECEIVE_SHADOWS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2050
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 76a2d9f50daee49278bc6d8aef1ea1b6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 76a2d9f50daee49278bc6d8aef1ea1b6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AlphaClip: 0
+    - _Blend: 0
+    - _Brightness: 1
+    - _BumpScale: 1
+    - _ColoredShadowOn: 1
+    - _CubicColorPower: 0.1
+    - _CubicRimOn: 1
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DstBlend: 0
+    - _EnvironmentReflections: 1
+    - _FogDistance1: 30
+    - _FogDistance2: 20
+    - _GlossMapScale: 0
+    - _Glossiness: 0
+    - _GlossinessSource: 0
+    - _GlossyReflections: 0
+    - _GradHeight_B: 2
+    - _GradHeight_D: 0
+    - _GradHeight_F: 2
+    - _GradHeight_L: 2
+    - _GradHeight_R: 2
+    - _GradHeight_T: 0
+    - _GradRotate_B: 0
+    - _GradRotate_D: 0
+    - _GradRotate_F: 0
+    - _GradRotate_L: 0
+    - _GradRotate_R: 0
+    - _GradRotate_T: 0.7853982
+    - _HSVShiftOn: 0
+    - _HeightFogHeight: 1
+    - _HeightFogOn: 0
+    - _HeightFogYFrom: 0
+    - _Hue: 0
+    - _Metallic: 0
+    - _MixCubicColorOn: 0
+    - _MultipleFogOn: 0
+    - _OcclusionStrength: 1
+    - _QueueOffset: 0
+    - _ReceiveShadows: 0
+    - _RimBurnOn: 0
+    - _RimLightingOn: 1
+    - _RimPower: 2
+    - _Saturation: 1
+    - _ShadeContrast: 0.5
+    - _ShadowPower: 1
+    - _Shininess: 0
+    - _Smoothness: 0.5
+    - _SmoothnessSource: 0
+    - _SmoothnessTextureChannel: 0
+    - _SpecSource: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _Surface: 0
+    - _ToonShadeSmoothness: 0.03
+    - _ToonShadeStep1: 0.33
+    - _ToonShadeStep2: 0.66
+    - _ToonShadingOn: 0
+    - _WorkflowMode: 1
+    - _WorldSpaceGradient: 1
+    - _WorldSpaceNormal: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BackColor1: {r: 0.2980392, g: 0.7674278, b: 1, a: 1}
+    - _BackColor2: {r: 0.61525786, g: 0.2688679, b: 1, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BottomColor1: {r: 1, g: 0.5925231, b: 0.2980392, a: 1}
+    - _BottomColor2: {r: 0.8679245, g: 0.18319735, b: 0.036845837, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FogColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _FogColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _FrontColor1: {r: 1, g: 0.88342804, b: 0.29716977, a: 1}
+    - _FrontColor2: {r: 0.9433962, g: 0.5943834, b: 0, a: 1}
+    - _GradOrigin_B: {r: 0, g: 2, b: 0, a: 0}
+    - _GradOrigin_D: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_F: {r: 0, g: 2, b: 0, a: 0}
+    - _GradOrigin_L: {r: 0, g: 2, b: 0, a: 0}
+    - _GradOrigin_R: {r: 0, g: 2, b: 0, a: 0}
+    - _GradOrigin_T: {r: 0, g: 0, b: 0, a: 0}
+    - _HeightFogColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LeftColor1: {r: 0.2980392, g: 1, b: 0.681032, a: 1}
+    - _LeftColor2: {r: 0, g: 0.9150943, b: 0.8781284, a: 1}
+    - _RightColor1: {r: 0.89016676, g: 1, b: 0.6179246, a: 1}
+    - _RightColor2: {r: 0.51767004, g: 0.8207547, b: 0.112273075, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 0.65528244, g: 0.38803846, b: 0.754717, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _TopColor1: {r: 1, g: 0.935965, b: 0.6179246, a: 1}
+    - _TopColor2: {r: 0.9254902, g: 0.50689673, b: 0.3450981, a: 1}
+--- !u!114 &493496740580723944
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1
