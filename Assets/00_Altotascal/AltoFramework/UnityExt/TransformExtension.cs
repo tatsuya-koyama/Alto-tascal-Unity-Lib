@@ -1,0 +1,83 @@
+﻿using UnityEngine;
+
+namespace AltoFramework.UnityExt
+{
+    public static class TransformExtension
+    {
+        static Vector3 _vec;
+
+        //---------------------------------------------------------------------
+        // Position
+        //---------------------------------------------------------------------
+
+        public static void AddPosition(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(
+                transform.position.x + x,
+                transform.position.y + y,
+                transform.position.z + z
+            );
+            transform.position = _vec;
+        }
+
+        public static void AddPosition(this Transform transform, Vector3 vec)
+        {
+            transform.AddPosition(vec.x, vec.y, vec.z);
+        }
+
+        public static void AddLocalPosition(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(
+                transform.localPosition.x + x,
+                transform.localPosition.y + y,
+                transform.localPosition.z + z
+            );
+            transform.localPosition = _vec;
+        }
+
+        public static void AddLocalPosition(this Transform transform, Vector3 vec)
+        {
+            transform.AddLocalPosition(vec.x, vec.y, vec.z);
+        }
+
+        //---------------------------------------------------------------------
+        // EulerAngles
+        //---------------------------------------------------------------------
+
+        public static void SetEulterAngles(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(x, y, z);
+            transform.eulerAngles = _vec;
+        }
+
+        public static void AddEulerAngles(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(
+                transform.eulerAngles.x + x,
+                transform.eulerAngles.y + y,
+                transform.eulerAngles.z + z
+            );
+            transform.eulerAngles = _vec;
+        }
+
+        public static void AddEulerAngles(this Transform transform, Vector3 vec)
+        {
+            transform.AddEulerAngles(vec.x, vec.y, vec.z);
+        }
+
+        public static void AddLocalEulerAngles(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(
+                transform.localEulerAngles.x + x,
+                transform.localEulerAngles.y + y,
+                transform.localEulerAngles.z + z
+            );
+            transform.localEulerAngles = _vec;
+        }
+
+        public static void AddLocalEulerAngles(this Transform transform, Vector3 vec)
+        {
+            transform.AddLocalEulerAngles(vec.x, vec.y, vec.z);
+        }
+    }
+}
