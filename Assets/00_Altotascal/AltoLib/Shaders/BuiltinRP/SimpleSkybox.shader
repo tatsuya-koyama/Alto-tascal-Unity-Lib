@@ -8,6 +8,7 @@ Shader "Altotascal/Skybox/SimpleSkybox"
         _Intensity1 ("Top Intensity", Float) = 1.0
         _Intensity2 ("Bottom Intensity", Float) = 1.0
         _Brightness ("Brightness", Float) = 1.0
+        _OffsetY ("Offset Y", Range(-1.0, 1.0)) = 0
     }
 
     CGINCLUDE
@@ -31,6 +32,7 @@ Shader "Altotascal/Skybox/SimpleSkybox"
     half  _Intensity1;
     half  _Intensity2;
     half  _Brightness;
+    half  _OffsetY;
 
     v2f vert(appdata v)
     {
@@ -42,7 +44,7 @@ Shader "Altotascal/Skybox/SimpleSkybox"
 
     half4 frag(v2f i) : COLOR
     {
-        float p = normalize(i.texcoord).y;
+        float p = normalize(i.texcoord).y - _OffsetY;
         float p1 = 1.0f - pow(min(1.0f, 1.0f - p), _Intensity1);
         float p3 = 1.0f - pow(min(1.0f, 1.0f + p), _Intensity2);
         float p2 = 1.0f - p1 - p3;
