@@ -45,6 +45,7 @@ Shader "Altotascal/Skybox/SimpleSkybox"
     half4 frag(v2f i) : COLOR
     {
         float p = normalize(i.texcoord).y - _OffsetY;
+        p = min(max(p, -1), 1);
         float p1 = 1.0f - pow(min(1.0f, 1.0f - p), _Intensity1);
         float p3 = 1.0f - pow(min(1.0f, 1.0f + p), _Intensity2);
         float p2 = 1.0f - p1 - p3;
