@@ -8,7 +8,7 @@ namespace AltoFramework
         // Wrap Time.deltaTime
         float dt { get; }
 
-        UniTask Wait(float seconds, Action action, bool ignoreTimeScale = true);
-        UniTask WaitFrame(int frame, Action action);
+        UniTask Wait(float seconds, Action action = null);
+        UniTask WaitFrame(int frame, Action action = null);
     }
 }

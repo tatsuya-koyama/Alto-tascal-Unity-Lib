@@ -20,6 +20,7 @@ namespace AltoFramework
         AltoTweenCallback _onComplete;
 
         float _passedTime = 0f;
+        float _delayTime = 0f;
 
         public AltoTween(
             float from = 0f, float to = 0f, float duration = 0f,
@@ -66,14 +67,30 @@ namespace AltoFramework
             return this;
         }
 
-        public async UniTask Async()
+        public IAltoTween Delay(float delaySec)
         {
+            _delayTime = delaySec;
+            return this;
+        }
+
+        public async UniTask Async(bool autoCancelOnSceneChange = true)
+        {
+            // ToDo : このクラスから Alto は参照したくなかった
+            if (autoCancelOnSceneChange && Alto.hasSceneContext)
+            {
+                await Alto.Async(
+                    UniTask.WaitUntil(() => IsCompleted())
+                );
+                return;
+            }
+
             await UniTask.WaitUntil(() => IsCompleted());
         }
 
         public IAltoTween SetAlpha(Graphic graphic)
         {
             return OnUpdate(x => {
+                if (graphic == null) { return; }
                 var color = graphic.color;
                 color.a = x;
                 graphic.color = color;
@@ -83,10 +100,13 @@ namespace AltoFramework
         public IAltoTween SetAlpha(CanvasGroup canvasGroup)
         {
             return OnUpdate(x => {
+                if (canvasGroup == null) { return; }
                 canvasGroup.alpha = x;
             });
         }
 
+        //----------------------------------------------------------------------
+        // public
         //----------------------------------------------------------------------
 
         public void Init()
@@ -100,6 +120,12 @@ namespace AltoFramework
             if (IsCompleted()) { return; }
             AltoAssert.IsNotNull(_easingFunc);
             AltoAssert.IsNotNull(_onUpdate);
+
+            if (_delayTime > 0)
+            {
+                _delayTime -= deltaTime;
+                return;
+            }
 
             _passedTime += deltaTime;
             if (_passedTime >= _duration)

@@ -69,6 +69,7 @@ namespace AltoFramework.Production
             if (currentSceneContext != null)
             {
                 await currentSceneContext.Finalize();
+                currentSceneContext.CancelTokenSource.Cancel();
             }
             SetIsSceneReady(false);
             currentSceneContext = nextSceneContext;

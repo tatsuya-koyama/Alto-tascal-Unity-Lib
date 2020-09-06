@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 
 namespace AltoFramework
@@ -98,6 +100,7 @@ namespace AltoFramework
         ///   });
         ///
         ///   // await したい時は Async() をつける
+        ///   // ※ シーン遷移時には自動でキャンセルされる。キャンセルしたくなければ Async(false)
         ///   await Alto.Tween().FromTo(0f, 1.0f, 0.3f).SetAlpha(graphic).Async();
         /// </code></example>
         public static IAltoTween Tween(object obj = null)
@@ -134,6 +137,29 @@ namespace AltoFramework
         public static AltoObjectPool<T> ObjectPool<T>() where T : PoolableBehaviour
         {
             return context.objectPoolHub.sceneScopeObjectPoolRegistry.GetPool<T>();
+        }
+
+        //----------------------------------------------------------------------
+        // async / await Helper
+        //----------------------------------------------------------------------
+
+        /// <summary>
+        ///   UniTask を、シーン遷移時に自動でキャンセルされる UniTask に変換する。
+        ///   GameObject に影響する処理を await する時は基本 Alto.Async() で囲っておくことで
+        ///   シーン遷移後に前のシーンの非同期処理が走り続ける…といった事故を防ぐことができる。
+        /// </summary>
+        /// <example><code>
+        ///   await Alto.Async(SomeAsyncFund());
+        /// </code><example>
+        public static UniTask Async(UniTask task)
+        {
+            var ct = sceneContext.CancelTokenSource.Token;
+            return task.WithCancellation(ct);
+        }
+
+        public static UniTask Wait(float seconds, Action action = null)
+        {
+            return Async(time.Wait(seconds, action));
         }
     }
 }

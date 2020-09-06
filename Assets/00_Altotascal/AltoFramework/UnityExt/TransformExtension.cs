@@ -10,6 +10,16 @@ namespace AltoFramework.UnityExt
         // Position
         //---------------------------------------------------------------------
 
+        public static void SetPosition(this Transform transform, float? x, float? y, float? z)
+        {
+            _vec.Set(
+                x ?? transform.position.x,
+                y ?? transform.position.y,
+                z ?? transform.position.z
+            );
+            transform.position = _vec;
+        }
+
         public static void AddPosition(this Transform transform, float x, float y, float z)
         {
             _vec.Set(
@@ -44,9 +54,13 @@ namespace AltoFramework.UnityExt
         // EulerAngles
         //---------------------------------------------------------------------
 
-        public static void SetEulterAngles(this Transform transform, float x, float y, float z)
+        public static void SetEulterAngles(this Transform transform, float? x, float? y, float? z)
         {
-            _vec.Set(x, y, z);
+            _vec.Set(
+                x ?? transform.eulerAngles.x,
+                y ?? transform.eulerAngles.y,
+                z ?? transform.eulerAngles.z
+            );
             transform.eulerAngles = _vec;
         }
 

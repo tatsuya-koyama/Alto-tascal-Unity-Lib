@@ -172,5 +172,25 @@ namespace AltoFramework.Tests
             tweener.Update(0.3f);
             Assert.That(value2, Is.EqualTo(14f));
         }
+
+        [Test, Description(".Delay() で開始タイミングを遅らせることができる")]
+        public void TestTweener_Delay()
+        {
+            var tweener = new AltoTweener();
+            float value1 = 0;
+            tweener.NewTween().Delay(0.5f).FromTo(1f, 2f, 1.0f).OnUpdate(x => value1 = x);
+            Assert.That(value1, Is.EqualTo(0f));
+
+            tweener.Update(0.4f);
+            Assert.That(value1, Is.EqualTo(0f));
+            tweener.Update(0.1f);
+            Assert.That(value1, Is.EqualTo(0f));
+            tweener.Update(0.0001f);
+            Assert.That(value1, Is.EqualTo(1f).Within(0.001f));
+            tweener.Update(0.5f);
+            Assert.That(value1, Is.EqualTo(1.5f).Within(0.001f));
+            tweener.Update(0.8f);
+            Assert.That(value1, Is.EqualTo(2f).Within(0.001f));
+        }
     }
 }

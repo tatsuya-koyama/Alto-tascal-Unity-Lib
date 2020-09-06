@@ -1,5 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
-using UnityEngine;
+using System.Threading;
 
 namespace AltoFramework
 {
@@ -21,6 +21,7 @@ namespace AltoFramework
     public interface ISceneContext
     {
         bool IsReady { get; set; }
+        CancellationTokenSource CancelTokenSource { get; }
 
         string SceneName();
         UniTask InitBeforeLoadScene();
@@ -33,7 +34,8 @@ namespace AltoFramework
 
     public abstract class DefaultSceneContext : ISceneContext
     {
-        public bool IsReady { get;  set; }
+        public bool IsReady { get; set; }
+        public CancellationTokenSource CancelTokenSource { get; private set; } = new CancellationTokenSource();
 
         public abstract string SceneName();
 

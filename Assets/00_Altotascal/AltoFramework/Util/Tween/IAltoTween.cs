@@ -15,7 +15,8 @@ namespace AltoFramework
         IAltoTween FromTo(float from, float to, float duration, AltoEasingFunc easingFunc = null);
         IAltoTween OnUpdate(AltoTweenCallback onUpdate);
         IAltoTween OnComplete(AltoTweenCallback onComplete);
-        UniTask Async();
+        IAltoTween Delay(float delaySec);
+        UniTask Async(bool autoCancelOnSceneChange = true);
 
         //----------------------------------------------------------------------
         // Helpers for Unity objects

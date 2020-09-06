@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace AltoFramework.Production
@@ -17,16 +18,31 @@ namespace AltoFramework.Production
             }
         }
 
-        public async UniTask Wait(float seconds, Action action, bool ignoreTimeScale = true)
+        /// <summary>
+        /// ゲーム内時間で指定秒数待つ
+        /// ※ UniTask.Delay() ではスパイク発生時に処理が飛ぶような挙動があったため、
+        ///    Timekeeper.dt ベースで自前実装
+        /// </summary>
+        public async UniTask Wait(float seconds, Action action = null)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(seconds), ignoreTimeScale);
-            action();
+            await WaitCoroutine(seconds);
+            action?.Invoke();
         }
 
-        public async UniTask WaitFrame(int frame, Action action)
+        IEnumerator WaitCoroutine(float seconds)
+        {
+            float elapsedSec = 0;
+            while (elapsedSec < seconds)
+            {
+                elapsedSec += this.dt;
+                yield return null;
+            }
+        }
+
+        public async UniTask WaitFrame(int frame, Action action = null)
         {
             await UniTask.DelayFrame(frame);
-            action();
+            action?.Invoke();
         }
     }
 }
