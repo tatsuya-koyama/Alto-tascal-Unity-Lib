@@ -1,4 +1,4 @@
-Shader "Altotascal/Skybox/FourColor"
+Shader "Altotascal/UI/FourColor"
 {
     Properties
     {
