@@ -26,6 +26,7 @@ half4 _BottomColor1;
 half4 _BottomColor2;
 
 half  _MixCubicColorOn;
+half  _MultiplyCubicDiffuseOn;
 half  _CubicColorPower;
 half  _WorldSpaceNormal;
 half  _WorldSpaceGradient;

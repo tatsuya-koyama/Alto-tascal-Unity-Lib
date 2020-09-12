@@ -18,6 +18,7 @@ Shader "Altotascal/URP 7.3.1/Cubic Color"
         _BottomColor1("Bottom 1", Color) = (1, 1, 1, 1)
         _BottomColor2("Bottom 2", Color) = (1, 1, 1, 1)
         [ToggleOff] _MixCubicColorOn("Mix Cubic Color", Float) = 0.0
+        [ToggleOff] _MultiplyCubicDiffuseOn("Multiply Cubic & Diffuse", Float) = 0.0
         _CubicColorPower("Cubic Color Power", Range(-1.0, 1.0)) = 1.0
         _WorldSpaceNormal("World Space Normal", Range(0.0, 1.0)) = 1.0
         _WorldSpaceGradient("World Space Gradient", Range(0.0, 1.0)) = 1.0

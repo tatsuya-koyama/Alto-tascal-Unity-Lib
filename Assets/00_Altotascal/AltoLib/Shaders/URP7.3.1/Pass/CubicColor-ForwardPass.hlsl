@@ -73,7 +73,15 @@ half4 Alto_UniversalFragmentBlinnPhong(
     diffuseColor += inputData.vertexLighting;
 #endif
 
-    diffuse = lerp(diffuse, cubicColor, _CubicColorPower);
+    UNITY_BRANCH
+    if (_MultiplyCubicDiffuseOn > 0)
+    {
+        diffuse = lerp(diffuse, diffuse * cubicColor, _CubicColorPower);
+    }
+    else
+    {
+        diffuse = lerp(diffuse, cubicColor, _CubicColorPower);
+    }
     half3 finalColor = diffuseColor * diffuse + emission;
 
     UNITY_BRANCH
@@ -83,23 +91,23 @@ half4 Alto_UniversalFragmentBlinnPhong(
         finalColor = lerp(finalColor, _ShadowColor, shadowLevel);
     }
 
-    half3 rimColor = _RimColor.rgb;
+    half4 rimColor = _RimColor;
     UNITY_BRANCH
     if (_CubicRimOn > 0)
     {
-        rimColor = cubicColor;
+        rimColor.rgb = cubicColor;
     }
 
     UNITY_BRANCH
     if (_RimLightingOn > 0)
     {
-        finalColor += RimLight(inputData, rimColor);
+        finalColor += RimLight(inputData, rimColor.rgb) * rimColor.a;
     }
 
     UNITY_BRANCH
     if (_RimBurnOn > 0)
     {
-        finalColor -= RimLight(inputData, 1 - rimColor);
+        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * rimColor.a;
     }
 
     UNITY_BRANCH

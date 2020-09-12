@@ -25,6 +25,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty bottomColor1;
             public MaterialProperty bottomColor2;
             public MaterialProperty mixCubicColorOn;
+            public MaterialProperty multiplyCubicDiffuseOn;
             public MaterialProperty cubicColorPower;
             public MaterialProperty worldSpaceNormal;
             public MaterialProperty worldSpaceGradient;
@@ -81,22 +82,23 @@ namespace AltoLib.ShaderGUI
 
             public CustomProperties(MaterialProperty[] properties)
             {
-                topColor1           = BaseShaderGUI.FindProperty("_TopColor1", properties);
-                topColor2           = BaseShaderGUI.FindProperty("_TopColor2", properties);
-                rightColor1         = BaseShaderGUI.FindProperty("_RightColor1", properties);
-                rightColor2         = BaseShaderGUI.FindProperty("_RightColor2", properties);
-                frontColor1         = BaseShaderGUI.FindProperty("_FrontColor1", properties);
-                frontColor2         = BaseShaderGUI.FindProperty("_FrontColor2", properties);
-                leftColor1          = BaseShaderGUI.FindProperty("_LeftColor1", properties);
-                leftColor2          = BaseShaderGUI.FindProperty("_LeftColor2", properties);
-                backColor1          = BaseShaderGUI.FindProperty("_BackColor1", properties);
-                backColor2          = BaseShaderGUI.FindProperty("_BackColor2", properties);
-                bottomColor1        = BaseShaderGUI.FindProperty("_BottomColor1", properties);
-                bottomColor2        = BaseShaderGUI.FindProperty("_BottomColor2", properties);
-                mixCubicColorOn     = BaseShaderGUI.FindProperty("_MixCubicColorOn", properties);
-                cubicColorPower     = BaseShaderGUI.FindProperty("_CubicColorPower", properties);
-                worldSpaceNormal    = BaseShaderGUI.FindProperty("_WorldSpaceNormal", properties);
-                worldSpaceGradient  = BaseShaderGUI.FindProperty("_WorldSpaceGradient", properties);
+                topColor1              = BaseShaderGUI.FindProperty("_TopColor1", properties);
+                topColor2              = BaseShaderGUI.FindProperty("_TopColor2", properties);
+                rightColor1            = BaseShaderGUI.FindProperty("_RightColor1", properties);
+                rightColor2            = BaseShaderGUI.FindProperty("_RightColor2", properties);
+                frontColor1            = BaseShaderGUI.FindProperty("_FrontColor1", properties);
+                frontColor2            = BaseShaderGUI.FindProperty("_FrontColor2", properties);
+                leftColor1             = BaseShaderGUI.FindProperty("_LeftColor1", properties);
+                leftColor2             = BaseShaderGUI.FindProperty("_LeftColor2", properties);
+                backColor1             = BaseShaderGUI.FindProperty("_BackColor1", properties);
+                backColor2             = BaseShaderGUI.FindProperty("_BackColor2", properties);
+                bottomColor1           = BaseShaderGUI.FindProperty("_BottomColor1", properties);
+                bottomColor2           = BaseShaderGUI.FindProperty("_BottomColor2", properties);
+                mixCubicColorOn        = BaseShaderGUI.FindProperty("_MixCubicColorOn", properties);
+                multiplyCubicDiffuseOn = BaseShaderGUI.FindProperty("_MultiplyCubicDiffuseOn", properties);
+                cubicColorPower        = BaseShaderGUI.FindProperty("_CubicColorPower", properties);
+                worldSpaceNormal       = BaseShaderGUI.FindProperty("_WorldSpaceNormal", properties);
+                worldSpaceGradient     = BaseShaderGUI.FindProperty("_WorldSpaceGradient", properties);
 
                 gradOrigin_T        = BaseShaderGUI.FindProperty("_GradOrigin_T", properties);
                 gradOrigin_R        = BaseShaderGUI.FindProperty("_GradOrigin_R", properties);
@@ -191,6 +193,7 @@ namespace AltoLib.ShaderGUI
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
             EditorGUILayout.LabelField("Custom Properties", labelStyle);
 
+            DrawCustomPropAtTop(material);
             DrawCubicColorProps();
             DrawShadingProps();
             DrawRimProps();
@@ -198,7 +201,11 @@ namespace AltoLib.ShaderGUI
             DrawHsvProps();
             DrawFogProps();
             DrawHeightFogProps();
+            DrawCustomPropAtBottom(material);
         }
+
+        protected virtual void DrawCustomPropAtTop(Material material) {}
+        protected virtual void DrawCustomPropAtBottom(Material material) {}
 
         void DrawCubicColorProps()
         {
@@ -240,6 +247,7 @@ namespace AltoLib.ShaderGUI
             EditorGUILayout.Space();
 
             _util.DrawToggle("Mix Cubic Color", "mixCubicColorOn");
+            _util.DrawToggle("Multiply Cubic & Diffuse", "multiplyCubicDiffuseOn");
             _util.DrawSlider("Cubic Color Power", "cubicColorPower", -1f, 1f);
             _util.DrawSlider("World Space Normal", "worldSpaceNormal", 0f, 1f);
             _util.DrawSlider("World Space Gradient", "worldSpaceGradient", 0f, 1f);
