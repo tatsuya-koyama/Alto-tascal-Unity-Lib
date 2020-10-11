@@ -3,9 +3,10 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-///////////////////////////////////////////////////////////////////////////////
-//                      Lighting Functions                                   //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Lighting Functions
+//==============================================================================
+
 half3 Alto_LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
 {
     half NdotL = saturate(dot(normal, lightDir));
@@ -54,9 +55,10 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, half3 diffuse, half4
     return half4(finalColor, alpha);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//                  Vertex and Fragment functions                            //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Vertex and Fragment inputs
+//==============================================================================
+
 struct Attributes
 {
     float4 positionOS    : POSITION;
@@ -125,11 +127,10 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     inputData.bakedGI = SAMPLE_GI(input.lightmapUV, input.vertexSH, inputData.normalWS);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//                  Vertex and Fragment functions                            //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Vertex function
+//==============================================================================
 
-// Used in Standard (Simple Lighting) shader
 Varyings LitPassVertexSimple(Attributes input)
 {
     Varyings output = (Varyings)0;
@@ -169,7 +170,10 @@ Varyings LitPassVertexSimple(Attributes input)
     return output;
 }
 
-// Used for StandardSimpleLighting shader
+//==============================================================================
+// Fragment function
+//==============================================================================
+
 half4 LitPassFragmentSimple(Varyings input) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);

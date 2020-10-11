@@ -4,9 +4,10 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"
 
-///////////////////////////////////////////////////////////////////////////////
-//                      Lighting Functions                                   //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Lighting Functions
+//==============================================================================
+
 half Alto_LightIntensity(half3 lightDir, half3 normal)
 {
     half NdotL = dot(normal, lightDir);
@@ -124,9 +125,10 @@ half4 Alto_UniversalFragmentBlinnPhong(
     return half4(finalColor, alpha);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//                  Vertex and Fragment inputs                               //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Vertex and Fragment inputs
+//==============================================================================
+
 struct Attributes
 {
     float4 positionOS    : POSITION;
@@ -200,6 +202,7 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 //------------------------------------------------------------------------------
 // Cubic (6-directional) Color
 //------------------------------------------------------------------------------
+
 static const half3 VecTop    = half3( 0,  1,  0);
 static const half3 VecBottom = half3( 0, -1,  0);
 static const half3 VecRight  = half3( 1,  0,  0);
@@ -276,6 +279,7 @@ half3 CubicColor(Attributes input, VertexNormalInputs normalInput, float3 posWor
 //------------------------------------------------------------------------------
 // Multiple color fog
 //------------------------------------------------------------------------------
+
 half3 MixMultipleColorFog(half3 color, float cameraDistance)
 {
     half d1 = _FogDistance1;
@@ -287,11 +291,10 @@ half3 MixMultipleColorFog(half3 color, float cameraDistance)
     return color;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//                  Vertex and Fragment functions                            //
-///////////////////////////////////////////////////////////////////////////////
+//==============================================================================
+// Vertex function
+//==============================================================================
 
-// Used in Standard (Simple Lighting) shader
 Varyings LitPassVertexSimple(Attributes input)
 {
     Varyings output = (Varyings)0;
@@ -339,7 +342,10 @@ Varyings LitPassVertexSimple(Attributes input)
     return output;
 }
 
-// Used for StandardSimpleLighting shader
+//==============================================================================
+// Fragment function
+//==============================================================================
+
 half4 LitPassFragmentSimple(Varyings input) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
