@@ -1,13 +1,17 @@
 ﻿Shader "Altotascal/UI/TextOutline"
 {
     // サンプリング方式でテキストにアウトラインをつける。
-    // アウトラインの色は頂点カラー（Text コンポーネント側で指定した色）を使用。
+    // "Use Vertex Color for Outline" にチェックを入れた場合、
+    // 頂点カラー（Text コンポーネント側で指定した色）を文字部分ではなく
+    // アウトライン側に使用する。
+    //
     // 周囲にゴミのようなものが見える場合はフォントの meta ファイルの
     // characterPadding を修正してフォントアトラスの文字間の余白をとると良い
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Color ("Text Color", Color) = (1, 1, 1, 1)
+        _Color ("Outline or Text Color", Color) = (1, 1, 1, 1)
+        [Toggle] _VertexColorOutline ("Use Vertex Color for Outline", Float) = 0
         _OutlineSpread ("Outline Spread", Range(0.1, 10)) = 1
 
         _StencilComp ("Stencil Comparison", Float) = 8
@@ -44,6 +48,7 @@
 
     sampler2D _MainTex;
     fixed4 _Color;
+    half   _VertexColorOutline;
     half   _OutlineSpread;
     fixed4 _TextureSampleAdd;
     float4 _ClipRect;
@@ -66,8 +71,14 @@
 
     fixed4 frag(v2f IN) : SV_Target
     {
-        half4 color = _Color;
-        half4 outColor = IN.color;
+        half4 color = IN.color;
+        half4 outColor = _Color;
+
+        if (_VertexColorOutline > 0)
+        {
+            color = _Color;
+            outColor = IN.color;
+        }
 
         half a0 = tex2D(_MainTex, IN.uv).a;
         color = lerp(outColor, color, a0);
@@ -107,7 +118,7 @@
         clip(color.a - 0.001);
         #endif
 
-        color.a *= outColor.a;
+        color.a *= IN.color.a;
         return color;
     }
 
