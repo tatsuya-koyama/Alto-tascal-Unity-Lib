@@ -9,16 +9,27 @@ namespace AltoFramework
     class AltoTweenList
     {
         public List<AltoTween> tweens { get; } = new List<AltoTween>();
+        public List<AltoTween> pendingTweens { get; } = new List<AltoTween>();  // Update ループ中に Add された Tween
         public bool isCompleted { get; private set; } = false;
+
+        bool _isUpdating = false;
 
         public void Add(AltoTween tween)
         {
-            this.tweens.Add(tween);
+            if (_isUpdating)
+            {
+                this.pendingTweens.Add(tween);
+            }
+            else
+            {
+                this.tweens.Add(tween);
+            }
             this.isCompleted = false;
         }
 
         public void Update(float deltaTime)
         {
+            _isUpdating = true;
             bool containsUnfinished = false;
             foreach (var tween in tweens)
             {
@@ -26,6 +37,14 @@ namespace AltoFramework
                 if (!tween.IsCompleted()) { containsUnfinished = true; }
             }
             this.isCompleted = !containsUnfinished;
+            _isUpdating = false;
+
+            if (this.pendingTweens.Count > 0)
+            {
+                this.tweens.AddRange(this.pendingTweens);
+                this.pendingTweens.Clear();
+                this.isCompleted = false;
+            }
         }
 
         public void Finish()
@@ -42,9 +61,19 @@ namespace AltoFramework
         public void Clear()
         {
             tweens.Clear();
+            pendingTweens.Clear();
         }
     }
 
+    /// <summary>
+    /// 登録オブジェクトごとの Tween のリストを制御。
+    /// （オブジェクトを指定しなかった場合は null オブジェクトに登録されたとみなされ
+    ///   まとめて管理される）
+    /// Tween はオブジェクト単位で動作中のものが 1 つも無くなったタイミングで
+    /// まとめて削除される。そのため現状の実装では、常に新しい Tween が生み出され
+    /// 常時 1 個以上の Tween が存在している場合に Tween リストが肥大化する可能性があるので注意。
+    /// [ToDo] このあたりの救済策を考える
+    /// </summary>
     public class AltoTweener : IAltoTweener
     {
         /// <summary>
