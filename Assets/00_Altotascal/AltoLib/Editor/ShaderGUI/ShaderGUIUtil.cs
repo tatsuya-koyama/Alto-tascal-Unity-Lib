@@ -76,6 +76,19 @@ namespace AltoLib.ShaderGUI
             return value;
         }
 
+        public Vector4 DrawVector4(string label, string propName)
+        {
+            EditorGUI.BeginChangeCheck();
+            var prop = GetProperty(propName);
+            Vector4 value = prop.vectorValue;
+            value = EditorGUILayout.Vector4Field(label, value);
+            if (EditorGUI.EndChangeCheck())
+            {
+                prop.vectorValue = value;
+            }
+            return value;
+        }
+
         MaterialProperty GetProperty(string propName)
         {
             MaterialProperty prop = null;
