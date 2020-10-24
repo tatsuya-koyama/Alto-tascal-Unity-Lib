@@ -331,7 +331,11 @@ Varyings LitPassVertexSimple(Attributes input)
     output.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 
-    output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
+    UNITY_BRANCH
+    if (abs(_CubicColorPower) > 0.01)
+    {
+        output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
+    }
 
     UNITY_BRANCH
     if (_MultipleFogOn > 0)
@@ -373,12 +377,14 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
         inputData, input.cubicColor, diffuse, specular, smoothness, emission, alpha
     );
 
+    color.rgb = MixFog(color.rgb, inputData.fogCoord);
+
     UNITY_BRANCH
     if (_HeightFogOn > 0)
     {
         half yTo = _HeightFogYFrom + _HeightFogHeight;
-        half heightFogFactor = smoothstep(_HeightFogYFrom, yTo, input.posWS.y);
-        color.rgb = lerp(_HeightFogColor.rgb, color.rgb, heightFogFactor);
+        half heightFogFactor = 1 - smoothstep(_HeightFogYFrom, yTo, input.posWS.y);
+        color.rgb = lerp(color.rgb, _HeightFogColor.rgb, heightFogFactor * _HeightFogColor.a);
     }
 
     UNITY_BRANCH
@@ -387,7 +393,6 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
         color.rgb = MixMultipleColorFog(color.rgb, input.cubicColor.w);
     }
 
-    color.rgb = MixFog(color.rgb, inputData.fogCoord);
     return color;
 };
 

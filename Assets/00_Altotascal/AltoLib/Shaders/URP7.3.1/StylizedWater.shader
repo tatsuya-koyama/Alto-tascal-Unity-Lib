@@ -22,6 +22,11 @@ Shader "Altotascal/URP 7.3.1/Stylized Water"
         _SurfaceNoise("Surface Noise", Float) = 1.0
         _SurfaceParams("Surface Diversity Params", Vector) = (1, 1, 1, 1)
 
+        [ToggleOff] _EdgeFadeOutOn("Edge Fade Out", Float) = 0.0
+        _EdgeFadeOutOrigin("Edge Fade Out Origin", Vector) = (0, 0, 0, 0)
+        _EdgeFadeOutDistance("Edge Fade Out Distance", Float) = 10
+        _EdgeSharpness("Edge Sharpness", Float) = 0.8
+
         // Basic props
         [MainTexture] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         [MainColor] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}

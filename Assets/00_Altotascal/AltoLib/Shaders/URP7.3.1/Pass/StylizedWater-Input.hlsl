@@ -22,6 +22,11 @@ half _SurfaceSpecular;
 half _SurfaceNoise;
 half4 _SurfaceParams;
 
+half _EdgeFadeOutOn;
+half4 _EdgeFadeOutOrigin;
+half _EdgeFadeOutDistance;
+half _EdgeSharpness;
+
 float4 _BaseMap_ST;
 half4 _BaseColor;
 half4 _SpecColor;

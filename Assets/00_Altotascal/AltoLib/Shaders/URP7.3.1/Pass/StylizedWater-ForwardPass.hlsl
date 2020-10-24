@@ -139,8 +139,8 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     input.positionWS = TransformObjectToWorld(positionOS);
 
     // surface wave
-    half waveSpeed = _Time.y * _WaveSpeed;
-    half theta = (input.positionWS.x + input.positionWS.z) * 2 * _WaveCycle;
+    float waveSpeed = _Time.y * _WaveSpeed;
+    float theta = (input.positionWS.x + input.positionWS.z) * 2 * _WaveCycle;
     input.positionWS.x += cos(theta + waveSpeed) * 0.08 * _WavePower;
     input.positionWS.y += sin(theta + waveSpeed) * 0.08 * _WavePower;
 
@@ -197,7 +197,8 @@ half4 WaterColor(Varyings input, half4 baseColor)
         grabUv.x += sin(_Time.y * 9.13 + (input.posWS.x * 5)) * distortionPower;
         grabUv.y += cos(_Time.y * 9.57 + (input.posWS.z * 5)) * distortionPower;
         half4 grabColor = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, grabUv);
-        color = lerp(grabColor, baseColor, d);
+        color.rgb = lerp(grabColor.rgb, baseColor.rgb, baseColor.a);
+        color.a = 1;
     }
 
     UNITY_BRANCH
@@ -212,6 +213,15 @@ half4 WaterColor(Varyings input, half4 baseColor)
 
     float foamLine = 1 - saturate(3.0 * depth * _FoamSharpness);
     color.rgb += foamLine * _FoamColor.rgb * _FoamFactor;
+
+    UNITY_BRANCH
+    if (_EdgeFadeOutOn > 0)
+    {
+        half distanceRate = distance(_EdgeFadeOutOrigin, input.posWS) / _EdgeFadeOutDistance;
+        distanceRate = 1 - smoothstep(_EdgeSharpness, 1, distanceRate);
+        color.a *= distanceRate;
+    }
+
     return color;
 }
 
