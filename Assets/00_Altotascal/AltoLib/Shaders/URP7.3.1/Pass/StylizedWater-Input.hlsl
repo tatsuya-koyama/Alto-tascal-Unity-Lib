@@ -27,6 +27,16 @@ half4 _EdgeFadeOutOrigin;
 half _EdgeFadeOutDistance;
 half _EdgeSharpness;
 
+half _DissolveAreaSize;
+half3 _DissolveOrigin;
+half3 _DissolveSlow;
+half _DissolveDistance;
+half _DissolveRoughness;
+half _DissolveNoise;
+half _DissolveEdgeSharpness;
+half4 _DissolveEdgeAddColor;
+half4 _DissolveEdgeSubColor;
+
 float4 _BaseMap_ST;
 half4 _BaseColor;
 half4 _SpecColor;

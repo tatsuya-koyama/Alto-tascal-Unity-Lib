@@ -27,6 +27,16 @@ Shader "Altotascal/URP 7.3.1/Stylized Water"
         _EdgeFadeOutDistance("Edge Fade Out Distance", Float) = 10
         _EdgeSharpness("Edge Sharpness", Float) = 0.8
 
+        _DissolveAreaSize("Dissolve Area Size", Float) = 0.0
+        _DissolveOrigin("Dissolve Origin Pos", Vector) = (0, 0, 0, 0)
+        _DissolveSlow("Dissolve Slow Factor", Vector) = (1, 1, 1, 1)
+        _DissolveDistance("Dissolve Distance", Float) = 1.0
+        _DissolveRoughness("Dissolve Roughness", Float) = 1.0
+        _DissolveNoise("Dissolve Noise", Float) = 1.0
+        _DissolveEdgeSharpness("Dissolve Edge Sharpness", Float) = 1.0
+        _DissolveEdgeAddColor("Dissolve Edge Add Color", Color) = (1, 1, 1, 1)
+        _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
+
         // Basic props
         [MainTexture] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         [MainColor] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}

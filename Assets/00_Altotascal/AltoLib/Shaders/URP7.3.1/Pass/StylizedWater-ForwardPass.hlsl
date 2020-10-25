@@ -225,6 +225,37 @@ half4 WaterColor(Varyings input, half4 baseColor)
     return color;
 }
 
+//------------------------------------------------------------------------------
+// Dissolve Clip Effect
+//------------------------------------------------------------------------------
+
+half3 DissolveEffect(Varyings input, half3 srcColor)
+{
+    clip(_DissolveDistance - 0.00001);
+    float n = 0;
+
+    UNITY_BRANCH
+    if (_DissolveNoise > 0)
+    {
+        float3 noiseFactor = input.posWS * 16 * _DissolveRoughness;
+        noiseFactor += _Time.y * 8;
+        n = noise(noiseFactor);
+    }
+
+    float3 posFromOrigin = input.posWS - _DissolveOrigin;
+    posFromOrigin *= _DissolveSlow;
+    half distanceFromOrigin = distance(float3(0, 0, 0), posFromOrigin);
+    half clipDistance = _DissolveDistance + (n * 1.5 + smoothstep(0.3, 0.7, n)) * 0.5 * _DissolveNoise;
+    half clipDiff = clipDistance - distanceFromOrigin;
+    half isClipOff = step(_DissolveAreaSize + n, distanceFromOrigin);
+    clip(clipDiff + isClipOff * 9999);
+
+    half dissolveEdge = saturate(1 - clipDiff * _DissolveEdgeSharpness + n * _DissolveNoise) * (1 - isClipOff);
+    half3 color = srcColor;
+    color.rgb -= dissolveEdge * (1 - _DissolveEdgeSubColor);
+    color.rgb += dissolveEdge * _DissolveEdgeAddColor;
+    return color;
+}
 
 //==============================================================================
 // Vertex function
@@ -302,6 +333,12 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
 
     half4 color = Alto_UniversalFragmentBlinnPhong(inputData, diffuse, specular, smoothness, emission, alpha);
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
+
+    UNITY_BRANCH
+    if (_DissolveAreaSize > 0)
+    {
+        color.rgb = DissolveEffect(input, color.rgb);
+    }
 
     return WaterColor(input, color);
 };

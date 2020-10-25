@@ -32,29 +32,49 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty edgeFadeOutDistance;
             public MaterialProperty edgeSharpness;
 
+            public MaterialProperty dissolveAreaSize;
+            public MaterialProperty dissolveOrigin;
+            public MaterialProperty dissolveSlow;
+            public MaterialProperty dissolveDistance;
+            public MaterialProperty dissolveRoughness;
+            public MaterialProperty dissolveNoise;
+            public MaterialProperty dissolveEdgeSharpness;
+            public MaterialProperty dissolveEdgeAddColor;
+            public MaterialProperty dissolveEdgeSubColor;
+
             public CustomProperties(MaterialProperty[] properties)
             {
-                waterColorDepth     = BaseShaderGUI.FindProperty("_WaterColorDepth", properties);
-                depthDebug          = BaseShaderGUI.FindProperty("_DepthDebug", properties);
-                foamColor           = BaseShaderGUI.FindProperty("_FoamColor", properties);
-                foamSharpness       = BaseShaderGUI.FindProperty("_FoamSharpness", properties);
-                foamFactor          = BaseShaderGUI.FindProperty("_FoamFactor", properties);
-                underwaterColor     = BaseShaderGUI.FindProperty("_UnderwaterColor", properties);
-                multiplyUnderwater  = BaseShaderGUI.FindProperty("_MultiplyUnderwaterColor", properties);
-                waterDistortion     = BaseShaderGUI.FindProperty("_WaterDistortion", properties);
+                waterColorDepth       = BaseShaderGUI.FindProperty("_WaterColorDepth", properties);
+                depthDebug            = BaseShaderGUI.FindProperty("_DepthDebug", properties);
+                foamColor             = BaseShaderGUI.FindProperty("_FoamColor", properties);
+                foamSharpness         = BaseShaderGUI.FindProperty("_FoamSharpness", properties);
+                foamFactor            = BaseShaderGUI.FindProperty("_FoamFactor", properties);
+                underwaterColor       = BaseShaderGUI.FindProperty("_UnderwaterColor", properties);
+                multiplyUnderwater    = BaseShaderGUI.FindProperty("_MultiplyUnderwaterColor", properties);
+                waterDistortion       = BaseShaderGUI.FindProperty("_WaterDistortion", properties);
 
-                waveCycle           = BaseShaderGUI.FindProperty("_WaveCycle", properties);
-                waveSpeed           = BaseShaderGUI.FindProperty("_WaveSpeed", properties);
-                wavePower           = BaseShaderGUI.FindProperty("_WavePower", properties);
-                riseAndFall         = BaseShaderGUI.FindProperty("_RiseAndFall", properties);
-                surfaceSpecular     = BaseShaderGUI.FindProperty("_SurfaceSpecular", properties);
-                surfaceNoise        = BaseShaderGUI.FindProperty("_SurfaceNoise", properties);
-                surfaceParams       = BaseShaderGUI.FindProperty("_SurfaceParams", properties);
+                waveCycle             = BaseShaderGUI.FindProperty("_WaveCycle", properties);
+                waveSpeed             = BaseShaderGUI.FindProperty("_WaveSpeed", properties);
+                wavePower             = BaseShaderGUI.FindProperty("_WavePower", properties);
+                riseAndFall           = BaseShaderGUI.FindProperty("_RiseAndFall", properties);
+                surfaceSpecular       = BaseShaderGUI.FindProperty("_SurfaceSpecular", properties);
+                surfaceNoise          = BaseShaderGUI.FindProperty("_SurfaceNoise", properties);
+                surfaceParams         = BaseShaderGUI.FindProperty("_SurfaceParams", properties);
 
-                edgeFadeOutOn       = BaseShaderGUI.FindProperty("_EdgeFadeOutOn", properties);
-                edgeFadeOutOrigin   = BaseShaderGUI.FindProperty("_EdgeFadeOutOrigin", properties);
-                edgeFadeOutDistance = BaseShaderGUI.FindProperty("_EdgeFadeOutDistance", properties);
-                edgeSharpness       = BaseShaderGUI.FindProperty("_EdgeSharpness", properties);
+                edgeFadeOutOn         = BaseShaderGUI.FindProperty("_EdgeFadeOutOn", properties);
+                edgeFadeOutOrigin     = BaseShaderGUI.FindProperty("_EdgeFadeOutOrigin", properties);
+                edgeFadeOutDistance   = BaseShaderGUI.FindProperty("_EdgeFadeOutDistance", properties);
+                edgeSharpness         = BaseShaderGUI.FindProperty("_EdgeSharpness", properties);
+
+                dissolveAreaSize      = BaseShaderGUI.FindProperty("_DissolveAreaSize", properties);
+                dissolveOrigin        = BaseShaderGUI.FindProperty("_DissolveOrigin", properties);
+                dissolveSlow          = BaseShaderGUI.FindProperty("_DissolveSlow", properties);
+                dissolveDistance      = BaseShaderGUI.FindProperty("_DissolveDistance", properties);
+                dissolveRoughness     = BaseShaderGUI.FindProperty("_DissolveRoughness", properties);
+                dissolveNoise         = BaseShaderGUI.FindProperty("_DissolveNoise", properties);
+                dissolveEdgeSharpness = BaseShaderGUI.FindProperty("_DissolveEdgeSharpness", properties);
+                dissolveEdgeAddColor  = BaseShaderGUI.FindProperty("_DissolveEdgeAddColor", properties);
+                dissolveEdgeSubColor  = BaseShaderGUI.FindProperty("_DissolveEdgeSubColor", properties);
             }
 
             //------------------------------------------------------------------
@@ -74,6 +94,7 @@ namespace AltoLib.ShaderGUI
         bool _showWaterColorProps  = true;
         bool _showSurfaceProps     = true;
         bool _showEdgeFadeOutProps = true;
+        bool _showDissolveProps = true;
 
         public override void FindProperties(MaterialProperty[] properties)
         {
@@ -87,6 +108,7 @@ namespace AltoLib.ShaderGUI
             DrawWaterColorProps();
             DrawSurfaceProps();
             DrawEdgeFadeOutProps();
+            DrawDissolveProps();
         }
 
         void DrawWaterColorProps()
@@ -127,6 +149,22 @@ namespace AltoLib.ShaderGUI
             _util.DrawVector3("Fade Out Origin", "edgeFadeOutOrigin");
             _util.DrawFloat("Distance", "edgeFadeOutDistance");
             _util.DrawSlider("Sharpness", "edgeSharpness", 0f, 1f);
+        }
+
+        void DrawDissolveProps()
+        {
+            _showDissolveProps = _util.Foldout(_showDissolveProps, "Dissolve Clip Effect");
+            if (!_showDissolveProps) { return; }
+
+            _util.DrawSlider("Dissolve Area Size", "dissolveAreaSize", 0f, 100f);
+            _util.DrawVector3("Origin", "dissolveOrigin");
+            _util.DrawVector3("Slow Factor", "dissolveSlow");
+            _util.DrawSlider("Distance to Clip", "dissolveDistance", 0f, 100f);
+            _util.DrawSlider("Noise Level", "dissolveNoise", 0f, 10f);
+            _util.DrawSlider("Roughness", "dissolveRoughness", 0f, 10f);
+            _util.DrawSlider("Edge Sharpness", "dissolveEdgeSharpness", 0f, 10f);
+            materialEditor.ColorProperty(_customProperties.dissolveEdgeAddColor, "Edge Add Color");
+            materialEditor.ColorProperty(_customProperties.dissolveEdgeSubColor, "Edge Subtract Color");
         }
     }
 }

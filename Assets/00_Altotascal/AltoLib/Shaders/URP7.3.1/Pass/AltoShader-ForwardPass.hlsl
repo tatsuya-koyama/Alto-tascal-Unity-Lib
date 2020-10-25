@@ -297,6 +297,7 @@ half3 MixMultipleColorFog(half3 color, float cameraDistance)
 
 half3 DissolveEffect(Varyings input, half3 srcColor)
 {
+    clip(_DissolveDistance - 0.001);
     float n = 0;
 
     UNITY_BRANCH
@@ -355,7 +356,7 @@ float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
 {
     float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2 * _WindPhaseShift;
     float theta = thetaOffset + (_Time.y * 2 * _WindSpeed)
-               + max(0, sin(_Time.y * 0.5 * _WindBigWave) * 4);
+                + max(0, sin(_Time.y * 0.5 * _WindBigWave) * 4);
 
     float waveNoise = 0;
     UNITY_BRANCH
