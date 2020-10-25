@@ -66,14 +66,16 @@ namespace AltoLib
         }
 
         //----------------------------------------------------------------------
-        // private
+        // MonoBehaviour
         //----------------------------------------------------------------------
+
+        void Start()
+        {
+            _currentLookPos = target.transform.position + lookPosOffset;
+        }
 
         void LateUpdate()
         {
-            // debug
-            _isPosForced = Input.GetKey(KeyCode.Z);
-
             UpdateLookPos();
             UpdateAngle();
             AutoZoom();
@@ -81,6 +83,10 @@ namespace AltoLib
             DetectWall();
             UpdateCameraPos();
         }
+
+        //----------------------------------------------------------------------
+        // private
+        //----------------------------------------------------------------------
 
         void UpdateLookPos()
         {
