@@ -92,12 +92,7 @@ half4 Alto_UniversalFragmentBlinnPhong(
         finalColor = lerp(finalColor, _ShadowColor, shadowLevel);
     }
 
-    half4 rimColor = _RimColor;
-    UNITY_BRANCH
-    if (_CubicRimOn > 0)
-    {
-        rimColor.rgb = cubicColor;
-    }
+    half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
 
     UNITY_BRANCH
     if (_RimLightingOn > 0)
@@ -336,15 +331,14 @@ void Dithering(Varyings input)
     clip(_DitherAlpha - dither);
 }
 
-void DitheringByCameraDistance(Varyings input)
+void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha)
 {
     float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
     float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
     float dither = tex2D(_DitherPattern, ditherCoord).r;
 
-    float ditherRange = _DitherCameraDistanceFrom - _DitherCameraDistanceTo;
-    float alpha = (input.cubicColor.w - _DitherCameraDistanceTo) / ditherRange;
-    alpha = max(_DitherMinAlpha, alpha);
+    float alpha = saturate((input.cubicColor.w - to) / (from - to));
+    alpha = max(minAlpha, alpha * alpha);
     clip(alpha - dither);
 }
 
@@ -393,7 +387,24 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     }
 
     input.positionVS = TransformWorldToView(input.positionWS);
-    input.positionCS = TransformWorldToHClip(input.positionWS);
+
+    UNITY_BRANCH
+    if (_BillboardOn > 0)
+    {
+        float2 scale = float2(
+            length(float3(UNITY_MATRIX_M[0].x, UNITY_MATRIX_M[1].x, UNITY_MATRIX_M[2].x)),
+            length(float3(UNITY_MATRIX_M[0].y, UNITY_MATRIX_M[1].y, UNITY_MATRIX_M[2].y))
+        );
+        input.positionCS = mul(
+            UNITY_MATRIX_P,
+            mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1))
+                + float4(positionOS.xy, 0, 0) * float4(scale.x, scale.y, 1, 1)
+        );
+    }
+    else
+    {
+        input.positionCS = TransformWorldToHClip(input.positionWS);
+    }
 
     float4 ndc = input.positionCS * 0.5f;
     input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
@@ -442,12 +453,8 @@ Varyings LitPassVertexSimple(Attributes input)
     output.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 
-    UNITY_BRANCH
-    if (abs(_CubicColorPower) > 0.01)
-    {
-        output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
-    }
-    output.cubicColor.w = TransformWorldToView(vertexInput.positionWS).z * -1;
+    output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
+    output.cubicColor.w = length(vertexInput.positionVS);
 
     UNITY_BRANCH
     if (_MirageOn > 0 && _Mirage1 > 0)
@@ -502,7 +509,16 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     if (_DitherAlpha < 1) { Dithering(input); }
 
     UNITY_BRANCH
-    if (_DitherCameraDistanceFrom > 0) { DitheringByCameraDistance(input); }
+    if (_DitherCameraDistanceFrom > 0)
+    {
+        DitheringByCameraDistance(input, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
+    }
+
+    UNITY_BRANCH
+    if (_DitherCullOn > 0 && _Alto_Global_DitherCullFrom > 0)
+    {
+        DitheringByCameraDistance(input, _Alto_Global_DitherCullFrom, _Alto_Global_DitherCullTo, 0);
+    }
 
     UNITY_BRANCH
     if (_MirageOn > 0 && _Mirage2 > 0)

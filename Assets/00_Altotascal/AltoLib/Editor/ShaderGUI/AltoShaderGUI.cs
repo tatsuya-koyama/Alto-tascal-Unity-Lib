@@ -7,6 +7,8 @@ namespace AltoLib.ShaderGUI
     {
         class CustomProperties : ICustomProperties
         {
+            public MaterialProperty billboardOn;
+
             public MaterialProperty mirageOn;
             public MaterialProperty mirage1;
             public MaterialProperty mirage2;
@@ -26,6 +28,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty ditherMinAlpha;
             public MaterialProperty ditherCameraDistanceFrom;
             public MaterialProperty ditherCameraDistanceTo;
+            public MaterialProperty ditherCullOn;
 
             public MaterialProperty windStrength;
             public MaterialProperty windSpeed;
@@ -37,6 +40,8 @@ namespace AltoLib.ShaderGUI
 
             public CustomProperties(MaterialProperty[] properties)
             {
+                billboardOn              = BaseShaderGUI.FindProperty("_BillboardOn", properties);
+
                 mirageOn                 = BaseShaderGUI.FindProperty("_MirageOn", properties);
                 mirage1                  = BaseShaderGUI.FindProperty("_Mirage1", properties);
                 mirage2                  = BaseShaderGUI.FindProperty("_Mirage2", properties);
@@ -56,6 +61,7 @@ namespace AltoLib.ShaderGUI
                 ditherMinAlpha           = BaseShaderGUI.FindProperty("_DitherMinAlpha", properties);
                 ditherCameraDistanceFrom = BaseShaderGUI.FindProperty("_DitherCameraDistanceFrom", properties);
                 ditherCameraDistanceTo   = BaseShaderGUI.FindProperty("_DitherCameraDistanceTo", properties);
+                ditherCullOn             = BaseShaderGUI.FindProperty("_DitherCullOn", properties);
 
                 windStrength             = BaseShaderGUI.FindProperty("_WindStrength", properties);
                 windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
@@ -89,12 +95,14 @@ namespace AltoLib.ShaderGUI
 
         protected override void DrawCustomPropAtTop(Material material)
         {
+            _util.DrawToggle("Billboard", "billboardOn");
             DrawDitherProps();
             DrawWindProps();
         }
 
         protected override void DrawCustomPropAtBottom(Material material)
         {
+            base.DrawCustomPropAtBottom(material);
             DrawMirageProps();
             DrawDissolveProps();
         }
@@ -107,8 +115,9 @@ namespace AltoLib.ShaderGUI
             materialEditor.TextureProperty(_customProperties.ditherPattern, "Dithering Pattern");
             _util.DrawSlider("Dithering Alpha", "ditherAlpha", 0f, 1f);
             _util.DrawSlider("Minimum Alpha", "ditherMinAlpha", 0f, 1f);
-            _util.DrawSlider("Camera Distance From", "ditherCameraDistanceFrom", 0f, 20f);
-            _util.DrawSlider("Camera Distance To", "ditherCameraDistanceTo", 0f, 20f);
+            _util.DrawSlider("Camera Distance Hide", "ditherCameraDistanceTo", 0f, 20f);
+            _util.DrawSlider("Camera Distance Start", "ditherCameraDistanceFrom", 0f, 20f);
+            _util.DrawToggle("Dithering Cull", "ditherCullOn");
         }
 
         void DrawWindProps()

@@ -5,6 +5,8 @@ Shader "Altotascal/URP 7.3.1/Alto Shader"
     Properties
     {
         // Custom props
+        [ToggleOff] _BillboardOn("Billboard", Float) = 0.0
+
         [ToggleOff] _MirageOn("Mirage", Float) = 0.0
         _Mirage1("Mirage 1", Float) = 0.0
         _Mirage2("Mirage 2", Float) = 0.0
@@ -24,6 +26,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader"
         _DitherMinAlpha("Dithering Minimum Alpha", Float) = 0
         _DitherCameraDistanceFrom("Camera Distance to Dithering start", Float) = 0.0
         _DitherCameraDistanceTo("Camera Distance to Dithering end", Float) = 0.0
+        [ToggleOff]_DitherCullOn("Dither Culling", Float) = 1.0
 
         _WindStrength("Wind Strength", Range(0.0, 10.0)) = 0.0
         _WindSpeed("Wind Speed", Range(0.0, 10.0)) = 1.0
