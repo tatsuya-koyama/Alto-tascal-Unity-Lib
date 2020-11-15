@@ -94,6 +94,7 @@ struct Varyings
 
     float4 positionCS               : SV_POSITION;
     float4 screenPos                : TEXCOORD8;
+    float4 cameraValue : COLOR0;  // x: distance to camera
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -226,6 +227,21 @@ half4 WaterColor(Varyings input, half4 baseColor)
 }
 
 //------------------------------------------------------------------------------
+// Dithering alpha
+//------------------------------------------------------------------------------
+
+void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha)
+{
+    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
+    float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
+    float dither = tex2D(_DitherPattern, ditherCoord).r;
+
+    float alpha = saturate((input.cameraValue.x - to) / (from - to));
+    alpha = max(minAlpha, alpha * alpha);
+    clip(alpha - dither);
+}
+
+//------------------------------------------------------------------------------
 // Dissolve Clip Effect
 //------------------------------------------------------------------------------
 
@@ -301,6 +317,8 @@ Varyings LitPassVertexSimple(Attributes input)
     output.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 
+    output.cameraValue.x = length(TransformWorldToView(vertexInput.positionWS));
+
     return output;
 }
 
@@ -330,6 +348,12 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
 
     InputData inputData;
     InitializeInputData(input, normalTS, inputData);
+
+    UNITY_BRANCH
+    if (_DitherCullOn > 0 && _Alto_Global_DitherCullFrom > 0)
+    {
+        DitheringByCameraDistance(input, _Alto_Global_DitherCullFrom, _Alto_Global_DitherCullTo, 0);
+    }
 
     half4 color = Alto_UniversalFragmentBlinnPhong(inputData, diffuse, specular, smoothness, emission, alpha);
     color.rgb = MixFog(color.rgb, inputData.fogCoord);

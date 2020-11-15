@@ -42,6 +42,9 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty dissolveEdgeAddColor;
             public MaterialProperty dissolveEdgeSubColor;
 
+            public MaterialProperty ditherPattern;
+            public MaterialProperty ditherCullOn;
+
             public CustomProperties(MaterialProperty[] properties)
             {
                 waterColorDepth       = BaseShaderGUI.FindProperty("_WaterColorDepth", properties);
@@ -75,6 +78,9 @@ namespace AltoLib.ShaderGUI
                 dissolveEdgeSharpness = BaseShaderGUI.FindProperty("_DissolveEdgeSharpness", properties);
                 dissolveEdgeAddColor  = BaseShaderGUI.FindProperty("_DissolveEdgeAddColor", properties);
                 dissolveEdgeSubColor  = BaseShaderGUI.FindProperty("_DissolveEdgeSubColor", properties);
+
+                ditherPattern         = BaseShaderGUI.FindProperty("_DitherPattern", properties);
+                ditherCullOn          = BaseShaderGUI.FindProperty("_DitherCullOn", properties);
             }
 
             //------------------------------------------------------------------
@@ -94,7 +100,8 @@ namespace AltoLib.ShaderGUI
         bool _showWaterColorProps  = true;
         bool _showSurfaceProps     = true;
         bool _showEdgeFadeOutProps = true;
-        bool _showDissolveProps = true;
+        bool _showDissolveProps    = true;
+        bool _showDitherProps      = true;
 
         public override void FindProperties(MaterialProperty[] properties)
         {
@@ -105,10 +112,20 @@ namespace AltoLib.ShaderGUI
 
         public override void DrawAdditionalFoldouts(Material material)
         {
+            DrawDitherProps();
             DrawWaterColorProps();
             DrawSurfaceProps();
             DrawEdgeFadeOutProps();
             DrawDissolveProps();
+        }
+
+        void DrawDitherProps()
+        {
+            _showDitherProps = _util.Foldout(_showDitherProps, "Dithering");
+            if (!_showDitherProps) { return; }
+
+            materialEditor.TextureProperty(_customProperties.ditherPattern, "Dithering Pattern");
+            _util.DrawToggle("Dithering Cull", "ditherCullOn");
         }
 
         void DrawWaterColorProps()

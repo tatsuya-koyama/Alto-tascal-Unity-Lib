@@ -5,6 +5,11 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
+// Global props
+half _Alto_Global_DitherCullFrom;
+half _Alto_Global_DitherCullTo;
+
+// Custom props
 half _WaterColorDepth;
 half _DepthDebug;
 half4 _FoamColor;
@@ -36,6 +41,10 @@ half _DissolveNoise;
 half _DissolveEdgeSharpness;
 half4 _DissolveEdgeAddColor;
 half4 _DissolveEdgeSubColor;
+
+sampler2D _DitherPattern;
+half4 _DitherPattern_TexelSize;
+half _DitherCullOn;
 
 float4 _BaseMap_ST;
 half4 _BaseColor;
