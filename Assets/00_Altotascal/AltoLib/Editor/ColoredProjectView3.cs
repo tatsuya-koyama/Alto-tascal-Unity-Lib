@@ -9,7 +9,7 @@ namespace AltoLib
     {
         const string MenuPath = "Alto/ColoredProjectView (Kind)";
         static readonly string[] Keywords = {
-            "scene", "material", "editor", "resource", "prefab", "shader", "script"
+            "scene", "material", "editor", "resource", "prefab", "shader", "script", "texture"
         };
 
         [MenuItem(MenuPath)]
@@ -76,7 +76,7 @@ namespace AltoLib
                 {
                     if (lowerName.StartsWith(Keywords[i]))
                     {
-                        return ((i % 7) + 1, pathLevel - depthBase);
+                        return ((i % 8) + 1, pathLevel - depthBase);
                     }
                 }
                 ++depthBase;
@@ -86,7 +86,7 @@ namespace AltoLib
 
         static Color GetColorForDarkSkin(int id)
         {
-            switch (id % 8)
+            switch (id % 9)
             {
                 case 0: return new Color(8.4f, 8.4f, 0.0f, 0.45f);
                 case 1: return new Color(9.6f, 0.5f, 0.5f, 0.50f);
@@ -96,13 +96,14 @@ namespace AltoLib
                 case 5: return new Color(0.0f, 4.8f, 9.6f, 0.40f);
                 case 6: return new Color(9.6f, 3.0f, 3.0f, 0.50f);
                 case 7: return new Color(2.0f, 2.0f, 9.6f, 0.65f);
+                case 8: return new Color(3.0f, 8.4f, 4.8f, 0.55f);
             }
             return new Color(0, 0, 0, 0);
         }
 
         static Color GetColorForLightSkin(int id)
         {
-            switch (id % 8)
+            switch (id % 9)
             {
                 case 0: return new Color(1.4f, 1.4f, 0.0f, 0.15f);
                 case 1: return new Color(1.6f, 0.0f, 0.0f, 0.15f);
@@ -112,6 +113,7 @@ namespace AltoLib
                 case 5: return new Color(0.0f, 0.8f, 1.6f, 0.15f);
                 case 6: return new Color(1.6f, 0.4f, 0.4f, 0.15f);
                 case 7: return new Color(0.2f, 0.2f, 1.6f, 0.15f);
+                case 8: return new Color(0.6f, 1.4f, 0.8f, 0.15f);
             }
             return new Color(0, 0, 0, 0);
         }
