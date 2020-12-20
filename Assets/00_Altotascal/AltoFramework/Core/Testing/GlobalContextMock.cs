@@ -11,6 +11,10 @@ namespace AltoFramework.Testing
 
         public IResourceHub resourceHub { get; private set; }
 
+        public IAudioPlayer bgmPlayer { get; private set; }
+
+        public IAudioPlayer sePlayer { get; private set; }
+
         public ISignalHub signalHub { get; private set; }
 
         public ITweenerHub tweenerHub { get; private set; }
@@ -34,6 +38,12 @@ namespace AltoFramework.Testing
             timeKeeper = new TimeKeeper();
 
             resourceHub = new ResourceHub(sceneDirector);
+
+            bgmPlayer = new BgmPlayer();
+            bgmPlayer.Init(_gameObject, bootConfig.numBgmSourcePool, sceneDirector, resourceHub);
+
+            sePlayer = new SePlayer();
+            sePlayer.Init(_gameObject, bootConfig.numSeSourcePool, sceneDirector, resourceHub);
 
             signalHub = new SignalHub(sceneDirector);
 

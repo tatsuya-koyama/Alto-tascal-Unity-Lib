@@ -32,6 +32,11 @@ namespace AltoFramework
         // Shortcut methods / properties
         //----------------------------------------------------------------------
 
+        public static ISceneDirector scene
+        {
+            get { return context.sceneDirector; }
+        }
+
         public static ISceneContext sceneContext
         {
             get { return context.sceneDirector?.currentSceneContext; }
@@ -60,6 +65,16 @@ namespace AltoFramework
         public static IResourceStore globalResources
         {
             get { return context.resourceHub.globalScopeResourceStore; }
+        }
+
+        public static IAudioPlayer bgm
+        {
+            get { return context.bgmPlayer; }
+        }
+
+        public static IAudioPlayer se
+        {
+            get { return context.sePlayer; }
         }
 
         /// <summary>

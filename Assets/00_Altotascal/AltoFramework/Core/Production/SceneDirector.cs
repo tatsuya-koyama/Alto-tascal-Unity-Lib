@@ -16,10 +16,13 @@ namespace AltoFramework.Production
         public event Action sceneLoaded;
         public event Action sceneUpdate;
 
+        bool _useGlobalAudioListener;
         ScreenFader _screenFader;
 
         public void Init(GameObject gameObject, IBootConfig bootConfig)
         {
+            _useGlobalAudioListener = bootConfig.useGlobalAudioListener;
+
             _screenFader = gameObject.AddComponent<ScreenFader>();
             _screenFader.Init();
         }
@@ -80,6 +83,7 @@ namespace AltoFramework.Production
                 await nextSceneContext.InitBeforeLoadScene();
             }
             await SceneManager.LoadSceneAsync(nextSceneName);
+            DisableLocalAudioListener();
 
             AltoLog.FW("[SceneDirector] - Init <b>After</b> Load Scene");
             if (currentSceneContext != null)
@@ -111,6 +115,17 @@ namespace AltoFramework.Production
             if (currentSceneContext != null)
             {
                 currentSceneContext.IsReady = isReady;
+            }
+        }
+
+        void DisableLocalAudioListener()
+        {
+            if (!_useGlobalAudioListener) { return; }
+
+            var audioListener = Camera.main.GetComponent<AudioListener>();
+            if (audioListener != null)
+            {
+                audioListener.enabled = false;
             }
         }
     }

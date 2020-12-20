@@ -29,6 +29,13 @@ namespace AltoFramework.Editor
         List<AltoResourceTreeViewItem> _items = new List<AltoResourceTreeViewItem>();
         AltoResourceCollector _collector = new AltoResourceCollector();
 
+        public long TotalMemory()
+        {
+            long memorySum = 0;
+            _items.ForEach(item => memorySum += item.memorySize);
+            return memorySum;
+        }
+
         public void WatchAll()
         {
             var items = _collector.CollectAll();
@@ -50,6 +57,15 @@ namespace AltoFramework.Editor
         public void WatchScriptableObjects()
         {
             var items = _collector.CollectScriptableObjects();
+            if (items == null) { return; }
+
+            _items = items;
+            ReloadAndSort();
+        }
+
+        public void WatchAudioClips()
+        {
+            var items = _collector.CollectAudioClips();
             if (items == null) { return; }
 
             _items = items;

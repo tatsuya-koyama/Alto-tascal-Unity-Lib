@@ -25,6 +25,8 @@ namespace AltoFramework.Editor
             DoCollectSprites(items, false);
             DoCollectObjects(items, true);
             DoCollectObjects(items, false);
+            DoCollectAudioClips(items, true);
+            DoCollectAudioClips(items, false);
             AssignId(items);
             return items;
         }
@@ -38,6 +40,17 @@ namespace AltoFramework.Editor
             DoCollectSpriteAtlases(items, false);
             DoCollectSprites(items, true);
             DoCollectSprites(items, false);
+            AssignId(items);
+            return items;
+        }
+
+        public List<AltoResourceTreeViewItem> CollectAudioClips()
+        {
+            if (!IsReady()) { return null; }
+
+            var items = new List<AltoResourceTreeViewItem>();
+            DoCollectAudioClips(items, true);
+            DoCollectAudioClips(items, false);
             AssignId(items);
             return items;
         }
@@ -111,6 +124,21 @@ namespace AltoFramework.Editor
                 {
                     category = "Scriptable Object", assetName = key, isGlobal = isGlobal,
                     memorySize = GetScriptableObjectMemory(objects[key]),
+                });
+            }
+        }
+
+        void DoCollectAudioClips(List<AltoResourceTreeViewItem> items, bool isGlobal)
+        {
+            var resources = isGlobal ? Alto.globalResources : Alto.resources;
+            var objects = ((ResourceStore)resources).audios;
+
+            foreach (var key in objects.Keys)
+            {
+                items.Add(new AltoResourceTreeViewItem(0)
+                {
+                    category = "Audio Clip", assetName = key, isGlobal = isGlobal,
+                    memorySize = Profiler.GetRuntimeMemorySizeLong(objects[key]),
                 });
             }
         }

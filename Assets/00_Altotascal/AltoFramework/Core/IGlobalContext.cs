@@ -8,6 +8,10 @@
 
         IResourceHub resourceHub { get; }
 
+        IAudioPlayer bgmPlayer { get; }
+
+        IAudioPlayer sePlayer { get; }
+
         ISignalHub signalHub { get; }
 
         ITweenerHub tweenerHub { get; }

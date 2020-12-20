@@ -45,6 +45,10 @@ namespace AltoFramework.Editor
             {
                 _treeView.WatchScriptableObjects();
             }
+            if (GUILayout.Button("Audio Clip"))
+            {
+                _treeView.WatchAudioClips();
+            }
             if (GUILayout.Button("Prefab"))
             {
                 // ToDo
@@ -63,11 +67,13 @@ namespace AltoFramework.Editor
 
         string GetMemoryUsage()
         {
-            var totalMemory  = Profiler.GetTotalReservedMemoryLong()       / 1024f / 1024f;
-            var usedMemory   = Profiler.GetTotalAllocatedMemoryLong()      / 1024f / 1024f;
+            float totalMemory  = Profiler.GetTotalReservedMemoryLong()  / 1024f / 1024f;
+            float usedMemory   = Profiler.GetTotalAllocatedMemoryLong() / 1024f / 1024f;
+            float altoMemory   = _treeView.TotalMemory()                / 1024f / 1024f;
 
             return $"[Total Reserved Memory] : {totalMemory.ToString("0.0")} MB  "
-                 + $"[Used] : {usedMemory.ToString("0.0")} MB";
+                 + $"[Used] : {usedMemory.ToString("0.0")} MB  "
+                 + $"[Alto] : {altoMemory.ToString("0.0")} MB";
         }
     }
 }
