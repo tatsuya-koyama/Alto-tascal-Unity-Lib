@@ -10,7 +10,7 @@ namespace AltoFramework
 
         void Init(
             GameObject gameObject, int numSourcePool,
-            ISceneDirector sceneDirector, IResourceHub resourceHub
+            ISceneDirector sceneDirector, IResourceStore resourceStore
         );
 
         void Play(
@@ -19,6 +19,11 @@ namespace AltoFramework
             float spatial = 0f, Vector3? position = null
         );
         void Play(
+            string audioPath, bool? loop = null, bool? mix = null, bool? replay = null,
+            bool autoVolume = true, float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
+            float spatial = 0f, Vector3? position = null
+        );
+        UniTask PlayOndemand(
             string audioPath, bool? loop = null, bool? mix = null, bool? replay = null,
             bool autoVolume = true, float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
             float spatial = 0f, Vector3? position = null

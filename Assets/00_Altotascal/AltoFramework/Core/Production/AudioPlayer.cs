@@ -33,7 +33,7 @@ namespace AltoFramework
     public class AudioPlayer : IAudioPlayer
     {
         AudioSourcePool _sourcePool = new AudioSourcePool();
-        IResourceStore _resources;
+        IResourceStore _resourceStore;
 
         protected virtual string AudioSourceObjectName => "AudioSource";
         protected virtual bool DefaultLoop   => false;
@@ -84,11 +84,11 @@ namespace AltoFramework
 
         public void Init(
             GameObject gameObject, int numSourcePool,
-            ISceneDirector sceneDirector, IResourceHub resourceHub
+            ISceneDirector sceneDirector, IResourceStore resourceStore
         )
         {
             _sourcePool.Init(gameObject, AudioSourceObjectName, numSourcePool);
-            _resources = resourceHub.sceneScopeResourceStore;
+            _resourceStore = resourceStore;
 
             sceneDirector.sceneUpdate += OnSceneUpdate;
         }
@@ -98,9 +98,8 @@ namespace AltoFramework
         //----------------------------------------------------------------------
 
         public void Play(
-            AudioClip audioClip, bool? loop = null, bool? mix = null,
-            bool? replay = null, bool autoVolume = true,
-            float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
+            AudioClip audioClip, bool? loop = null, bool? mix = null, bool? replay = null,
+            bool autoVolume = true, float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
             float spatial = 0f, Vector3? position = null
         )
         {
@@ -111,14 +110,43 @@ namespace AltoFramework
         }
 
         public void Play(
-            string audioPath, bool? loop = null, bool? mix = null,
-            bool? replay = null, bool autoVolume = true,
-            float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
+            string audioPath, bool? loop = null, bool? mix = null, bool? replay = null,
+            bool autoVolume = true, float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
             float spatial = 0f, Vector3? position = null
         )
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             Play(audioClip, loop, mix, replay, autoVolume, volume, pitch, pan, spatial, position);
+        }
+
+        /// <summary>
+        /// リソースの自動ロード・アンロード付き再生。
+        /// 再生時はリソースのグローバル参照カウントが +1 され、未ロードならロードしてから再生する。
+        /// 再生終了時には参照カウントを -1 し、その時点でカウントが 0 ならアンロードを行う。
+        ///
+        /// シーンをまたいで BGM を再生する場合や、ジュークボックスなどで
+        /// 都度必要なリソースをロードして鳴らすような用途を想定している。
+        /// </summary>
+        public async UniTask PlayOndemand(
+            string audioPath, bool? loop = null, bool? mix = null, bool? replay = null,
+            bool autoVolume = true, float volume = 1.0f, float pitch = 1.0f, float pan = 0f,
+            float spatial = 0f, Vector3? position = null
+        )
+        {
+            var audioClip = await _resourceStore.GetAudioOndemand(audioPath);
+            var state = PlayGeneral(
+                audioClip, loop, mix, replay,
+                autoVolume, 0f, volume, 0f, pitch, pan, spatial, position
+            );
+            if (state == null)
+            {
+                _resourceStore.ReleaseGlobalWithAutoUnload(audioPath);
+                return;
+            }
+
+            state.onStop = () => {
+                _resourceStore.ReleaseGlobalWithAutoUnload(audioPath);
+            };
         }
 
         public async UniTask FadeIn(
@@ -128,11 +156,11 @@ namespace AltoFramework
             float spatial = 0f, Vector3? position = null
         )
         {
-            bool isPlayed = PlayGeneral(
+            var state = PlayGeneral(
                 audioClip, loop, mix, replay,
                 autoVolume, volumeFrom, volumeTo, fadeTime, pitch, pan, spatial, position
             );
-            if (!isPlayed) { return; }
+            if (state == null) { return; }
 
             await UniTask.Delay(TimeSpan.FromSeconds(fadeTime));
         }
@@ -144,7 +172,7 @@ namespace AltoFramework
             float spatial = 0f, Vector3? position = null
         )
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             await FadeIn(
                 audioClip, fadeTime, volumeFrom, volumeTo,
                 loop, mix, replay, autoVolume, pitch, pan, spatial, position
@@ -169,7 +197,7 @@ namespace AltoFramework
 
         public void Stop(string audioPath)
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             Stop(audioClip);
         }
 
@@ -194,7 +222,7 @@ namespace AltoFramework
             await UniTask.Delay(TimeSpan.FromSeconds(fadeTime));
             foreach (var state in states)
             {
-                state.source.Stop();
+                state.StopSource();
             }
         }
 
@@ -202,7 +230,7 @@ namespace AltoFramework
             float fadeTime, string audioPath, float volumeFrom = 1f, float volumeTo = 0f
         )
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             await FadeOut(fadeTime, audioClip, volumeFrom, volumeTo);
         }
 
@@ -236,7 +264,7 @@ namespace AltoFramework
             float spatial = 0f, Vector3? position = null
         )
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             await CrossFade(
                 audioClip, fadeOutTime, fadeInDelay, fadeInTime, volumeFrom, volumeTo,
                 loop, autoVolume, pitch, pan, spatial, position
@@ -287,7 +315,7 @@ namespace AltoFramework
 
         public void Pause(string audioPath)
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             Pause(audioClip);
         }
 
@@ -305,7 +333,7 @@ namespace AltoFramework
 
         public void Resume(string audioPath)
         {
-            var audioClip = _resources.GetAudio(audioPath);
+            var audioClip = _resourceStore.GetAudio(audioPath);
             Resume(audioClip);
         }
 
@@ -321,20 +349,20 @@ namespace AltoFramework
 
         /// <summary>
         /// フェードインに対応した汎用再生処理。
-        /// 再生時は true, 再生がキャンセルされた場合は false を返す
+        /// 再生時は再生した音の AudioSourceState を, 再生がキャンセルされた場合は null を返す
         /// </summary>
-        bool PlayGeneral(
+        AudioSourceState PlayGeneral(
             AudioClip audioClip, bool? loop, bool? _mix, bool? _replay,
             bool _autoVolume, float volumeFrom, float volumeTo, float fadeTime,
             float pitch, float pan, float spatial, Vector3? _position
         )
         {
-            if (audioClip == null) { return false; }
+            if (audioClip == null) { return null; }
 
             bool replay = _replay ?? DefaultReplay;
             if (!replay)
             {
-                if (_sourcePool.IsPlaying(audioClip)) { return false; }
+                if (_sourcePool.IsPlaying(audioClip)) { return null; }
             }
 
             bool mix = _mix ?? DefaultMix;
@@ -367,7 +395,7 @@ namespace AltoFramework
             transform.position = position;
 
             source.Play();
-            return true;
+            return audioSourceState;
         }
 
         float GetVolume(float volume, bool autoVolume = false, AudioClip audioClip = null)

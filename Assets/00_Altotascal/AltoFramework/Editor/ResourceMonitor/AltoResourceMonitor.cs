@@ -37,21 +37,21 @@ namespace AltoFramework.Editor
             {
                 _treeView.WatchAll();
             }
-            if (GUILayout.Button("Sprite"))
+            if (GUILayout.Button("Prefab"))
             {
-                _treeView.WatchSpriteAtlas();
+                _treeView.WatchGameObjects();
             }
             if (GUILayout.Button("Scriptable Object"))
             {
                 _treeView.WatchScriptableObjects();
             }
+            if (GUILayout.Button("Sprite Atlas"))
+            {
+                _treeView.WatchSpriteAtlas();
+            }
             if (GUILayout.Button("Audio Clip"))
             {
                 _treeView.WatchAudioClips();
-            }
-            if (GUILayout.Button("Prefab"))
-            {
-                // ToDo
             }
             EditorGUILayout.EndHorizontal();
 

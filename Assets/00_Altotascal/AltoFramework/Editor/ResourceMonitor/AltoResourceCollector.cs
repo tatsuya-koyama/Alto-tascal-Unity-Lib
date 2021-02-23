@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using AltoFramework.Production;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -19,38 +20,20 @@ namespace AltoFramework.Editor
             if (!IsReady()) { return null; }
 
             var items = new List<AltoResourceTreeViewItem>();
-            DoCollectSpriteAtlases(items, true);
-            DoCollectSpriteAtlases(items, false);
-            DoCollectSprites(items, true);
-            DoCollectSprites(items, false);
-            DoCollectObjects(items, true);
-            DoCollectObjects(items, false);
-            DoCollectAudioClips(items, true);
-            DoCollectAudioClips(items, false);
+            DoCollectGameObjects(items);
+            DoCollectScriptableObjects(items);
+            DoCollectSpriteAtlases(items);
+            DoCollectAudioClips(items);
             AssignId(items);
             return items;
         }
 
-        public List<AltoResourceTreeViewItem> CollectSprites()
+        public List<AltoResourceTreeViewItem> CollectGameObjects()
         {
             if (!IsReady()) { return null; }
 
             var items = new List<AltoResourceTreeViewItem>();
-            DoCollectSpriteAtlases(items, true);
-            DoCollectSpriteAtlases(items, false);
-            DoCollectSprites(items, true);
-            DoCollectSprites(items, false);
-            AssignId(items);
-            return items;
-        }
-
-        public List<AltoResourceTreeViewItem> CollectAudioClips()
-        {
-            if (!IsReady()) { return null; }
-
-            var items = new List<AltoResourceTreeViewItem>();
-            DoCollectAudioClips(items, true);
-            DoCollectAudioClips(items, false);
+            DoCollectGameObjects(items);
             AssignId(items);
             return items;
         }
@@ -60,8 +43,27 @@ namespace AltoFramework.Editor
             if (!IsReady()) { return null; }
 
             var items = new List<AltoResourceTreeViewItem>();
-            DoCollectObjects(items, true);
-            DoCollectObjects(items, false);
+            DoCollectScriptableObjects(items);
+            AssignId(items);
+            return items;
+        }
+
+        public List<AltoResourceTreeViewItem> CollectSprites()
+        {
+            if (!IsReady()) { return null; }
+
+            var items = new List<AltoResourceTreeViewItem>();
+            DoCollectSpriteAtlases(items);
+            AssignId(items);
+            return items;
+        }
+
+        public List<AltoResourceTreeViewItem> CollectAudioClips()
+        {
+            if (!IsReady()) { return null; }
+
+            var items = new List<AltoResourceTreeViewItem>();
+            DoCollectAudioClips(items);
             AssignId(items);
             return items;
         }
@@ -83,64 +85,71 @@ namespace AltoFramework.Editor
             }
         }
 
-        void DoCollectSpriteAtlases(List<AltoResourceTreeViewItem> items, bool isGlobal)
+        void DoCollectGameObjects(List<AltoResourceTreeViewItem> items)
         {
-            var resources = isGlobal ? Alto.globalResources : Alto.resources;
-            var atlases = ((ResourceStore)resources).atlases;
-
-            foreach (var key in atlases.Keys)
+            var entries = Alto.resource.registry.GetEntries().Where(x => {
+                return x.type == typeof(GameObject);
+            });
+            foreach (var entry in entries)
             {
-                items.Add(new AltoResourceTreeViewItem(0)
-                {
-                    category = "Sprite Atlas", assetName = key, isGlobal = isGlobal,
-                    memorySize = GetSpriteAtlasTextureMemory(atlases[key]),
-                });
+                var resource = Alto.resource.GetGameObj(entry.address);
+                items.Add(MakeItem(entry, "Prefab", resource));
             }
         }
 
-        void DoCollectSprites(List<AltoResourceTreeViewItem> items, bool isGlobal)
+        void DoCollectScriptableObjects(List<AltoResourceTreeViewItem> items)
         {
-            var resources = isGlobal ? Alto.globalResources : Alto.resources;
-            var sprites = ((ResourceStore)resources).sprites;
-
-            foreach (var key in sprites.Keys)
+            var entries = Alto.resource.registry.GetEntries().Where(x => {
+                return x.type.IsSubclassOf(typeof(ScriptableObject));
+            });
+            foreach (var entry in entries)
             {
-                items.Add(new AltoResourceTreeViewItem(0)
-                {
-                    category = "Sprite", assetName = key, isGlobal = isGlobal,
-                    memorySize = -1,
-                });
+                var resource = Alto.resource.GetObj<ScriptableObject>(entry.address);
+                items.Add(MakeItem(entry, "Scriptable Object", resource));
             }
         }
 
-        void DoCollectObjects(List<AltoResourceTreeViewItem> items, bool isGlobal)
+        void DoCollectSpriteAtlases(List<AltoResourceTreeViewItem> items)
         {
-            var resources = isGlobal ? Alto.globalResources : Alto.resources;
-            var objects = ((ResourceStore)resources).objects;
-
-            foreach (var key in objects.Keys)
+            var entries = Alto.resource.registry.GetEntries().Where(x => {
+                return x.type == typeof(SpriteAtlas);
+            });
+            foreach (var entry in entries)
             {
-                items.Add(new AltoResourceTreeViewItem(0)
-                {
-                    category = "Scriptable Object", assetName = key, isGlobal = isGlobal,
-                    memorySize = GetScriptableObjectMemory(objects[key]),
-                });
+                var resource = Alto.resource.GetSpriteAtlas(entry.address);
+                long memorySize = GetSpriteAtlasTextureMemory(resource);
+                items.Add(MakeItem(entry, "Sprite Atlas", resource, memorySize));
             }
         }
 
-        void DoCollectAudioClips(List<AltoResourceTreeViewItem> items, bool isGlobal)
+        void DoCollectAudioClips(List<AltoResourceTreeViewItem> items)
         {
-            var resources = isGlobal ? Alto.globalResources : Alto.resources;
-            var objects = ((ResourceStore)resources).audios;
-
-            foreach (var key in objects.Keys)
+            var entries = Alto.resource.registry.GetEntries().Where(x => {
+                return x.type == typeof(AudioClip);
+            });
+            foreach (var entry in entries)
             {
-                items.Add(new AltoResourceTreeViewItem(0)
-                {
-                    category = "Audio Clip", assetName = key, isGlobal = isGlobal,
-                    memorySize = Profiler.GetRuntimeMemorySizeLong(objects[key]),
-                });
+                var resource = Alto.resource.GetAudio(entry.address);
+                items.Add(MakeItem(entry, "Audio Clip", resource));
             }
+        }
+
+        AltoResourceTreeViewItem MakeItem(
+            ResourceRegistry.ResourceEntry entry, string category, Object resource,
+            long? _memorySize = null
+        )
+        {
+            long genericMemorySize = (resource == null) ? -1 : Profiler.GetRuntimeMemorySizeLong(resource);
+            long memorySize = _memorySize ?? genericMemorySize;
+            return new AltoResourceTreeViewItem(0)
+            {
+                category       = category,
+                assetName      = entry.address,
+                refCount       = entry.sceneScopeRefCount,
+                globalRefCount = entry.globalScopeRefCount,
+                loaded         = entry.loaded,
+                memorySize     = memorySize,
+            };
         }
 
         /// <summary>

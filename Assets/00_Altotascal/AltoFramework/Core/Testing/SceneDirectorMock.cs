@@ -14,7 +14,7 @@ namespace AltoFramework.Testing
         public event Action sceneLoaded;
         public event Action sceneUpdate;
 
-        public void Init(GameObject gameObject, IBootConfig bootConfig)
+        public void Init(GameObject gameObject, IBootConfig bootConfig, IResourceStore resourceStore)
         {
         }
 

@@ -8,7 +8,7 @@ namespace AltoFramework.Production
 
         public ITimeKeeper timeKeeper { get; private set; }
 
-        public IResourceHub resourceHub { get; private set; }
+        public IResourceStore resourceStore { get; private set; }
 
         public IAudioPlayer bgmPlayer { get; private set; }
 
@@ -35,19 +35,19 @@ namespace AltoFramework.Production
             GameObject.DontDestroyOnLoad(_contextGameObj);
             GameObject.DontDestroyOnLoad(_audioSourceGameObj);
 
+            resourceStore = new ResourceStore();
+
             sceneDirector = _contextGameObj.AddComponent<SceneDirector>();
-            sceneDirector.Init(_contextGameObj, bootConfig);
+            sceneDirector.Init(_contextGameObj, bootConfig, resourceStore);
             sceneDirector.sceneUpdate += OnSceneUpdate;
 
             timeKeeper = new TimeKeeper();
 
-            resourceHub = new ResourceHub(sceneDirector);
-
             bgmPlayer = new BgmPlayer();
-            bgmPlayer.Init(_audioSourceGameObj, bootConfig.numBgmSourcePool, sceneDirector, resourceHub);
+            bgmPlayer.Init(_audioSourceGameObj, bootConfig.numBgmSourcePool, sceneDirector, resourceStore);
 
             sePlayer = new SePlayer();
-            sePlayer.Init(_audioSourceGameObj, bootConfig.numSeSourcePool, sceneDirector, resourceHub);
+            sePlayer.Init(_audioSourceGameObj, bootConfig.numSeSourcePool, sceneDirector, resourceStore);
 
             if (bootConfig.useGlobalAudioListener)
             {

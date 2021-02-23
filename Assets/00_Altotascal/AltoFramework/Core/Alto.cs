@@ -57,14 +57,9 @@ namespace AltoFramework
             get { return context.timeKeeper; }
         }
 
-        public static IResourceStore resources
+        public static IResourceStore resource
         {
-            get { return context.resourceHub.sceneScopeResourceStore; }
-        }
-
-        public static IResourceStore globalResources
-        {
-            get { return context.resourceHub.globalScopeResourceStore; }
+            get { return context.resourceStore; }
         }
 
         public static IAudioPlayer bgm

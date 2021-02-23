@@ -1,22 +1,30 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.U2D;
 
 namespace AltoFramework
 {
     public interface IResourceStore
     {
-        void UnloadAll();
+        ResourceRegistry registry { get; }
 
-        UniTask LoadSpriteAtlas(params string[] assetAddress);
-        void UnloadSpriteAtlas(string assetAddress);
+        void Retain(params string[] assetAddressList);
+        void Release(params string[] assetAddressList);
+        void RetainGlobal(params string[] assetAddressList);
+        void ReleaseGlobal(params string[] assetAddressList);
+        void ReleaseAllSceneScoped();
+        UniTask RetainGlobalWithAutoLoad(params string[] assetAddressList);
+        void ReleaseGlobalWithAutoUnload(params string[] assetAddressList);
+
+        GameObject GetGameObj(string assetAddress);
+        T GetObj<T>(string assetAddress) where T : ScriptableObject;
+        AudioClip GetAudio(string assetAddress);
+        SpriteAtlas GetSpriteAtlas(string assetAddress);
         Sprite GetSprite(string spriteName);
 
-        UniTask LoadObject(params string[] assetAddress);
-        void UnloadObject(string assetAddress);
-        T GetObject<T>(string assetAddress) where T : ScriptableObject;
+        UniTask<AudioClip> GetAudioOndemand(string assetAddress);
 
-        UniTask LoadAudio(params string[] assetAddress);
-        void UnloadAudio(string assetAddress);
-        AudioClip GetAudio(string assetAddress);
+        UniTask Load();
+        void Unload();
     }
 }

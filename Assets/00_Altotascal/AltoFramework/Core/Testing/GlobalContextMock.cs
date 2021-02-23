@@ -9,7 +9,7 @@ namespace AltoFramework.Testing
 
         public ITimeKeeper timeKeeper { get; private set; }
 
-        public IResourceHub resourceHub { get; private set; }
+        public IResourceStore resourceStore { get; private set; }
 
         public IAudioPlayer bgmPlayer { get; private set; }
 
@@ -32,18 +32,18 @@ namespace AltoFramework.Testing
 
             _gameObject = new GameObject("GameContext");
 
+            resourceStore = new ResourceStore();
+
             sceneDirector = _gameObject.AddComponent<SceneDirectorMock>();
-            sceneDirector.Init(_gameObject, bootConfig);
+            sceneDirector.Init(_gameObject, bootConfig, resourceStore);
 
             timeKeeper = new TimeKeeper();
 
-            resourceHub = new ResourceHub(sceneDirector);
-
             bgmPlayer = new BgmPlayer();
-            bgmPlayer.Init(_gameObject, bootConfig.numBgmSourcePool, sceneDirector, resourceHub);
+            bgmPlayer.Init(_gameObject, bootConfig.numBgmSourcePool, sceneDirector, resourceStore);
 
             sePlayer = new SePlayer();
-            sePlayer.Init(_gameObject, bootConfig.numSeSourcePool, sceneDirector, resourceHub);
+            sePlayer.Init(_gameObject, bootConfig.numSeSourcePool, sceneDirector, resourceStore);
 
             signalHub = new SignalHub(sceneDirector);
 

@@ -17,11 +17,13 @@ namespace AltoFramework.Production
         public event Action sceneUpdate;
 
         bool _useGlobalAudioListener;
+        IResourceStore _resourceStore;
         ScreenFader _screenFader;
 
-        public void Init(GameObject gameObject, IBootConfig bootConfig)
+        public void Init(GameObject gameObject, IBootConfig bootConfig, IResourceStore resourceStore)
         {
             _useGlobalAudioListener = bootConfig.useGlobalAudioListener;
+            _resourceStore = resourceStore;
 
             _screenFader = gameObject.AddComponent<ScreenFader>();
             _screenFader.Init();
@@ -77,11 +79,14 @@ namespace AltoFramework.Production
             SetIsSceneReady(false);
             currentSceneContext = nextSceneContext;
 
+            await LoadAndUnloadResources(nextSceneContext);
+
             AltoLog.FW("[SceneDirector] - Init <b>Before</b> Load Scene");
             if (nextSceneContext != null)
             {
                 await nextSceneContext.InitBeforeLoadScene();
             }
+
             await SceneManager.LoadSceneAsync(nextSceneName);
             DisableLocalAudioListener();
 
@@ -118,9 +123,23 @@ namespace AltoFramework.Production
             }
         }
 
+        async UniTask LoadAndUnloadResources(ISceneContext nextSceneContext)
+        {
+            _resourceStore.ReleaseAllSceneScoped();
+            nextSceneContext.RetainResource();
+            _resourceStore.Unload();
+            await _resourceStore.Load();
+        }
+
+        /// <summary>
+        /// シーンをまたぐ AudioListener を使うモードの場合は
+        /// 複数 Listener によるエラーが出ないように、
+        /// メインカメラに AudioListener がついていたらオフにする
+        /// </summary>
         void DisableLocalAudioListener()
         {
             if (!_useGlobalAudioListener) { return; }
+            if (Camera.main == null) { return; }
 
             var audioListener = Camera.main.GetComponent<AudioListener>();
             if (audioListener != null)

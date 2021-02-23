@@ -15,8 +15,8 @@
 
         void OnSceneLoading()
         {
-            AltoLog.FW("[ResourceHub] Unload all scene-scoped resources.");
-            sceneScopeResourceStore.UnloadAll();
+            AltoLog.FW("[ResourceHub] Unload scene-scoped resources no longer needed.");
+            sceneScopeResourceStore.Unload();
         }
     }
 }

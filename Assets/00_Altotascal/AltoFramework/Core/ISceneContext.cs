@@ -10,9 +10,15 @@ namespace AltoFramework
     ///       - (Invoke SceneDirector.sceneLoading event)
     ///       - Destroy all Scene_1 objects
     ///       -  * Scene_1 context :: Finalize()
+    ///
+    ///       -  * Scene_2 context :: RetainResource()
+    ///            (Increment scene-scoped resource reference counts)
+    ///       - Decrement all scene-scoped resource reference counts
+    ///       - Load and Unload resources
+    ///
     ///       -  * Scene_2 context :: InitBeforeLoadScene()
     ///       - Start Load Scene_2
-    ///       - (MonoBehaviors' Awake)
+    ///           (MonoBehaviors' Awake)
     ///       -  * Scene_2 context :: InitAfterLoadScene()
     ///       - (Invoke SceneDirector.sceneLoaded event)
     ///       - Fade in screen
@@ -24,6 +30,7 @@ namespace AltoFramework
         CancellationTokenSource CancelTokenSource { get; }
 
         string SceneName();
+        void RetainResource();
         UniTask InitBeforeLoadScene();
         UniTask InitAfterLoadScene();
         void OnStartupScene();
@@ -38,6 +45,11 @@ namespace AltoFramework
         public CancellationTokenSource CancelTokenSource { get; private set; } = new CancellationTokenSource();
 
         public abstract string SceneName();
+
+        public virtual void RetainResource()
+        {
+            // Call Alto.resource.Retain() in subclasses
+        }
 
         public virtual UniTask InitBeforeLoadScene()
         {

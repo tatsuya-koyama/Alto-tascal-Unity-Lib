@@ -73,20 +73,20 @@ namespace AltoFramework
 
         public void StopAll()
         {
-            foreach (var state in _pool) { state.source.Stop(); }
+            foreach (var state in _pool) { state.StopSource(); }
         }
 
         public void StopCurrent()
         {
             if (currentSourceState == null) { return; }
-            currentSourceState.source.Stop();
+            currentSourceState.StopSource();
         }
 
         public void Stop(AudioClip audioClip)
         {
             foreach (var state in _pool)
             {
-                if (state.source.clip == audioClip) { state.source.Stop(); }
+                if (state.source.clip == audioClip) { state.StopSource(); }
             }
         }
 

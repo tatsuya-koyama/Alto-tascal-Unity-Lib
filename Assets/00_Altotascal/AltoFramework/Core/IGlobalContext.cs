@@ -6,7 +6,7 @@
 
         ITimeKeeper timeKeeper { get; }
 
-        IResourceHub resourceHub { get; }
+        IResourceStore resourceStore { get; }
 
         IAudioPlayer bgmPlayer { get; }
 

@@ -12,9 +12,11 @@ namespace AltoFramework.Editor
     /// </summary>
     public class AltoResourceTreeViewItem : TreeViewItem
     {
-        public bool   isGlobal;
         public string category;
         public string assetName;
+        public int    refCount;
+        public int    globalRefCount;
+        public bool   loaded;
         public long   memorySize;
         public string info;
 
@@ -45,9 +47,9 @@ namespace AltoFramework.Editor
             ReloadAndSort();
         }
 
-        public void WatchSpriteAtlas()
+        public void WatchGameObjects()
         {
-            var items = _collector.CollectSprites();
+            var items = _collector.CollectGameObjects();
             if (items == null) { return; }
 
             _items = items;
@@ -57,6 +59,15 @@ namespace AltoFramework.Editor
         public void WatchScriptableObjects()
         {
             var items = _collector.CollectScriptableObjects();
+            if (items == null) { return; }
+
+            _items = items;
+            ReloadAndSort();
+        }
+
+        public void WatchSpriteAtlas()
+        {
+            var items = _collector.CollectSprites();
             if (items == null) { return; }
 
             _items = items;
@@ -78,10 +89,12 @@ namespace AltoFramework.Editor
 
         static readonly MultiColumnHeaderState.Column[] headerColumns = new[]
         {
-            new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Scope"),      width = 10 },
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Category"),   width = 15 },
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Id"),         width =  5 },
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Asset Name"), width = 20 },
+            new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Ref"),        width =  5 },
+            new MultiColumnHeaderState.Column() { headerContent = new GUIContent("gRef"),       width =  5 },
+            new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Loaded"),     width =  7 },
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Memory"),     width = 10 },
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Info"),       width = 15 },
         };
@@ -130,20 +143,22 @@ namespace AltoFramework.Editor
 
                 switch (colIndex)
                 {
-                    case 0:
-                        string scope = item.isGlobal ? "- Global -" : "Scene";
-                        EditorGUI.LabelField(rect, scope, labelStyle);
+                    case 0: EditorGUI.LabelField(rect, item.category,      labelStyle); break;
+                    case 1: EditorGUI.LabelField(rect, item.id.ToString(), labelStyle); break;
+                    case 2: EditorGUI.LabelField(rect, item.assetName,     labelStyle); break;
+                    case 3: EditorGUI.LabelField(rect, item.refCount.ToString(),       labelStyle); break;
+                    case 4: EditorGUI.LabelField(rect, item.globalRefCount.ToString(), labelStyle); break;
+                    case 5:
+                        string loadState = item.loaded ? "Yes" : "No";
+                        EditorGUI.LabelField(rect, loadState, labelStyle);
                         break;
-                    case 1: EditorGUI.LabelField(rect, item.category,      labelStyle); break;
-                    case 2: EditorGUI.LabelField(rect, item.id.ToString(), labelStyle); break;
-                    case 3: EditorGUI.LabelField(rect, item.assetName,     labelStyle); break;
-                    case 4:
+                    case 6:
                         string memorySize = item.memorySize > 0
                             ? (item.memorySize / 1024f / 1024f).ToString("0.000") + " MB"
                             : "-";
                         EditorGUI.LabelField(rect, memorySize, labelStyle);
                         break;
-                    case 5: EditorGUI.LabelField(rect, item.info, labelStyle); break;
+                    case 7: EditorGUI.LabelField(rect, item.info, labelStyle); break;
                 }
             }
         }
@@ -160,30 +175,40 @@ namespace AltoFramework.Editor
             {
                 case 0:
                     orderedItems = isAsc
-                        ? items.OrderBy(item => item.isGlobal)
-                        : items.OrderByDescending(item => item.isGlobal);
-                    break;
-                case 1:
-                    orderedItems = isAsc
                         ? items.OrderBy(item => item.category)
                         : items.OrderByDescending(item => item.category);
                     break;
-                case 2:
+                case 1:
                     orderedItems = isAsc
                         ? items.OrderBy(item => item.id)
                         : items.OrderByDescending(item => item.id);
                     break;
-                case 3:
+                case 2:
                     orderedItems = isAsc
                         ? items.OrderBy(item => item.assetName)
                         : items.OrderByDescending(item => item.assetName);
                     break;
+                case 3:
+                    orderedItems = isAsc
+                        ? items.OrderBy(item => item.refCount)
+                        : items.OrderByDescending(item => item.refCount);
+                    break;
                 case 4:
+                    orderedItems = isAsc
+                        ? items.OrderBy(item => item.globalRefCount)
+                        : items.OrderByDescending(item => item.globalRefCount);
+                    break;
+                case 5:
+                    orderedItems = isAsc
+                        ? items.OrderBy(item => item.loaded)
+                        : items.OrderByDescending(item => item.loaded);
+                    break;
+                case 6:
                     orderedItems = isAsc
                         ? items.OrderBy(item => item.memorySize)
                         : items.OrderByDescending(item => item.memorySize);
                     break;
-                case 5:
+                case 7:
                     orderedItems = isAsc
                         ? items.OrderBy(item => item.info)
                         : items.OrderByDescending(item => item.info);

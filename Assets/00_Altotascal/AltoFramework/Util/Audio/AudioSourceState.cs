@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AltoFramework
 {
@@ -11,6 +12,7 @@ namespace AltoFramework
         public AudioSource source;
         public float originalVolume;
         public bool isFading { get; private set; } = false;
+        public Action onStop = null;
 
         float _volumeTo;
         float _volumeFrom;
@@ -40,8 +42,19 @@ namespace AltoFramework
             if (!isFading) { source.volume = volume; }
         }
 
+        public void StopSource()
+        {
+            if (!source.isPlaying) { return; }
+
+            source.Stop();
+            onStop?.Invoke();
+            onStop = null;
+        }
+
         public void Update(float dt)
         {
+            UpdateStopCallback();
+
             if (!isFading) { return; }
             if (_fadeTime <= 0f) { return; }
 
@@ -50,6 +63,21 @@ namespace AltoFramework
             source.volume = (_volumeTo - _volumeFrom) * volumeRate + _volumeFrom;
 
             if (_fadeProgress >= _fadeTime) { isFading = false; }
+        }
+
+        /// <summary>
+        /// StopSource() を呼ばれるのでなく、ループなしで単に再生し終わって
+        /// 停止状態になったときにコールバックを呼んであげる処理
+        /// </summary>
+        void UpdateStopCallback()
+        {
+            if (onStop == null) { return; }
+
+            if (!source.isPlaying)
+            {
+                onStop?.Invoke();
+                onStop = null;
+            }
         }
 
         // 経過時間からボリューム比を計算。

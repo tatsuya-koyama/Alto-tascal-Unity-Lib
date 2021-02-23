@@ -12,25 +12,27 @@ namespace AltoFramework
     public class AltoLog
     {
         #if ALTO_DEBUG_LIGHT_SKIN
-        public const string COLOR_FW      = "007777";  // Filtered by [ALTO_FW]
-        public const string COLOR_FW_WARN = "770077";  // Filtered by [ALTO_FW_WARN]
-        public const string COLOR_VERBOSE = "606060";  // Filtered by [@]
-        public const string COLOR_DEFAULT = "000000";  // Filtered by [@@]
-        public const string COLOR_SUCCESS = "008811";  // Filtered by [@@@]
-        public const string COLOR_FAIL    = "990099";  // Filtered by [@@@]
-        public const string COLOR_NOTICE  = "440099";  // Filtered by [@@@@]
-        public const string COLOR_WARN    = "996600";  // Filtered by [@@@@@]
-        public const string COLOR_ERROR   = "aa0000";  // Filtered by [@@@@@@]
+        public const string COLOR_FW       = "007777";  // Filtered by [ALTO_FW]
+        public const string COLOR_FW_WARN  = "770077";  // Filtered by [ALTO_FW_WARN]
+        public const string COLOR_FW_ERROR = "c42323";  // Filtered by [ALTO_FW_ERROR]
+        public const string COLOR_VERBOSE  = "606060";  // Filtered by [@]
+        public const string COLOR_DEFAULT  = "000000";  // Filtered by [@@]
+        public const string COLOR_SUCCESS  = "008811";  // Filtered by [@@@]
+        public const string COLOR_FAIL     = "990099";  // Filtered by [@@@]
+        public const string COLOR_NOTICE   = "440099";  // Filtered by [@@@@]
+        public const string COLOR_WARN     = "996600";  // Filtered by [@@@@@]
+        public const string COLOR_ERROR    = "aa0000";  // Filtered by [@@@@@@]
         #else
-        public const string COLOR_FW      = "22cccc";  // Filtered by [ALTO_FW]
-        public const string COLOR_FW_WARN = "ff33ff";  // Filtered by [ALTO_FW_WARN]
-        public const string COLOR_VERBOSE = "8f8f8f";  // Filtered by [@]
-        public const string COLOR_DEFAULT = "cccccc";  // Filtered by [@@]
-        public const string COLOR_SUCCESS = "33ee00";  // Filtered by [@@@]
-        public const string COLOR_FAIL    = "22aaff";  // Filtered by [@@@]
-        public const string COLOR_NOTICE  = "eeee33";  // Filtered by [@@@@]
-        public const string COLOR_WARN    = "ff9900";  // Filtered by [@@@@@]
-        public const string COLOR_ERROR   = "ff3322";  // Filtered by [@@@@@@]
+        public const string COLOR_FW       = "22cccc";  // Filtered by [ALTO_FW]
+        public const string COLOR_FW_WARN  = "ff33ff";  // Filtered by [ALTO_FW_WARN]
+        public const string COLOR_FW_ERROR = "d23225";  // Filtered by [ALTO_FW_ERROR]
+        public const string COLOR_VERBOSE  = "8f8f8f";  // Filtered by [@]
+        public const string COLOR_DEFAULT  = "cccccc";  // Filtered by [@@]
+        public const string COLOR_SUCCESS  = "33ee00";  // Filtered by [@@@]
+        public const string COLOR_FAIL     = "22aaff";  // Filtered by [@@@]
+        public const string COLOR_NOTICE   = "eeee33";  // Filtered by [@@@@]
+        public const string COLOR_WARN     = "ff9900";  // Filtered by [@@@@@]
+        public const string COLOR_ERROR    = "ff3322";  // Filtered by [@@@@@@]
         #endif
 
         [Conditional("ALTO_DEBUG")]
@@ -43,6 +45,12 @@ namespace AltoFramework
         public static void FW_Warn(object message, Object context = null, string color = COLOR_FW_WARN)
         {
             UnityEngine.Debug.Log($"<color=#{color}>{message}</color>\n[ALTO_FW_WARN]", context);
+        }
+
+        [Conditional("ALTO_DEBUG")]
+        public static void FW_Error(object message, Object context = null, string color = COLOR_FW_ERROR)
+        {
+            UnityEngine.Debug.LogError($"<color=#{color}>{message}</color>\n[ALTO_FW_ERROR]", context);
         }
 
         [Conditional("ALTO_DEBUG")]

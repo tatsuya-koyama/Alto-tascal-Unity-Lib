@@ -11,228 +11,262 @@ namespace AltoFramework.Production
 {
     public class ResourceStore : IResourceStore
     {
-        private Dictionary<string, SpriteAtlas>      _atlases = new Dictionary<string, SpriteAtlas>();
-        private Dictionary<string, Sprite>           _sprites = new Dictionary<string, Sprite>();
-        private Dictionary<string, ScriptableObject> _objects = new Dictionary<string, ScriptableObject>();
-        private Dictionary<string, AudioClip>        _audios  = new Dictionary<string, AudioClip>();
+        ResourceRegistry _registry = new ResourceRegistry();
+        public ResourceRegistry registry => _registry;
+
+        GameObjectStore _gameObjs = new GameObjectStore();
+        ScriptableObjectStore _scriptableObjs = new ScriptableObjectStore();
+        AudioClipStore _audios = new AudioClipStore();
+        SpriteAtlasStore _sprites = new SpriteAtlasStore();
+
+        bool _isLoading = false;
+        int _loadRetryCount = 0;
 
         //----------------------------------------------------------------------
-        // For Debug
-        //----------------------------------------------------------------------
-        #if UNITY_EDITOR
-        public Dictionary<string, SpriteAtlas>      atlases { get { return _atlases; } }
-        public Dictionary<string, Sprite>           sprites { get { return _sprites; } }
-        public Dictionary<string, ScriptableObject> objects { get { return _objects; } }
-        public Dictionary<string, AudioClip>        audios  { get { return _audios;  } }
-        #endif
-
-        //----------------------------------------------------------------------
-        // General
+        // Manipulate reference count
         //----------------------------------------------------------------------
 
-        public void UnloadAll()
+        public void Retain(params string[] assetAddressList)
         {
-            _atlases.Keys.ToList().ForEach(key => UnloadSpriteAtlas(key));
-            _objects.Keys.ToList().ForEach(key => UnloadObject(key));
-            _audios .Keys.ToList().ForEach(key => UnloadAudio(key));
-        }
-
-        //----------------------------------------------------------------------
-        // Sprite Atlas
-        //----------------------------------------------------------------------
-
-        /// <summary>
-        ///   Addressable Assets のスプライトアトラスをメモリにロードし、
-        ///   GetSprite(スプライト名) で取得可能にする。
-        ///   現実装ではアトラス内のスプライト名がユニークである前提
-        ///   （複数のアトラスに同名のスプライトがあった場合はロード時に Dictionary のエラーが発生する）
-        /// </summary>
-        async UniTask LoadSpriteAtlasSingle(string assetAddress)
-        {
-            if (_atlases.ContainsKey(assetAddress))
+            foreach (var address in assetAddressList)
             {
-                AltoLog.FW_Warn($"[ResourceStore] SpriteAtlas <{assetAddress}> is already loaded.");
-                return;
-            }
-
-            var asyncOpHandle = Addressables.LoadAssetAsync<SpriteAtlas>(assetAddress);
-            var spriteAtlas = await asyncOpHandle.Task;
-            if (asyncOpHandle.Status != AsyncOperationStatus.Succeeded)
-            {
-                AltoLog.Error($"[ResourceStore] SpriteAtlas Load Error : <b>{assetAddress}</b>");
-                return;
-            }
-            _atlases.Add(assetAddress, spriteAtlas);
-            RegisterSprites(spriteAtlas);
-        }
-
-        public async UniTask LoadSpriteAtlas(params string[] assetAddressList)
-        {
-            var tasks = assetAddressList.Select(address => LoadSpriteAtlasSingle(address));
-            await UniTask.WhenAll(tasks);
-        }
-
-        public void UnloadSpriteAtlas(string assetAddress)
-        {
-            if (!_atlases.ContainsKey(assetAddress))
-            {
-                AltoLog.FW_Warn($"[ResourceStore] SpriteAtlas <{assetAddress}> is not loaded.");
-                return;
-            }
-
-            var spriteAtlas = _atlases[assetAddress];
-            _atlases.Remove(assetAddress);
-            UnregisterSprites(spriteAtlas);
-            Addressables.Release<SpriteAtlas>(spriteAtlas);
-        }
-
-        public Sprite GetSprite(string spriteName)
-        {
-            Sprite sprite;
-            if (!_sprites.TryGetValue(spriteName, out sprite))
-            {
-                AltoLog.Error($"[ResourceStore] Sprite <{spriteName}> not found.");
-                return null;
-            }
-
-            return sprite;
-        }
-
-        // スプライトアトラス内の Sprite を走査
-        void ForEachSprite(SpriteAtlas atlas, Action<string, Sprite> action)
-        {
-            Sprite[] spritesInAtlas = new Sprite[atlas.spriteCount];
-            atlas.GetSprites(spritesInAtlas);
-
-            foreach (var sprite in spritesInAtlas)
-            {
-                // SpriteAtlas.GetSprites で取得した Sprite の名前には "(Clone)" が付くため、それを削る
-                string spriteName = sprite.name.Substring(0, sprite.name.Length - "(Clone)".Length);
-                action(spriteName, sprite);
+                _registry.Retain(address);
             }
         }
 
-        void RegisterSprites(SpriteAtlas atlas)
+        public void Release(params string[] assetAddressList)
         {
-            ForEachSprite(atlas, (spriteName, sprite) => {
-                _sprites.Add(spriteName, sprite);
-            });
+            foreach (var address in assetAddressList)
+            {
+                _registry.Release(address);
+            }
         }
 
-        void UnregisterSprites(SpriteAtlas atlas)
+        public void RetainGlobal(params string[] assetAddressList)
         {
-            ForEachSprite(atlas, (spriteName, sprite) => {
-                _sprites.Remove(spriteName);
-            });
+            foreach (var address in assetAddressList)
+            {
+                _registry.Retain(address, isGlobalScope: true);
+            }
+        }
+
+        public void ReleaseGlobal(params string[] assetAddressList)
+        {
+            foreach (var address in assetAddressList)
+            {
+                _registry.Release(address, isGlobalScope: true);
+            }
+        }
+
+        public async UniTask RetainGlobalWithAutoLoad(params string[] assetAddressList)
+        {
+            RetainGlobal(assetAddressList);
+            await LoadMulti(assetAddressList);
+        }
+
+        public void ReleaseGlobalWithAutoUnload(params string[] assetAddressList)
+        {
+            ReleaseGlobal(assetAddressList);
+            UnloadMulti(assetAddressList);
+        }
+
+        public void ReleaseAllSceneScoped()
+        {
+            _registry.ReleaseAll();
         }
 
         //----------------------------------------------------------------------
-        // ScriptableObject
+        // Retrieve loaded data
         //----------------------------------------------------------------------
 
-        async UniTask LoadObjectSingle(string assetAddress)
+        public GameObject GetGameObj(string assetAddress)
         {
-            if (_objects.ContainsKey(assetAddress))
-            {
-                AltoLog.FW_Warn($"[ResourceStore] ScriptableObject <{assetAddress}> is already loaded.");
-                return;
-            }
-
-            var asyncOpHandle = Addressables.LoadAssetAsync<ScriptableObject>(assetAddress);
-            var obj = await asyncOpHandle.Task;
-            if (asyncOpHandle.Status != AsyncOperationStatus.Succeeded)
-            {
-                AltoLog.Error($"[ResourceStore] ScriptableObject Load Error : <b>{assetAddress}</b>");
-                return;
-            }
-            _objects.Add(assetAddress, obj);
+            return _gameObjs.Get(assetAddress);
         }
 
-        public async UniTask LoadObject(params string[] assetAddressList)
+        public T GetObj<T>(string assetAddress) where T : ScriptableObject
         {
-            var tasks = assetAddressList.Select(address => LoadObjectSingle(address));
-            await UniTask.WhenAll(tasks);
-        }
-
-        public void UnloadObject(string assetAddress)
-        {
-            if (!_objects.ContainsKey(assetAddress))
-            {
-                AltoLog.FW_Warn($"[ResourceStore] ScriptableObject <{assetAddress}> is not loaded.");
-                return;
-            }
-
-            var obj = _objects[assetAddress];
-            _objects.Remove(assetAddress);
-            Addressables.Release<ScriptableObject>(obj);
-        }
-
-        public T GetObject<T>(string assetAddress) where T : ScriptableObject
-        {
-            ScriptableObject obj;
-            if (!_objects.TryGetValue(assetAddress, out obj))
-            {
-                AltoLog.Error($"[ResourceStore] ScriptableObject <{assetAddress}> not found.");
-                return null;
-            }
+            var obj = _scriptableObjs.Get(assetAddress);
             if (!(obj is T))
             {
-                AltoLog.Error($"[ResourceStore] ScriptableObject cast error : <{assetAddress}>");
+                AltoLog.FW_Error($"[ResourceStore] ScriptableObject cast error : <{assetAddress}>");
                 return null;
             }
             return (T)obj;
         }
 
-        //----------------------------------------------------------------------
-        // AudioClip
-        //----------------------------------------------------------------------
-
-        async UniTask LoadAudioSingle(string assetAddress)
+        public AudioClip GetAudio(string assetAddress)
         {
-            if (_audios.ContainsKey(assetAddress))
-            {
-                AltoLog.FW_Warn($"[ResourceStore] AudioClip <{assetAddress}> is already loaded.");
-                return;
-            }
-
-            var asyncOpHandle = Addressables.LoadAssetAsync<AudioClip>(assetAddress);
-            var audioClip = await asyncOpHandle.Task;
-            if (asyncOpHandle.Status != AsyncOperationStatus.Succeeded)
-            {
-                AltoLog.Error($"[ResourceStore] AudioClip Load Error : <b>{assetAddress}</b>");
-                return;
-            }
-            _audios.Add(assetAddress, audioClip);
+            return _audios.Get(assetAddress);
         }
 
-        public async UniTask LoadAudio(params string[] assetAddressList)
+        public SpriteAtlas GetSpriteAtlas(string assetAddress)
         {
-            var tasks = assetAddressList.Select(address => LoadAudioSingle(address));
+            return _sprites.Get(assetAddress);
+        }
+
+        /// <summary>
+        /// スプライトアトラス内の Sprite を取得
+        /// （現実装ではアトラス内のスプライト名がスプライト全体を通してユニークである前提）
+        /// </summary>
+        public Sprite GetSprite(string spriteName)
+        {
+            return _sprites.GetSprite(spriteName);
+        }
+
+        //----------------------------------------------------------------------
+        // Retrieve data with auto loading
+        //----------------------------------------------------------------------
+
+        public async UniTask<AudioClip> GetAudioOndemand(string assetAddress)
+        {
+            if (!_audios.Contains(assetAddress))
+            {
+                await RetainGlobalWithAutoLoad(assetAddress);
+            }
+            return _audios.Get(assetAddress);
+        }
+
+        //----------------------------------------------------------------------
+        // Load (Called by framework)
+        //----------------------------------------------------------------------
+
+        /// <summary>
+        /// ロードが必要なリソース（参照カウントが 1 以上で未ロードのリソース）をロードする。
+        /// ロードは未ロードのものが無くなるまで行われる。
+        /// （ロード処理中に新たなリソースが Retain された場合、それもロードしきってから処理が返る）
+        /// </summary>
+        public async UniTask Load()
+        {
+            if (_isLoading)
+            {
+                AltoLog.FW("[ResourceStore] Loading is already running.");
+                return;
+            }
+            _isLoading = true;
+
+            var addresses = _registry.GetAddressesToLoad();
+            await LoadMulti(addresses);
+            _isLoading = false;
+
+            if (_registry.ShouldLoadAny())
+            {
+                // ロード中に新たなリソースが Retain されていた場合はそれもロードする
+                ++_loadRetryCount;
+                if (_loadRetryCount > 99) { return; }
+                await Load();
+                --_loadRetryCount;
+            }
+        }
+
+        async UniTask LoadMulti(IEnumerable<string> addresses)
+        {
+            var tasks = addresses.Select(address => LoadSingle(address));
             await UniTask.WhenAll(tasks);
         }
 
-        public void UnloadAudio(string assetAddress)
+        /// <summary>
+        /// アセット 1 つをメモリにロード。
+        /// ※ 参照カウンタが 1 以上になっていなければロードされない
+        /// </summary>
+        async UniTask LoadSingle(string assetAddress)
         {
-            if (!_audios.ContainsKey(assetAddress))
+            if (!_registry.IsReferenced(assetAddress)) { return; }
+
+            var asyncOpHandle = Addressables.LoadAssetAsync<UnityEngine.Object>(assetAddress);
+            var resource = await asyncOpHandle.Task;
+            if (asyncOpHandle.Status != AsyncOperationStatus.Succeeded)
             {
-                AltoLog.FW_Warn($"[ResourceStore] AudioClip <{assetAddress}> is not loaded.");
+                AltoLog.FW_Error($"[ResourceStore] Load Error : <b>{assetAddress}</b>");
                 return;
             }
-
-            var audioClip = _audios[assetAddress];
-            _audios.Remove(assetAddress);
-            Addressables.Release<AudioClip>(audioClip);
+            _registry.MarkLoaded(assetAddress, resource, asyncOpHandle);
+            OnLoadResource(assetAddress, resource);
         }
 
-        public AudioClip GetAudio(string assetAddress)
+        void OnLoadResource(string assetAddress, UnityEngine.Object resource)
         {
-            AudioClip audioClip;
-            if (!_audios.TryGetValue(assetAddress, out audioClip))
+            switch (resource)
             {
-                AltoLog.Error($"[ResourceStore] AudioClip <{assetAddress}> not found.");
-                return null;
+                case GameObject gameObj:
+                    _gameObjs.OnLoad(assetAddress, gameObj);
+                    break;
+
+                case ScriptableObject scriptableObj:
+                    _scriptableObjs.OnLoad(assetAddress, scriptableObj);
+                    break;
+
+                case AudioClip audioClip:
+                    _audios.OnLoad(assetAddress, audioClip);
+                    break;
+
+                case SpriteAtlas spriteAtlas:
+                    _sprites.OnLoad(assetAddress, spriteAtlas);
+                    break;
+
+                default:
+                    AltoLog.FW_Warn($"[ResourceStore] Unsupported asset type : {assetAddress} - {resource.GetType()}");
+                    break;
             }
-            return audioClip;
+        }
+
+        //----------------------------------------------------------------------
+        // Unload (Called by framework)
+        //----------------------------------------------------------------------
+
+        /// <summary>
+        /// アンロードが必要なリソース（ロード済みで参照カウントが 0 未満のリソース）をアンロード
+        /// </summary>
+        public void Unload()
+        {
+            var addresses = _registry.GetAddressesToUnload();
+            UnloadMulti(addresses);
+        }
+
+        void UnloadMulti(IEnumerable<string> addresses)
+        {
+            foreach (var address in addresses)
+            {
+                UnloadSingle(address);
+            }
+        }
+
+        /// <summary>
+        /// アセット 1 つをメモリからアンロード。
+        /// ※ 参照カウンタが 0 になっていなければアンロードされない
+        /// </summary>
+        void UnloadSingle(string assetAddress)
+        {
+            if (_registry.IsReferenced(assetAddress)) { return; }
+
+            var entry = _registry.GetEntry(assetAddress);
+            Addressables.Release(entry.handle);
+            OnUnloadResource(entry);
+            _registry.UnmarkLoaded(assetAddress);
+        }
+
+        void OnUnloadResource(ResourceRegistry.ResourceEntry entry)
+        {
+            if (entry.type == typeof(GameObject))
+            {
+                _gameObjs.OnUnload(entry.address);
+            }
+            else if (entry.type.IsSubclassOf(typeof(ScriptableObject)))
+            {
+                _scriptableObjs.OnUnload(entry.address);
+            }
+            else if (entry.type == typeof(AudioClip))
+            {
+                _audios.OnUnload(entry.address);
+            }
+            else if (entry.type == typeof(SpriteAtlas))
+            {
+                _sprites.OnUnload(entry.address);
+            }
+            else
+            {
+                AltoLog.FW_Warn($"[ResourceStore] Unsupported asset type : {entry.address} - {entry.type}");
+            }
         }
     }
 }
