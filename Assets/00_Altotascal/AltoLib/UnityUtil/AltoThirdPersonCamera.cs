@@ -29,11 +29,15 @@ namespace AltoLib
         [SerializeField] public bool detectWall = true;
         [SerializeField] public int detectWallLayerMask = -1;
         [SerializeField] public float detectWallRayLength = 3.0f;
+        [SerializeField] public float detectWallCorrectSpeed = 3f;
+        [SerializeField] public float detectWallYOffset = 1.2f;
 
         [SerializeField] public bool autoZoom = true;
         [SerializeField] public float autoZoomRange = 60f;
         [SerializeField] public float autoZoomDistance = 5f;
         [SerializeField] public Vector3 autoZoomLookPosOffset = new Vector3(0, 2f, 0);
+
+        [SerializeField] public bool drawDebug = true;
 
         Vector3 _currentIdealPos;
         Vector3 _currentLookPos;
@@ -143,20 +147,22 @@ namespace AltoLib
             float finalDistance = Mathf.Clamp(distance + _distanceOffset, minDistance, maxDistance);
             _currentIdealPos = NewPos(finalDistance, _currentLookPos);
 
+            // 先にカメラの向きを計算
+            Vector3 lookPos = _currentLookPos + _autoZoomPosOffset;
+            transform.position = _currentIdealPos;
+            transform.LookAt(lookPos);
+
+            // 壁際にいる場合は向きを固定したままカメラ位置を補正
             if (_isPosForced)
             {
-                _forcePosLerp += (1f - _forcePosLerp) * followSpeed * dt();
+                _forcePosLerp += (1f - _forcePosLerp) * detectWallCorrectSpeed * dt();
             }
             else
             {
-                _forcePosLerp += (0f - _forcePosLerp) * followSpeed * dt();
+                _forcePosLerp += (0f - _forcePosLerp) * detectWallCorrectSpeed * dt();
             }
             _forcePosLerp = Mathf.Clamp(_forcePosLerp, 0f, 1f);
             transform.position = Vector3.Lerp(_currentIdealPos, _forcePos, _forcePosLerp);
-
-            Vector3 lookPos = _currentLookPos;
-            if (!_isPosForced) { lookPos += _autoZoomPosOffset; }
-            transform.LookAt(lookPos);
         }
 
         void DetectWall()
@@ -164,19 +170,37 @@ namespace AltoLib
             _isPosForced = false;
             if (!detectWall) { return; }
 
-            Vector3 fromPos = target.transform.position + lookPosOffset;
+            Vector3 fromPos = target.transform.position + lookPosOffset + _autoZoomPosOffset;
+            fromPos.y -= detectWallYOffset;
             Vector3 lookDir = fromPos - _currentIdealPos;
+            lookDir = fromPos - _currentIdealPos;
             lookDir.Normalize();
-            Debug.DrawRay(this.transform.position, lookDir, Color.green);
 
-            Vector3 toPos = fromPos + (Vector3.up * detectWallRayLength) - (lookDir * detectWallRayLength);
-            Debug.DrawLine(fromPos, toPos, Color.magenta);
+            float idealDistance = Vector3.Distance(_currentIdealPos, fromPos);
+            float rayLength = Mathf.Min(idealDistance, detectWallRayLength);
+            Vector3 toPos = fromPos - (lookDir * rayLength);
+
+            // デバッグ表示
+            if (drawDebug)
+            {
+                Vector3 toPosBottom = toPos;
+                toPosBottom.y = fromPos.y;
+                Debug.DrawLine(fromPos, toPos, Color.magenta);
+                Debug.DrawLine(toPos, toPosBottom, Color.red);
+                Debug.DrawLine(toPosBottom, fromPos, Color.red);
+            }
 
             RaycastHit hitWall;
             if (Physics.Linecast(fromPos, toPos, out hitWall, detectWallLayerMask))
             {
                 _forcePos = hitWall.point;
+                _forcePos.y += detectWallYOffset;
                 _isPosForced = true;
+
+                if (drawDebug)
+                {
+                    DebugDrawUtil.DrawDiamond3D(hitWall.point, 0.2f, Color.yellow);
+                }
             }
         }
 
