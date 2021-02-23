@@ -99,10 +99,12 @@ namespace AltoLib
                     if (GUILayout.Button("▼ Sort by Type", GUILayout.MaxWidth(200)))
                     {
                         SortByType();
+                        SavePrefs();
                     }
                     if (GUILayout.Button("▼ Sort by Name", GUILayout.MaxWidth(200)))
                     {
                         SortByName();
+                        SavePrefs();
                     }
                 }
                 GUILayout.EndVertical();
