@@ -22,7 +22,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
         _DitherMinAlpha("Dithering Minimum Alpha", Float) = 0
         _DitherCameraDistanceFrom("Camera Distance to Dithering start", Float) = 0.0
         _DitherCameraDistanceTo("Camera Distance to Dithering end", Float) = 0.0
-        [ToggleOff]_DitherCullOn("Dither Culling", Float) = 1.0
+        _DitherCull("Dither Culling", Float) = 5.0
 
         _WindStrength("Wind Strength", Range(0.0, 10.0)) = 0.0
         _WindSpeed("Wind Speed", Range(0.0, 10.0)) = 1.0

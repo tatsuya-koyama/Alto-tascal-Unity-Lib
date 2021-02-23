@@ -43,7 +43,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty dissolveEdgeSubColor;
 
             public MaterialProperty ditherPattern;
-            public MaterialProperty ditherCullOn;
+            public MaterialProperty ditherCull;
 
             public CustomProperties(MaterialProperty[] properties)
             {
@@ -80,7 +80,7 @@ namespace AltoLib.ShaderGUI
                 dissolveEdgeSubColor  = BaseShaderGUI.FindProperty("_DissolveEdgeSubColor", properties);
 
                 ditherPattern         = BaseShaderGUI.FindProperty("_DitherPattern", properties);
-                ditherCullOn          = BaseShaderGUI.FindProperty("_DitherCullOn", properties);
+                ditherCull            = BaseShaderGUI.FindProperty("_DitherCull", properties);
             }
 
             //------------------------------------------------------------------
@@ -125,7 +125,7 @@ namespace AltoLib.ShaderGUI
             if (!_showDitherProps) { return; }
 
             materialEditor.TextureProperty(_customProperties.ditherPattern, "Dithering Pattern");
-            _util.DrawToggle("Dithering Cull", "ditherCullOn");
+            _util.DrawSlider("Dithering Cull", "ditherCull", 0f, 20f);
         }
 
         void DrawWaterColorProps()

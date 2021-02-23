@@ -88,13 +88,13 @@ half4 Alto_UniversalFragmentBlinnPhong(
     UNITY_BRANCH
     if (_RimLightingOn > 0)
     {
-        finalColor += RimLight(inputData, rimColor.rgb) * rimColor.a;
+        finalColor += RimLight(inputData, rimColor.rgb) * _RimColor.a;
     }
 
     UNITY_BRANCH
     if (_RimBurnOn > 0)
     {
-        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * rimColor.a;
+        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * _RimColor.a;
     }
 
     UNITY_BRANCH
@@ -497,9 +497,9 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     }
 
     UNITY_BRANCH
-    if (_DitherCullOn > 0 && _Alto_Global_DitherCullFrom > 0)
+    if (_DitherCull > 0)
     {
-        DitheringByCameraDistance(input, _Alto_Global_DitherCullFrom, _Alto_Global_DitherCullTo, 0);
+        DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
     }
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);

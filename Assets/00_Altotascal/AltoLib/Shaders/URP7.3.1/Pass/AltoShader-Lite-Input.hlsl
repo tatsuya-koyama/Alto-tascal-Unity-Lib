@@ -11,10 +11,6 @@ half4 _SpecColor;
 half4 _EmissionColor;
 half _Cutoff;
 
-// Global props
-half _Alto_Global_DitherCullFrom;
-half _Alto_Global_DitherCullTo;
-
 // Custom props
 half _BillboardOn;
 
@@ -34,7 +30,7 @@ half _DitherAlpha;
 half _DitherMinAlpha;
 half _DitherCameraDistanceFrom;
 half _DitherCameraDistanceTo;
-half _DitherCullOn;
+half _DitherCull;
 
 half _WindStrength;
 half _WindSpeed;

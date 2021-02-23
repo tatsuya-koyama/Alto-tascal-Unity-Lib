@@ -350,9 +350,9 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     InitializeInputData(input, normalTS, inputData);
 
     UNITY_BRANCH
-    if (_DitherCullOn > 0 && _Alto_Global_DitherCullFrom > 0)
+    if (_DitherCull > 0)
     {
-        DitheringByCameraDistance(input, _Alto_Global_DitherCullFrom, _Alto_Global_DitherCullTo, 0);
+        DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
     }
 
     half4 color = Alto_UniversalFragmentBlinnPhong(inputData, diffuse, specular, smoothness, emission, alpha);

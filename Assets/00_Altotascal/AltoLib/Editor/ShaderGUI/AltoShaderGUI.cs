@@ -28,7 +28,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty ditherMinAlpha;
             public MaterialProperty ditherCameraDistanceFrom;
             public MaterialProperty ditherCameraDistanceTo;
-            public MaterialProperty ditherCullOn;
+            public MaterialProperty ditherCull;
 
             public MaterialProperty windStrength;
             public MaterialProperty windSpeed;
@@ -61,7 +61,7 @@ namespace AltoLib.ShaderGUI
                 ditherMinAlpha           = BaseShaderGUI.FindProperty("_DitherMinAlpha", properties);
                 ditherCameraDistanceFrom = BaseShaderGUI.FindProperty("_DitherCameraDistanceFrom", properties);
                 ditherCameraDistanceTo   = BaseShaderGUI.FindProperty("_DitherCameraDistanceTo", properties);
-                ditherCullOn             = BaseShaderGUI.FindProperty("_DitherCullOn", properties);
+                ditherCull               = BaseShaderGUI.FindProperty("_DitherCull", properties);
 
                 windStrength             = BaseShaderGUI.FindProperty("_WindStrength", properties);
                 windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
@@ -117,7 +117,7 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Minimum Alpha", "ditherMinAlpha", 0f, 1f);
             _util.DrawSlider("Camera Distance Hide", "ditherCameraDistanceTo", 0f, 20f);
             _util.DrawSlider("Camera Distance Start", "ditherCameraDistanceFrom", 0f, 20f);
-            _util.DrawToggle("Dithering Cull", "ditherCullOn");
+            _util.DrawSlider("Dithering Cull", "ditherCull", 0f, 20f);
         }
 
         void DrawWindProps()

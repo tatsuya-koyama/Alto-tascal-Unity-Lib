@@ -38,7 +38,7 @@ Shader "Altotascal/URP 7.3.1/Stylized Water"
         _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
 
         _DitherPattern("Dithering Pattern", 2D) = "white" {}
-        [ToggleOff]_DitherCullOn("Dither Culling", Float) = 1.0
+        _DitherCull("Dither Culling", Float) = 5.0
 
         // Basic props
         [MainTexture] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
