@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace AltoFramework.UnityExt
+namespace AltoLib.UnityExt
 {
     public static class GraphicExtension
     {

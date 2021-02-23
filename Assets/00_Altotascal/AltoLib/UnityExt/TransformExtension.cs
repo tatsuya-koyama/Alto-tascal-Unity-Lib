@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AltoFramework.UnityExt
+namespace AltoLib.UnityExt
 {
     public static class TransformExtension
     {
