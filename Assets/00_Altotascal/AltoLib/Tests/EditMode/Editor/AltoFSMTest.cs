@@ -1,0 +1,139 @@
+﻿using System;
+using NUnit.Framework;
+
+namespace AltoLib.Tests
+{
+    public class AltoFSMTest
+    {
+        public static string sequence;
+
+        class TestController
+        {
+            public string sequence = "";
+            public bool guardFromTalk = false;
+        }
+
+        class StandState : AltoFSM<TestController>.AltoState
+        {
+            protected override void Enter()  { context.sequence += "_in1"; }
+            protected override void Exit()   { context.sequence += "_out1"; }
+            protected override void Update() { context.sequence += "_up1"; }
+        }
+
+        class WalkState : AltoFSM<TestController>.AltoState
+        {
+            protected override void Enter()  { context.sequence += "_in2"; }
+            protected override void Exit()   { context.sequence += "_out2"; }
+            protected override void Update() { context.sequence += "_up2"; }
+        }
+
+        class RunState : AltoFSM<TestController>.AltoState
+        {
+            protected override void Enter()  { context.sequence += "_in3"; }
+            protected override void Exit()   { context.sequence += "_out3"; }
+            protected override void Update() { context.sequence += "_up3"; }
+        }
+
+        class TalkState : AltoFSM<TestController>.AltoState
+        {
+            protected override void Enter()  { context.sequence += "_in4"; }
+            protected override void Exit()   { context.sequence += "_out4"; }
+            protected override void Update() { context.sequence += "_up4"; }
+
+            protected override bool Guard(ValueType eventId)
+            {
+                return context.guardFromTalk;
+            }
+        }
+
+        enum StateEvent
+        {
+            Stand, Walk, Run, Talk
+        }
+
+        void SetTransition(AltoFSM<TestController> fsm)
+        {
+            // Stand <--> Walk <--> Run
+            fsm.AddTransition<StandState, WalkState >(StateEvent.Walk);
+            fsm.AddTransition<WalkState , RunState  >(StateEvent.Run);
+            fsm.AddTransition<RunState  , WalkState >(StateEvent.Walk);
+            fsm.AddTransition<WalkState , StandState>(StateEvent.Stand);
+
+            // [AnyState] -> Talk
+            fsm.AddFreeTransition<TalkState>(StateEvent.Talk);
+
+            // Talk -> Stand
+            fsm.AddTransition<TalkState, StandState>(StateEvent.Stand);
+        }
+
+        [Test]
+        public void TestBasic()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+            SetTransition(fsm);
+
+            fsm.SetState<StandState>();
+            Assert.That(fsm.currentState.GetType(), Is.EqualTo(typeof(StandState)));
+
+            fsm.SendEvent(StateEvent.Run);
+            fsm.SendEvent(StateEvent.Stand);
+            fsm.SendEvent(StateEvent.Walk);
+
+            Assert.That(fsm.currentState.GetType(), Is.EqualTo(typeof(WalkState)));
+            Assert.That(fsm.IsState<WalkState>, Is.True);
+            Assert.That(fsm.IsState<RunState>, Is.False);
+        }
+
+        [Test]
+        public void TestFreeTransition()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+            SetTransition(fsm);
+
+            fsm.SetState<StandState>();
+            fsm.SendEvent(StateEvent.Talk);
+            Assert.That(fsm.IsState<TalkState>, Is.True);
+
+            fsm.SetState<WalkState>();
+            fsm.SendEvent(StateEvent.Talk);
+            Assert.That(fsm.IsState<TalkState>, Is.True);
+        }
+
+        [Test]
+        public void TestTransitionEventHandlers()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+            SetTransition(fsm);
+            fsm.SetState<StandState>();
+
+            fsm.SendEvent(StateEvent.Walk);
+            fsm.Update();
+            fsm.SendEvent(StateEvent.Run);
+
+            Assert.That(controller.sequence, Is.EqualTo("_out1_in2_up2_out2_in3"));
+        }
+
+        [Test]
+        public void TestGuard()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+            SetTransition(fsm);
+            fsm.SetState<StandState>();
+
+            fsm.SendEvent(StateEvent.Talk);
+            Assert.That(fsm.IsState<TalkState>(), Is.True);
+
+            fsm.SendEvent(StateEvent.Stand);
+            Assert.That(fsm.IsState<StandState>(), Is.True);
+
+            fsm.SetState<TalkState>();
+            controller.guardFromTalk = true;
+            fsm.SendEvent(StateEvent.Stand);
+            Assert.That(fsm.IsState<StandState>(), Is.False, "ガードされて遷移しない");
+        }
+    }
+}
