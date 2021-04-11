@@ -37,7 +37,7 @@ namespace AltoFramework.Testing
             sceneDirector = _gameObject.AddComponent<SceneDirectorMock>();
             sceneDirector.Init(_gameObject, bootConfig, resourceStore);
 
-            timeKeeper = new TimeKeeper();
+            timeKeeper = new TimeKeeper(sceneDirector);
 
             bgmPlayer = new BgmPlayer();
             bgmPlayer.Init(_gameObject, bootConfig.numBgmSourcePool, sceneDirector, resourceStore);

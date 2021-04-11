@@ -41,7 +41,7 @@ namespace AltoFramework.Production
             sceneDirector.Init(_contextGameObj, bootConfig, resourceStore);
             sceneDirector.sceneUpdate += OnSceneUpdate;
 
-            timeKeeper = new TimeKeeper();
+            timeKeeper = new TimeKeeper(sceneDirector);
 
             bgmPlayer = new BgmPlayer();
             bgmPlayer.Init(_audioSourceGameObj, bootConfig.numBgmSourcePool, sceneDirector, resourceStore);

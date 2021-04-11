@@ -7,7 +7,7 @@ namespace AltoFramework.Production
 {
     public class TimeKeeper : ITimeKeeper
     {
-        public float maxDeltaTime = 1 / 30f;
+        public float maxDeltaTime = 1 / 20f;
 
         public float dt
         {
@@ -16,6 +16,28 @@ namespace AltoFramework.Production
                 // Time.maximumDeltaTime を利用してもよいが、自前のコードでラップしておく
                 return Mathf.Min(Time.deltaTime, maxDeltaTime);
             }
+        }
+
+        /// <summary>
+        /// 各シーンでの経過時間
+        /// </summary>
+        public float t => _t;
+        float _t = 0f;
+
+        public TimeKeeper(ISceneDirector sceneDirector)
+        {
+            sceneDirector.sceneLoading += OnSceneLoading;
+            sceneDirector.sceneUpdate  += OnSceneUpdate;
+        }
+
+        void OnSceneLoading()
+        {
+            _t = 0f;
+        }
+
+        void OnSceneUpdate()
+        {
+            _t += dt;
         }
 
         /// <summary>

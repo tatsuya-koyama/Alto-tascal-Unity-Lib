@@ -142,11 +142,7 @@ namespace AltoFramework
         {
             object dictKey = (obj != null) ? obj : _nullObject;
             AltoTweenList tweenList;
-            if (!_tweens.TryGetValue(dictKey, out tweenList))
-            {
-                AltoLog.Warn($"[AltoTweener :: Finish] Target object has no tween : {dictKey}");
-                return;
-            }
+            if (!_tweens.TryGetValue(dictKey, out tweenList)) { return; }
 
             tweenList.Finish();
             tweenList.Clear();

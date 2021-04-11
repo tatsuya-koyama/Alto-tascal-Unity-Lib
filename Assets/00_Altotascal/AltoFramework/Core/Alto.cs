@@ -52,6 +52,14 @@ namespace AltoFramework
             get { return context.timeKeeper.dt; }
         }
 
+        /// <summary>
+        ///   Returns elapsed time in scene.
+        /// </summary>
+        public static float t
+        {
+            get { return context.timeKeeper.t; }
+        }
+
         public static ITimeKeeper time
         {
             get { return context.timeKeeper; }

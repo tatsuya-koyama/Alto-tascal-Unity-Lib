@@ -98,7 +98,11 @@ namespace AltoFramework.Production
             SetIsSceneReady(true);
 
             sceneLoaded?.Invoke();
+
+            // シーンの 1 フレーム目は重くなるので 1 フレーム待ってからフェードイン
+            await UniTask.DelayFrame(1);
             await _screenFader.FadeIn(fadeInTime);
+
             isInTransition = false;
             currentSceneContext?.OnStartupScene();
         }
