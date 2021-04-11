@@ -33,6 +33,12 @@ namespace AltoLib
 
         static void CaptureScreen(int superSize)
         {
+            if (Camera.main == null || !Camera.main.enabled)
+            {
+                Debug.LogError("カメラが enabled = false の場合にキャプチャを撮ると Unity がクラッシュするようなので処理をキャンセルしました");
+                return;
+            }
+
             DateTime now = DateTime.Now;
             string timestamp = $"{ now.Year }-{ now.Month.ToString("D2") }{ now.Day.ToString("D2") }-"
                              + $"{ now.Hour.ToString("D2") }{ now.Minute.ToString("D2") }{ now.Second.ToString("D2") }";
