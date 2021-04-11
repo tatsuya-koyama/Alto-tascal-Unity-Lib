@@ -32,5 +32,32 @@ namespace AltoLib.UnityExt
         {
             rect.AddAnchoredPosition(vec.x, vec.y);
         }
+
+        //---------------------------------------------------------------------
+        // SizeDelta
+        //---------------------------------------------------------------------
+
+        public static void SetSizeDelta(this RectTransform rect, float? x, float? y)
+        {
+            _vec2.Set(
+                x ?? rect.sizeDelta.x,
+                y ?? rect.sizeDelta.y
+            );
+            rect.sizeDelta = _vec2;
+        }
+
+        public static void AddSizeDelta(this RectTransform rect, float x, float y)
+        {
+            _vec2.Set(
+                rect.sizeDelta.x + x,
+                rect.sizeDelta.y + y
+            );
+            rect.sizeDelta = _vec2;
+        }
+
+        public static void AddSizeDelta(this RectTransform rect, Vector2 vec)
+        {
+            rect.AddSizeDelta(vec.x, vec.y);
+        }
     }
 }

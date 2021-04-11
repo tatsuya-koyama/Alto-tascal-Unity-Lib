@@ -48,7 +48,7 @@ namespace AltoLib
 
         [SerializeField] public float leftSensitivity  = 16f;  // 左スティック感度
         [SerializeField] public float rightSensitivity = 16f;  // 右スティック感度
-        [SerializeField] public float stickSlack = 0.8f;  // スティックの遊び。これを超えた距離指が動くと軸が追従
+        [SerializeField] public float stickSlack = 0.08f;  // スティックの遊び。これを超えた距離指が動くと軸が追従
 
         PointerInfo _leftPointer  = new PointerInfo();
         PointerInfo _rightPointer = new PointerInfo();

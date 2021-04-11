@@ -35,6 +35,20 @@ namespace AltoLib.UnityExt
             transform.AddPosition(vec.x, vec.y, vec.z);
         }
 
+        //---------------------------------------------------------------------
+        // LocalPosition
+        //---------------------------------------------------------------------
+
+        public static void SetLocalPosition(this Transform transform, float? x, float? y, float? z)
+        {
+            _vec.Set(
+                x ?? transform.localPosition.x,
+                y ?? transform.localPosition.y,
+                z ?? transform.localPosition.z
+            );
+            transform.localPosition = _vec;
+        }
+
         public static void AddLocalPosition(this Transform transform, float x, float y, float z)
         {
             _vec.Set(
