@@ -112,10 +112,10 @@ half3 shiftColor(half3 rgb, half3 hsv)
 //==============================================================================
 
 half2 rotate(half2 v, float angle) {
-	float s = sin(angle);
-	float c = cos(angle);
-	half2x2 m = half2x2(c, -s, s, c);
-	return mul(m, v);
+    float s, c;
+    sincos(angle, s, c);
+    half2x2 m = half2x2(c, -s, s, c);
+    return mul(m, v);
 }
 
 #endif

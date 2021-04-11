@@ -27,10 +27,11 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
         _WindStrength("Wind Strength", Range(0.0, 10.0)) = 0.0
         _WindSpeed("Wind Speed", Range(0.0, 10.0)) = 1.0
         _WindBigWave("Wind Big Wave", Range(0.0, 10.0)) = 1.0
-        _WindNoise("Wind Noise", Range(0.0, 10.0)) = 1.0
-        _WindPhaseShift("Wind Phase Shift", Range(0.0, 10.0)) = 1.0
         _WindRotateSpeed("Wind Rotate Speed", Range(0.0, 10.0)) = 1.0
-        _WindBaseAngle("Wind Base Angle", Range(0.0, 6.283)) = 0.0
+
+        _RotateSpeedX("Rotate Speed (X)", Float) = 0.0
+        _RotateSpeedY("Rotate Speed (Y)", Float) = 0.0
+        _RotateSpeedZ("Rotate Speed (Z)", Float) = 0.0
 
         _TopColor1   ("Top 1",    Color) = (1, 1, 1, 1)
         _TopColor2   ("Top 2",    Color) = (1, 1, 1, 1)
@@ -230,7 +231,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma fragment ShadowPassFragment
 
             #include "Pass/AltoShader-Lite-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #include "Pass/AltoShader-Lite-ShadowCaster.hlsl"
             ENDHLSL
         }
 

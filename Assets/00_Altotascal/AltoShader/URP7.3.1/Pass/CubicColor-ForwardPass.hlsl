@@ -222,39 +222,47 @@ half3 CubicColor(Attributes input, VertexNormalInputs normalInput, float3 posWor
 
     half3 pos = lerp(input.positionOS, posWorld, _WorldSpaceGradient);
 
+    float s, c;
+
     // Top
-    half rot_T = (pos.x - _GradOrigin_T.x) * -sin(_GradRotate_T)
-               + (pos.z - _GradOrigin_T.z) * cos(_GradRotate_T);
+    sincos(_GradRotate_T, s, c);
+    half rot_T = (pos.x - _GradOrigin_T.x) * -s
+               + (pos.z - _GradOrigin_T.z) * c;
     half grad_T = saturate(rot_T / -_GradHeight_T);
     half3 color_T = lerp(_TopColor1, _TopColor2, grad_T);
 
     // Right
-    half rot_R = (pos.z - _GradOrigin_R.z) * -sin(_GradRotate_R)
-               + (pos.y - _GradOrigin_R.y) * cos(_GradRotate_R);
+    sincos(_GradRotate_R, s, c);
+    half rot_R = (pos.z - _GradOrigin_R.z) * -s
+               + (pos.y - _GradOrigin_R.y) * c;
     half grad_R = saturate(rot_R / -_GradHeight_R);
     half3 color_R = lerp(_RightColor1, _RightColor2, grad_R);
 
     // Front
-    half rot_F = (pos.x - _GradOrigin_F.x) * -sin(_GradRotate_F)
-               + (pos.y - _GradOrigin_F.y) * cos(_GradRotate_F);
+    sincos(_GradRotate_F, s, c);
+    half rot_F = (pos.x - _GradOrigin_F.x) * -s
+               + (pos.y - _GradOrigin_F.y) * c;
     half grad_F = saturate(rot_F / -_GradHeight_F);
     half3 color_F = lerp(_FrontColor1, _FrontColor2, grad_F);
 
     // Left
-    half rot_L = (pos.z - _GradOrigin_L.z) * sin(_GradRotate_L)
-               + (pos.y - _GradOrigin_L.y) * cos(_GradRotate_L);
+    sincos(_GradRotate_L, s, c);
+    half rot_L = (pos.z - _GradOrigin_L.z) * s
+               + (pos.y - _GradOrigin_L.y) * c;
     half grad_L = saturate(rot_L / -_GradHeight_L);
     half3 color_L = lerp(_LeftColor1, _LeftColor2, grad_L);
 
     // Back
-    half rot_B = (pos.x - _GradOrigin_B.x) * sin(_GradRotate_B)
-               + (pos.y - _GradOrigin_B.y) * cos(_GradRotate_B);
+    sincos(_GradRotate_B, s, c);
+    half rot_B = (pos.x - _GradOrigin_B.x) * s
+               + (pos.y - _GradOrigin_B.y) * c;
     half grad_B = saturate(rot_B / -_GradHeight_B);
     half3 color_B = lerp(_BackColor1, _BackColor2, grad_B);
 
     // Bottom
-    half rot_D = -(pos.x - _GradOrigin_D.x) * sin(_GradRotate_D)
-               + -(pos.z - _GradOrigin_D.z) * cos(_GradRotate_D);
+    sincos(_GradRotate_D, s, c);
+    half rot_D = -(pos.x - _GradOrigin_D.x) * s
+               + -(pos.z - _GradOrigin_D.z) * c;
     half grad_D = saturate(rot_D / -_GradHeight_D);
     half3 color_D = lerp(_BottomColor1, _BottomColor2, grad_D);
 

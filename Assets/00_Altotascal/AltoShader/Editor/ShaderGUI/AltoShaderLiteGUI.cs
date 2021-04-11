@@ -29,10 +29,11 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty windStrength;
             public MaterialProperty windSpeed;
             public MaterialProperty windBigWave;
-            public MaterialProperty windNoise;
-            public MaterialProperty windPhaseShift;
             public MaterialProperty windRotateSpeed;
-            public MaterialProperty windBaseAngle;
+
+            public MaterialProperty rotateSpeedX;
+            public MaterialProperty rotateSpeedY;
+            public MaterialProperty rotateSpeedZ;
 
             public MaterialProperty shadeContrast;
             public MaterialProperty rimLightingOn;
@@ -83,10 +84,11 @@ namespace AltoLib.ShaderGUI
                 windStrength             = BaseShaderGUI.FindProperty("_WindStrength", properties);
                 windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
                 windBigWave              = BaseShaderGUI.FindProperty("_WindBigWave", properties);
-                windNoise                = BaseShaderGUI.FindProperty("_WindNoise", properties);
-                windPhaseShift           = BaseShaderGUI.FindProperty("_WindPhaseShift", properties);
                 windRotateSpeed          = BaseShaderGUI.FindProperty("_WindRotateSpeed", properties);
-                windBaseAngle            = BaseShaderGUI.FindProperty("_WindBaseAngle", properties);
+
+                rotateSpeedX             = BaseShaderGUI.FindProperty("_RotateSpeedX", properties);
+                rotateSpeedY             = BaseShaderGUI.FindProperty("_RotateSpeedY", properties);
+                rotateSpeedZ             = BaseShaderGUI.FindProperty("_RotateSpeedZ", properties);
 
                 shadeContrast            = BaseShaderGUI.FindProperty("_ShadeContrast", properties);
                 rimLightingOn            = BaseShaderGUI.FindProperty("_RimLightingOn", properties);
@@ -126,6 +128,7 @@ namespace AltoLib.ShaderGUI
         bool _showDissolveProps   = true;
         bool _showDitherProps     = true;
         bool _showWindProps       = true;
+        bool _showRotateProps     = true;
         bool _showShadingProps    = true;
         bool _showRimProps        = true;
         bool _showShadowProps     = true;
@@ -145,6 +148,7 @@ namespace AltoLib.ShaderGUI
             _util.DrawToggle("Billboard", "billboardOn");
             DrawDitherProps();
             DrawWindProps();
+            DrawRotateProps();
         }
 
         protected override void DrawCustomPropAtBottom(Material material)
@@ -179,10 +183,17 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Wind Strength", "windStrength", 0f, 10f);
             _util.DrawSlider("Wind Speed", "windSpeed", 0f, 10f);
             _util.DrawSlider("Wind Big Wave", "windBigWave", 0f, 10f);
-            _util.DrawSlider("Wind Noise", "windNoise", 0f, 10f);
-            _util.DrawSlider("Phase Shift", "windPhaseShift", 0f, 10f);
-            _util.DrawSlider("Rotate Speed", "windRotateSpeed", 0f, 10f);
-            _util.DrawSlider("Base Angle", "windBaseAngle", 0, 360, Mathf.Deg2Rad);
+            _util.DrawSlider("Wind Rotate Speed", "windRotateSpeed", 0f, 10f);
+        }
+
+        void DrawRotateProps()
+        {
+            _showRotateProps = _util.Foldout(_showRotateProps, "Rotate Animation");
+            if (!_showRotateProps) { return; }
+
+            _util.DrawSlider("Rotate Speed X", "rotateSpeedX", -20f, 20f);
+            _util.DrawSlider("Rotate Speed Y", "rotateSpeedY", -20f, 20f);
+            _util.DrawSlider("Rotate Speed Z", "rotateSpeedZ", -20f, 20f);
         }
 
         void DrawDissolveProps()

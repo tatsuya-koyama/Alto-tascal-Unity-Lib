@@ -35,10 +35,11 @@ half _DitherCull;
 half _WindStrength;
 half _WindSpeed;
 half _WindBigWave;
-half _WindNoise;
-half _WindPhaseShift;
 half _WindRotateSpeed;
-half _WindBaseAngle;
+
+half _RotateSpeedX;
+half _RotateSpeedY;
+half _RotateSpeedZ;
 
 half4 _TopColor1;
 half4 _TopColor2;

@@ -238,7 +238,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader"
             #pragma fragment ShadowPassFragment
 
             #include "Pass/AltoShader-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #include "Pass/AltoShader-ShadowCaster.hlsl"
             ENDHLSL
         }
 

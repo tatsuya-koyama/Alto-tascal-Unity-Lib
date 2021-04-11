@@ -208,39 +208,47 @@ half3 CubicColor(Attributes input, VertexNormalInputs normalInput, float3 posWor
 
     half3 pos = lerp(input.positionOS, posWorld, _WorldSpaceGradient);
 
+    float s, c;
+
     // Top
-    half rot_T = (pos.x - _GradOrigin_T.x) * -sin(_GradRotate_T)
-               + (pos.z - _GradOrigin_T.z) * cos(_GradRotate_T);
+    sincos(_GradRotate_T, s, c);
+    half rot_T = (pos.x - _GradOrigin_T.x) * -s
+               + (pos.z - _GradOrigin_T.z) * c;
     half grad_T = saturate(rot_T / -_GradHeight_T);
     half3 color_T = lerp(_TopColor1, _TopColor2, grad_T);
 
     // Right
-    half rot_R = (pos.z - _GradOrigin_R.z) * -sin(_GradRotate_R)
-               + (pos.y - _GradOrigin_R.y) * cos(_GradRotate_R);
+    sincos(_GradRotate_R, s, c);
+    half rot_R = (pos.z - _GradOrigin_R.z) * -s
+               + (pos.y - _GradOrigin_R.y) * c;
     half grad_R = saturate(rot_R / -_GradHeight_R);
     half3 color_R = lerp(_RightColor1, _RightColor2, grad_R);
 
     // Front
-    half rot_F = (pos.x - _GradOrigin_F.x) * -sin(_GradRotate_F)
-               + (pos.y - _GradOrigin_F.y) * cos(_GradRotate_F);
+    sincos(_GradRotate_F, s, c);
+    half rot_F = (pos.x - _GradOrigin_F.x) * -s
+               + (pos.y - _GradOrigin_F.y) * c;
     half grad_F = saturate(rot_F / -_GradHeight_F);
     half3 color_F = lerp(_FrontColor1, _FrontColor2, grad_F);
 
     // Left
-    half rot_L = (pos.z - _GradOrigin_L.z) * sin(_GradRotate_L)
-               + (pos.y - _GradOrigin_L.y) * cos(_GradRotate_L);
+    sincos(_GradRotate_L, s, c);
+    half rot_L = (pos.z - _GradOrigin_L.z) * s
+               + (pos.y - _GradOrigin_L.y) * c;
     half grad_L = saturate(rot_L / -_GradHeight_L);
     half3 color_L = lerp(_LeftColor1, _LeftColor2, grad_L);
 
     // Back
-    half rot_B = (pos.x - _GradOrigin_B.x) * sin(_GradRotate_B)
-               + (pos.y - _GradOrigin_B.y) * cos(_GradRotate_B);
+    sincos(_GradRotate_B, s, c);
+    half rot_B = (pos.x - _GradOrigin_B.x) * s
+               + (pos.y - _GradOrigin_B.y) * c;
     half grad_B = saturate(rot_B / -_GradHeight_B);
     half3 color_B = lerp(_BackColor1, _BackColor2, grad_B);
 
     // Bottom
-    half rot_D = -(pos.x - _GradOrigin_D.x) * sin(_GradRotate_D)
-               + -(pos.z - _GradOrigin_D.z) * cos(_GradRotate_D);
+    sincos(_GradRotate_D, s, c);
+    half rot_D = -(pos.x - _GradOrigin_D.x) * s
+               + -(pos.z - _GradOrigin_D.z) * c;
     half grad_D = saturate(rot_D / -_GradHeight_D);
     half3 color_D = lerp(_BottomColor1, _BottomColor2, grad_D);
 
@@ -286,7 +294,7 @@ half3 DissolveEffect(Varyings input, half3 srcColor)
     clip(_DissolveDistance - 0.001);
     float n = 0;
 
-    //UNITY_BRANCH
+    UNITY_BRANCH
     if (_DissolveNoise > 0)
     {
         float3 noiseFactor = input.posWS * 16 * _DissolveRoughness;
@@ -339,25 +347,14 @@ void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha
 
 float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
 {
-    float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2 * _WindPhaseShift;
+    float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2;
     float theta = thetaOffset + (_Time.y * 2 * _WindSpeed)
                 + max(0, sin(_Time.y * 0.5 * _WindBigWave) * 4);
-
-    float waveNoise = 0;
-    UNITY_BRANCH
-    if (_WindNoise > 0)
-    {
-        float noiseTheta = (positionWS.x + positionWS.z) * 0.1;
-        float t = noiseTheta + (_Time.y * 0.3 * (0.8 + _WindNoise * 0.2));
-        waveNoise = sin(t * 13) + sin(t * 30) + (sin(1 + t) + cos(t)) * 0.3 - 1.2;
-        waveNoise = max(0, waveNoise) * 0.5 * _WindNoise;
-    }
-    float wave = cos(theta + waveNoise);
+    float wave = cos(theta);
 
     float2 wind = float2(0, 0);
     wind.x = wave * positionOS.y * 0.08 * _WindStrength;
-    float windAngle = _WindBaseAngle
-                    + (positionWS.x + positionWS.z) * 0.3 * _WindPhaseShift
+    float windAngle = (positionWS.x + positionWS.z) * 0.3
                     + (_Time.y * _WindRotateSpeed);
     wind = rotate(wind, windAngle);
 
@@ -416,6 +413,32 @@ Varyings LitPassVertexSimple(Attributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
+    //-----------------------------------------------------
+    // Rotate vertex and normal
+    //-----------------------------------------------------
+    UNITY_BRANCH
+    if (_RotateSpeedX != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
+        input.positionOS.yz = mul(m, input.positionOS.yz);
+        input.normalOS  .yz = mul(m, input.normalOS  .yz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedY != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
+        input.positionOS.xz = mul(m, input.positionOS.xz);
+        input.normalOS  .xz = mul(m, input.normalOS  .xz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedZ != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
+        input.positionOS.xy = mul(m, input.positionOS.xy);
+        input.normalOS  .xy = mul(m, input.normalOS  .xy);
+    }
+
+    //-----------------------------------------------------
     VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
     half3 viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
