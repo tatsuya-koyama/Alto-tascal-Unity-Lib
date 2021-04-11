@@ -4,20 +4,42 @@ using UnityEngine;
 
 namespace AltoLib
 {
-    public partial class AltoFSM<TContext>
+    public interface IAltoFSM
+    {
+        IAltoFSM parentFsm { get; }
+        bool IsState<TState>();
+        void SendEvent(ValueType eventId);
+        void Update();
+    }
+
+    public partial class AltoFSM<TContext> : IAltoFSM
     {
         public bool logVerbose = false;
+
+        public IAltoFSM parentFsm { get; private set; }
 
         TContext _context;
         List<AltoState> _registeredStates = new List<AltoState>();
         AltoState _currentState;
+        Queue<ValueType> _eventQueue = new Queue<ValueType>();
+        bool _isHandlingEvent = false;
+        string _logIndent = "";
 
         public class AnyState : AltoState {}
 
-        public AltoFSM(TContext context, bool logVerbose = false)
+        public AltoFSM(
+            TContext context, IAltoFSM parentFsm = null,
+            bool logVerbose = false, int logDepth = 0
+        )
         {
             _context = context;
+            this.parentFsm = parentFsm;
             this.logVerbose = logVerbose;
+
+            for (int i = 0; i < Math.Min(logDepth, 8); ++i)
+            {
+                _logIndent += "---";
+            }
         }
 
         //----------------------------------------------------------------------
@@ -86,16 +108,34 @@ namespace AltoLib
 
         /// <summary>
         /// 遷移イベントを送り、事前に設定された遷移条件に従ってステート遷移を行う。
-        /// 現在ステートが対応するイベントでなかったり、Guard() によってガードされて
-        /// 遷移が行われなかった場合は false を返す。
+        /// 現在ステートが対応するイベントでなかったり、Guard() によってガードされた場合は
+        /// 遷移は行われない。SendEvent() によってさらに SendEvent() が呼ばれるケース
+        /// （State 自身が Enter 内で SendEvent() を呼ぶなど）は許されているが、
+        /// 10 回以上 SendEvent() が連鎖した場合はエラーとしている
         /// </summary>
-        public bool SendEvent(ValueType _eventId)
+        public void SendEvent(ValueType eventId)
         {
-            var nextState = GetNextState(_eventId);
-            if (nextState == null) { return false; }
+            if (_isHandlingEvent)
+            {
+                _eventQueue.Enqueue(eventId);
+                return;
+            }
+            _isHandlingEvent = true;
 
-            ChangeStateInternal(nextState);
-            return true;
+            SendEventInternal(eventId);
+            int tryCount = 10;
+            while (_eventQueue.Count > 0)
+            {
+                --tryCount;
+                if (tryCount < 0)
+                {
+                    LogError("Too many SendEvent loops! Check the transition logic.");
+                    _isHandlingEvent = false;
+                    return;
+                }
+                SendEventInternal(_eventQueue.Dequeue());
+            }
+            _isHandlingEvent = false;
         }
 
         public void Update()
@@ -111,12 +151,12 @@ namespace AltoLib
         void Log(string message)
         {
             if (!logVerbose) { return; }
-            Debug.Log($"<color=#8cc659>[AltoFSM]</color> {message}");
+            Debug.Log($"<color=#9086e9>[AltoFSM]{_logIndent} </color>{message}");
         }
 
         void LogError(string message)
         {
-            Debug.LogError($"<color=#8cc659>[AltoFSM]</color> [Error] {message}");
+            Debug.LogError($"<color=#9086e9>[AltoFSM]{_logIndent} </color> [Error] {message}");
         }
 
         TState GetOrCreateState<TState>() where TState : AltoState, new()
@@ -132,6 +172,8 @@ namespace AltoLib
 
             var newState = new TState();
             newState.context = _context;
+            newState.fsm = this;
+            newState.Init();
             _registeredStates.Add(newState);
 
             return newState;
@@ -165,12 +207,21 @@ namespace AltoLib
             return anyState.GetNextState(eventId);
         }
 
+        bool SendEventInternal(ValueType _eventId)
+        {
+            var nextState = GetNextState(_eventId);
+            if (nextState == null) { return false; }
+
+            ChangeStateInternal(nextState);
+            return true;
+        }
+
         void ChangeStateInternal(AltoState nextState)
         {
             if (logVerbose)
             {
                 string currentStateName = (_currentState != null) ? _currentState.GetType().Name : "null";
-                Log($"State changed : {currentStateName} -> {nextState.GetType().Name}");
+                Log($"{currentStateName} <color=#f894fc>-></color> {nextState.GetType().Name}");
             }
 
             if (_currentState != null)
@@ -179,9 +230,8 @@ namespace AltoLib
                 _currentState.Exit();
             }
             nextState.onEnterPrevState = _currentState;
-            nextState.Enter();
-
             _currentState = nextState;
+            nextState.Enter();
         }
     }
 }

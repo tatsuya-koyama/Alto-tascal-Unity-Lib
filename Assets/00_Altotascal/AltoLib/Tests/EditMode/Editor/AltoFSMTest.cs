@@ -46,9 +46,16 @@ namespace AltoLib.Tests
             }
         }
 
-        enum StateEvent
+        class FlashState : AltoFSM<TestController>.AltoState
         {
-            Stand, Walk, Run, Talk
+            protected override void Enter()  { context.sequence += "_in5"; SendEvent(StateEvent.GoNext); }
+            protected override void Exit()   { context.sequence += "_out5"; }
+            protected override void Update() { context.sequence += "_up5"; }
+        }
+
+        public enum StateEvent
+        {
+            Stand, Walk, Run, Talk, Flash, GoNext
         }
 
         void SetTransition(AltoFSM<TestController> fsm)
@@ -59,11 +66,13 @@ namespace AltoLib.Tests
             fsm.AddTransition<RunState  , WalkState >(StateEvent.Walk);
             fsm.AddTransition<WalkState , StandState>(StateEvent.Stand);
 
-            // [AnyState] -> Talk
+            // [AnyState] -> Talk, Flash
             fsm.AddFreeTransition<TalkState>(StateEvent.Talk);
+            fsm.AddFreeTransition<FlashState>(StateEvent.Flash);
 
-            // Talk -> Stand
+            // Talk, Flash -> Stand
             fsm.AddTransition<TalkState, StandState>(StateEvent.Stand);
+            fsm.AddTransition<FlashState, StandState>(StateEvent.GoNext);
         }
 
         [Test]
@@ -114,6 +123,21 @@ namespace AltoLib.Tests
             fsm.SendEvent(StateEvent.Run);
 
             Assert.That(controller.sequence, Is.EqualTo("_out1_in2_up2_out2_in3"));
+        }
+
+        [Test]
+        public void TestSendEventFromState()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+            SetTransition(fsm);
+            fsm.ChangeState<StandState>();
+
+            fsm.SendEvent(StateEvent.Flash);
+            fsm.Update();
+            fsm.SendEvent(StateEvent.Walk);
+
+            Assert.That(controller.sequence, Is.EqualTo("_in1_out1_in5_out5_in1_up1_out1_in2"));
         }
 
         [Test]
