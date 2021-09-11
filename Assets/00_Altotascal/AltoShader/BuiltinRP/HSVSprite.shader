@@ -5,7 +5,7 @@ Shader "Altotascal/UI/HSV Sprite"
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
         _Hue ("Hue", Range(0, 360)) = 0
-        _Saturation ("Saturation", Range(0, 8)) = 0
+        _Saturation ("Saturation", Range(0, 8)) = 1
         _Brightness ("Value (Brightness)", Range(0, 8)) = 1
         [MaterialToggle] PixelSnap ("Pixel snap", Float) = 1
         [HideInInspector] _RendererColor ("RendererColor", Color) = (1,1,1,1)
