@@ -1,11 +1,11 @@
-﻿#ifndef ALTO_SHADER_LITE_FORWARD_PASS_INCLUDED
-#define ALTO_SHADER_LITE_FORWARD_PASS_INCLUDED
+﻿#ifndef ALTO_SHADER_11_FORWARD_PASS_INCLUDED
+#define ALTO_SHADER_11_FORWARD_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"
 
 //==============================================================================
-// Lighting Functions
+// Lighting Functions (Copied from Lighting.hlsl)
 //==============================================================================
 
 half Alto_LightIntensity(half3 lightDir, half3 normal)
@@ -42,8 +42,24 @@ half4 Alto_UniversalFragmentBlinnPhong(
     half3 diffuse, half4 specularGloss, half smoothness, half3 emission, half alpha
 )
 {
-    Light mainLight = GetMainLight(inputData.shadowCoord);
-    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, half4(0, 0, 0, 0));
+    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    half4 shadowMask = inputData.shadowMask;
+#elif !defined (LIGHTMAP_ON)
+    half4 shadowMask = unity_ProbesOcclusion;
+#else
+    half4 shadowMask = half4(1, 1, 1, 1);
+#endif
+
+    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
+
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+        mainLight.color *= aoFactor.directAmbientOcclusion;
+        inputData.bakedGI *= aoFactor.indirectAmbientOcclusion;
+    #endif
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
 
     half3 attenuatedLightColor = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
     half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
@@ -54,7 +70,10 @@ half4 Alto_UniversalFragmentBlinnPhong(
     uint pixelLightCount = GetAdditionalLightsCount();
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
     {
-        Light light = GetAdditionalLight(lightIndex, inputData.positionWS);
+        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
+        #if defined(_SCREEN_SPACE_OCCLUSION)
+            light.color *= aoFactor.directAmbientOcclusion;
+        #endif
         half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
         diffuseColor += Alto_LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
         specularColor += Alto_LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
@@ -186,6 +205,8 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     inputData.fogCoord = input.fogFactorAndVertexLight.x;
     inputData.vertexLighting = input.fogFactorAndVertexLight.yzw;
     inputData.bakedGI = SAMPLE_GI(input.lightmapUV, input.vertexSH, inputData.normalWS);
+    inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
+    inputData.shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV);
 }
 
 //------------------------------------------------------------------------------
@@ -417,9 +438,26 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
 }
 
 //==============================================================================
-// Vertex function
+// Vertex Functions (Copied from ShaderVariablesFunctions.hlsl)
 //==============================================================================
 
+VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
+{
+    VertexNormalInputs tbn;
+
+    // mikkts space compliant. only normalize when extracting normal at frag.
+    real sign = tangentOS.w * GetOddNegativeScale();
+    tbn.normalWS = TransformObjectToWorldNormal(normalOS);
+    tbn.tangentWS = TransformObjectToWorldDir(tangentOS.xyz);
+    tbn.bitangentWS = cross(tbn.normalWS, tbn.tangentWS) * sign;
+    return tbn;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                  Vertex and Fragment functions                            //
+///////////////////////////////////////////////////////////////////////////////
+
+// Used in Standard (Simple Lighting) shader
 Varyings LitPassVertexSimple(Attributes input)
 {
     Varyings output = (Varyings)0;
@@ -455,8 +493,8 @@ Varyings LitPassVertexSimple(Attributes input)
 
     //-----------------------------------------------------
     VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
-    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
-    half3 viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;
+    VertexNormalInputs normalInput = Alto_GetVertexNormalInputs(input.normalOS, input.tangentOS);
+    half3 viewDirWS = GetWorldSpaceViewDir(vertexInput.positionWS);
     half3 vertexLight = VertexLighting(vertexInput.positionWS, normalInput.normalWS);
     half fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
 
@@ -492,6 +530,7 @@ Varyings LitPassVertexSimple(Attributes input)
 // Fragment function
 //==============================================================================
 
+// Used for StandardSimpleLighting shader
 half4 LitPassFragmentSimple(Varyings input) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
@@ -503,9 +542,10 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
 
     half alpha = diffuseAlpha.a * _BaseColor.a;
     AlphaDiscard(alpha, _Cutoff);
-#ifdef _ALPHAPREMULTIPLY_ON
-    diffuse *= alpha;
-#endif
+
+    #ifdef _ALPHAPREMULTIPLY_ON
+        diffuse *= alpha;
+    #endif
 
     half3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
     half3 emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
@@ -547,6 +587,7 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     }
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
+    color.a = OutputAlpha(color.a, _Surface);
 
     UNITY_BRANCH
     if (_MultipleFogOn > 0)
@@ -563,6 +604,6 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     }
 
     return color;
-};
+}
 
 #endif

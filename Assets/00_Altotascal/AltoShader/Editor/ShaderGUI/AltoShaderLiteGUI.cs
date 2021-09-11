@@ -19,12 +19,15 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty dissolveEdgeAddColor;
             public MaterialProperty dissolveEdgeSubColor;
 
+            public MaterialProperty noisePattern;
             public MaterialProperty ditherPattern;
             public MaterialProperty ditherAlpha;
             public MaterialProperty ditherMinAlpha;
             public MaterialProperty ditherCameraDistanceFrom;
             public MaterialProperty ditherCameraDistanceTo;
             public MaterialProperty ditherCull;
+            public MaterialProperty heightDitherYFrom;
+            public MaterialProperty heightDitherHeight;
 
             public MaterialProperty windStrength;
             public MaterialProperty windSpeed;
@@ -74,12 +77,15 @@ namespace AltoLib.ShaderGUI
                 dissolveEdgeAddColor     = BaseShaderGUI.FindProperty("_DissolveEdgeAddColor", properties);
                 dissolveEdgeSubColor     = BaseShaderGUI.FindProperty("_DissolveEdgeSubColor", properties);
 
+                noisePattern             = BaseShaderGUI.FindProperty("_NoisePattern", properties);
                 ditherPattern            = BaseShaderGUI.FindProperty("_DitherPattern", properties);
                 ditherAlpha              = BaseShaderGUI.FindProperty("_DitherAlpha", properties);
                 ditherMinAlpha           = BaseShaderGUI.FindProperty("_DitherMinAlpha", properties);
                 ditherCameraDistanceFrom = BaseShaderGUI.FindProperty("_DitherCameraDistanceFrom", properties);
                 ditherCameraDistanceTo   = BaseShaderGUI.FindProperty("_DitherCameraDistanceTo", properties);
                 ditherCull               = BaseShaderGUI.FindProperty("_DitherCull", properties);
+                heightDitherYFrom        = BaseShaderGUI.FindProperty("_HeightDitherYFrom", properties);
+                heightDitherHeight       = BaseShaderGUI.FindProperty("_HeightDitherHeight", properties);
 
                 windStrength             = BaseShaderGUI.FindProperty("_WindStrength", properties);
                 windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
@@ -168,11 +174,14 @@ namespace AltoLib.ShaderGUI
             if (!_showDitherProps) { return; }
 
             materialEditor.TextureProperty(_customProperties.ditherPattern, "Dithering Pattern");
+            materialEditor.TextureProperty(_customProperties.noisePattern, "Noise Pattern");
             _util.DrawSlider("Dithering Alpha", "ditherAlpha", 0f, 1f);
             _util.DrawSlider("Minimum Alpha", "ditherMinAlpha", 0f, 1f);
             _util.DrawSlider("Camera Distance Hide", "ditherCameraDistanceTo", 0f, 20f);
             _util.DrawSlider("Camera Distance Start", "ditherCameraDistanceFrom", 0f, 20f);
             _util.DrawSlider("Dithering Cull", "ditherCull", 0f, 20f);
+            _util.DrawSlider("Dither Y From", "heightDitherYFrom", -100f, 100f);
+            _util.DrawSlider("Dither Height", "heightDitherHeight", 0f, 100f);
         }
 
         void DrawWindProps()

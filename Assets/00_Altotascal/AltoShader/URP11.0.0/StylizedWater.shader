@@ -1,11 +1,31 @@
 ﻿// Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
+Shader "Altotascal/URP 11.0.0/Stylized Water"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
     {
         // Custom props
-        [ToggleOff] _BillboardOn("Billboard", Float) = 0.0
+        _WaterColorDepth("Water Color Depth", Float) = 1.0
+        [ToggleOff] _DepthDebug("Depth Texture Debug", Float) = 0.0
+        _FoamColor("Foam Color", Color) = (1, 1, 1, 1)
+        _FoamSharpness("Foam Sharpness", Float) = 1.0
+        _FoamFactor("Foam Factor", Float) = 1.0
+        _UnderwaterColor("Underwater Color", Color) = (0, 0.5, 1, 0)
+        [ToggleOff] _MultiplyUnderwaterColor("Multiply Underwater Color", Float) = 0.0
+        _WaterDistortion("Water Distortion", Float) = 1.0
+
+        _WaveCycle("Wave Cycle", Float) = 1.0
+        _WaveSpeed("Wave Speed", Float) = 1.0
+        _WavePower("Wave Power", Float) = 1.0
+        _RiseAndFall("Rise and Fall", Float) = 0.0
+        _SurfaceSpecular("Surface Specular", Float) = 1.0
+        _SurfaceNoise("Surface Noise", Float) = 1.0
+        _SurfaceParams("Surface Diversity Params", Vector) = (1, 1, 1, 1)
+
+        [ToggleOff] _EdgeFadeOutOn("Edge Fade Out", Float) = 0.0
+        _EdgeFadeOutOrigin("Edge Fade Out Origin", Vector) = (0, 0, 0, 0)
+        _EdgeFadeOutDistance("Edge Fade Out Distance", Float) = 10
+        _EdgeSharpness("Edge Sharpness", Float) = 0.8
 
         _DissolveAreaSize("Dissolve Area Size", Float) = 0.0
         _DissolveOrigin("Dissolve Origin Pos", Vector) = (0, 0, 0, 0)
@@ -17,88 +37,8 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
         _DissolveEdgeAddColor("Dissolve Edge Add Color", Color) = (1, 1, 1, 1)
         _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
 
-        _NoisePattern("Noise Pattern", 2D) = "white" {}
         _DitherPattern("Dithering Pattern", 2D) = "white" {}
-        _DitherAlpha("Dithering Alpha", Float) = 1.0
-        _DitherMinAlpha("Dithering Minimum Alpha", Float) = 0
-        _DitherCameraDistanceFrom("Camera Distance to Dithering start", Float) = 0.0
-        _DitherCameraDistanceTo("Camera Distance to Dithering end", Float) = 0.0
         _DitherCull("Dither Culling", Float) = 5.0
-        _HeightDitherYFrom("Y From", Float) = 0
-        _HeightDitherHeight("Height", Float) = 0
-
-        _WindStrength("Wind Strength", Range(0.0, 10.0)) = 0.0
-        _WindSpeed("Wind Speed", Range(0.0, 10.0)) = 1.0
-        _WindBigWave("Wind Big Wave", Range(0.0, 10.0)) = 1.0
-        _WindRotateSpeed("Wind Rotate Speed", Range(0.0, 10.0)) = 1.0
-
-        _RotateSpeedX("Rotate Speed (X)", Float) = 0.0
-        _RotateSpeedY("Rotate Speed (Y)", Float) = 0.0
-        _RotateSpeedZ("Rotate Speed (Z)", Float) = 0.0
-
-        _TopColor1   ("Top 1",    Color) = (1, 1, 1, 1)
-        _TopColor2   ("Top 2",    Color) = (1, 1, 1, 1)
-        _RightColor1 ("Right 1",  Color) = (1, 1, 1, 1)
-        _RightColor2 ("Right 2",  Color) = (1, 1, 1, 1)
-        _FrontColor1 ("Front 1",  Color) = (1, 1, 1, 1)
-        _FrontColor2 ("Front 2",  Color) = (1, 1, 1, 1)
-        _LeftColor1  ("Left 1",   Color) = (1, 1, 1, 1)
-        _LeftColor2  ("Left 2",   Color) = (1, 1, 1, 1)
-        _BackColor1  ("Back 1",   Color) = (1, 1, 1, 1)
-        _BackColor2  ("Back 2",   Color) = (1, 1, 1, 1)
-        _BottomColor1("Bottom 1", Color) = (1, 1, 1, 1)
-        _BottomColor2("Bottom 2", Color) = (1, 1, 1, 1)
-        [ToggleOff] _MixCubicColorOn("Mix Cubic Color", Float) = 0.0
-        [ToggleOff] _MultiplyCubicDiffuseOn("Multiply Cubic & Diffuse", Float) = 0.0
-        _CubicColorPower("Cubic Color Power", Range(-1.0, 1.0)) = 1.0
-        _WorldSpaceNormal("World Space Normal", Range(0.0, 1.0)) = 1.0
-        _WorldSpaceGradient("World Space Gradient", Range(0.0, 1.0)) = 1.0
-
-        [ShowAsVector3] _GradOrigin_T("Gradient Start Pos (Top)", Vector) = (0, 0, 0, 0)
-        [ShowAsVector3] _GradOrigin_R("Gradient Start Pos (Right)", Vector) = (0, 0, 0, 0)
-        [ShowAsVector3] _GradOrigin_F("Gradient Start Pos (Front)", Vector) = (0, 0, 0, 0)
-        [ShowAsVector3] _GradOrigin_L("Gradient Start Pos (Left)", Vector) = (0, 0, 0, 0)
-        [ShowAsVector3] _GradOrigin_B("Gradient Start Pos (Back)", Vector) = (0, 0, 0, 0)
-        [ShowAsVector3] _GradOrigin_D("Gradient Start Pos (Bottom)", Vector) = (0, 0, 0, 0)
-
-        _GradHeight_T("Gradient Height (Top)", Float) = 0.0
-        _GradHeight_R("Gradient Height (Right)", Float) = 0.0
-        _GradHeight_F("Gradient Height (Front)", Float) = 0.0
-        _GradHeight_L("Gradient Height (Left)", Float) = 0.0
-        _GradHeight_B("Gradient Height (Back)", Float) = 0.0
-        _GradHeight_D("Gradient Height (Bottom)", Float) = 0.0
-
-        _GradRotate_T("Gradient Rotation (Top)", Range(0, 360)) = 0.0
-        _GradRotate_R("Gradient Rotation (Right)", Range(0, 360)) = 0.0
-        _GradRotate_F("Gradient Rotation (Front)", Range(0, 360)) = 0.0
-        _GradRotate_L("Gradient Rotation (Left)", Range(0, 360)) = 0.0
-        _GradRotate_B("Gradient Rotation (Back)", Range(0, 360)) = 0.0
-        _GradRotate_D("Gradient Rotation (Bottom)", Range(0, 360)) = 0.0
-
-        _ShadeContrast("Shade Contrast", Range(-1.0, 1.0)) = 0.5
-        [ToggleOff] _RimLightingOn("Rim Lighting", Float) = 0.0
-        [ToggleOff] _RimBurnOn("Rim Burn", Float) = 0.0
-        _RimColor("Rim Color", Color) = (1, 1, 1, 1)
-        _RimPower("Rim Power", Range(0.5, 8.0)) = 3.0
-        [ToggleOff] _CubicRimOn("Use Cubic Color as Rim", Float) = 0.0
-        [ToggleOff] _ColoredShadowOn("Colored Shadow", Float) = 0.0
-        _ShadowColor("Shadow Color", Color) = (0, 0, 1, 1)
-        _ShadowPower("Shadow Power", Range(0, 1.0))= 1.0
-        [ToggleOff] _HSVShiftOn("HSV Shift", Float) = 0.0
-        _Hue("Hue", Range(0, 360)) = 0.0
-        _Saturation("Saturation", Range(0, 8)) = 1.0
-        _Brightness("Brightness (Value)", Range(0, 8)) = 1.0
-
-        [ToggleOff]_MultipleFogOn("Multiple Fog", Float) = 0.0
-        _FogColor1("Fog Color 1", Color) = (1, 1, 1, 1)
-        _FogColor2("Fog Color 2", Color) = (1, 1, 1, 1)
-        _FogDistance1("Fog Distance 1", Float) = 30
-        _FogDistance2("Fog Distance 2", Float) = 20
-
-        [ToggleOff]_HeightFogOn("Height Fog", Float) = 0.0
-        _HeightFogColor("Height Fog Color", Color) = (1, 1, 1, 1)
-        _HeightFogYFrom("Y From", Float) = 0
-        _HeightFogHeight("Height", Float) = 1
 
         // Basic props
         [MainTexture] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
@@ -162,12 +102,6 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma target 2.0
 
             // -------------------------------------
-            // Custom Material Keywords
-            #pragma shader_feature _RIM_LIGHTING_ON
-            #pragma shader_feature _TOON_SHADING_ON
-            #pragma shader_feature _COLORED_SHADOW_ON
-
-            // -------------------------------------
             // Material Keywords
             #pragma shader_feature _ALPHATEST_ON
             #pragma shader_feature _ALPHAPREMULTIPLY_ON
@@ -200,8 +134,8 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/AltoShader-Lite-Input.hlsl"
-            #include "Pass/AltoShader-Lite-ForwardPass.hlsl"
+            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/StylizedWater-ForwardPass.hlsl"
 
             ENDHLSL
         }
@@ -233,8 +167,8 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Pass/AltoShader-Lite-Input.hlsl"
-            #include "Pass/AltoShader-Lite-ShadowCaster.hlsl"
+            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -265,7 +199,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Pass/AltoShader-Lite-Input.hlsl"
+            #include "Pass/StylizedWater-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -289,7 +223,7 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma shader_feature _EMISSION
             #pragma shader_feature _SPECGLOSSMAP
 
-            #include "Pass/AltoShader-Lite-Input.hlsl"
+            #include "Pass/StylizedWater-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -310,11 +244,11 @@ Shader "Altotascal/URP 7.3.1/Alto Shader - Lite"
             #pragma shader_feature _ALPHATEST_ON
             #pragma shader_feature _ALPHAPREMULTIPLY_ON
 
-            #include "Pass/AltoShader-Lite-Input.hlsl"
+            #include "Pass/StylizedWater-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
     }
     Fallback "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "AltoLib.ShaderGUI.AltoShaderLiteGUI"
+    CustomEditor "AltoLib.ShaderGUI.StylizedWaterGUI"
 }

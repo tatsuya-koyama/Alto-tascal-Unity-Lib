@@ -85,11 +85,14 @@ half4 Alto_UniversalFragmentBlinnPhong(
     }
     half3 finalColor = diffuseColor * diffuse + emission;
 
+    // 0 is shadow, 1 is lighted
+    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation;
+
     UNITY_BRANCH
     if (_ColoredShadowOn > 0)
     {
-        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation) * _ShadowPower;
-        finalColor = lerp(finalColor, _ShadowColor, shadowLevel);
+        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation);
+        finalColor = lerp(finalColor, _ShadowColor * lightLevel, (1 - lightLevel) * _ShadowPower);
     }
 
     half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
@@ -97,13 +100,13 @@ half4 Alto_UniversalFragmentBlinnPhong(
     UNITY_BRANCH
     if (_RimLightingOn > 0)
     {
-        finalColor += RimLight(inputData, rimColor.rgb) * rimColor.a;
+        finalColor += RimLight(inputData, rimColor.rgb) * rimColor.a * ((lightLevel + 1) / 2);
     }
 
     UNITY_BRANCH
     if (_RimBurnOn > 0)
     {
-        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * rimColor.a;
+        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * rimColor.a * lightLevel;
     }
 
     UNITY_BRANCH
@@ -279,10 +282,11 @@ half3 MixMultipleColorFog(half3 color, float cameraDistance)
 {
     half d1 = _FogDistance1;
     half d2 = _FogDistance2;
-    float fogIntensity_1 = saturate((cameraDistance - d1) / d1)      * _FogColor1.a;
-    float fogIntensity_2 = saturate((cameraDistance - d1 - d2) / d2) * _FogColor2.a;
-    color = lerp(color, _FogColor1, fogIntensity_1);
-    color = lerp(color, _FogColor2, fogIntensity_2);
+    float fogIntensity_1 = saturate((cameraDistance - d1) / d1);
+    float fogIntensity_2 = saturate((cameraDistance - d1 - d2) / d2);
+    fogIntensity_1 = saturate(fogIntensity_1 - fogIntensity_2);
+    color = lerp(color, _FogColor1, fogIntensity_1 * _FogColor1.a);
+    color = lerp(color, _FogColor2, fogIntensity_2 * _FogColor2.a);
     return color;
 }
 
@@ -340,6 +344,18 @@ void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha
     float alpha = saturate((input.cubicColor.w - to) / (from - to));
     alpha = max(minAlpha, alpha * alpha);
     clip(alpha - dither);
+}
+
+void DitheringByHeight(Varyings input, half from, half to)
+{
+    float2 screenPos = input.positionCS.xy / _ScreenParams.xy * _ScreenParams.xy;
+    float2 ditherCoord = screenPos * _DitherPattern_TexelSize.xy;
+    float dither = tex2D(_DitherPattern, ditherCoord).r;
+
+    //float noise = rand(screenPos) * 0.5 - 0.25;
+    float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.5 - 0.25;
+    float alpha = saturate((input.posWS.y - from + noise) / (to - from));
+    clip(alpha * alpha - dither);
 }
 
 //------------------------------------------------------------------------------
@@ -454,7 +470,7 @@ Varyings LitPassVertexSimple(Attributes input)
 #endif
 
     output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
-    output.cubicColor.w = length(vertexInput.positionVS);
+    output.cubicColor.w = length(vertexInput.positionVS) * step(sign(vertexInput.positionVS.z), 0);;
 
     UNITY_BRANCH
     if (_MirageOn > 0 && _Mirage1 > 0)
@@ -515,6 +531,12 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     }
 
     UNITY_BRANCH
+    if (_HeightDitherHeight > 0)
+    {
+        DitheringByHeight(input, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
+    }
+
+    UNITY_BRANCH
     if (_DitherCull > 0)
     {
         DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
@@ -537,17 +559,17 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
 
     UNITY_BRANCH
+    if (_MultipleFogOn > 0)
+    {
+        color.rgb = MixMultipleColorFog(color.rgb, input.cubicColor.w);
+    }
+
+    UNITY_BRANCH
     if (_HeightFogOn > 0)
     {
         half yTo = _HeightFogYFrom + _HeightFogHeight;
         half heightFogFactor = 1 - smoothstep(_HeightFogYFrom, yTo, input.posWS.y);
         color.rgb = lerp(color.rgb, _HeightFogColor.rgb, heightFogFactor * _HeightFogColor.a);
-    }
-
-    UNITY_BRANCH
-    if (_MultipleFogOn > 0)
-    {
-        color.rgb = MixMultipleColorFog(color.rgb, input.cubicColor.w);
     }
 
     return color;

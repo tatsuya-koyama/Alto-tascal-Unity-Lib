@@ -21,12 +21,15 @@ Shader "Altotascal/URP 7.3.1/Alto Shader"
         _DissolveEdgeAddColor("Dissolve Edge Add Color", Color) = (1, 1, 1, 1)
         _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
 
+        _NoisePattern("Noise Pattern", 2D) = "white" {}
         _DitherPattern("Dithering Pattern", 2D) = "white" {}
         _DitherAlpha("Dithering Alpha", Float) = 1.0
         _DitherMinAlpha("Dithering Minimum Alpha", Float) = 0
         _DitherCameraDistanceFrom("Camera Distance to Dithering start", Float) = 0.0
         _DitherCameraDistanceTo("Camera Distance to Dithering end", Float) = 0.0
         _DitherCull("Dither Culling", Float) = 5.0
+        _HeightDitherYFrom("Y From", Float) = 0
+        _HeightDitherHeight("Height", Float) = 0
 
         _WindStrength("Wind Strength", Range(0.0, 10.0)) = 0.0
         _WindSpeed("Wind Speed", Range(0.0, 10.0)) = 1.0

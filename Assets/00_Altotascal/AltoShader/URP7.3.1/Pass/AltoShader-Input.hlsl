@@ -18,6 +18,8 @@ half _MirageOn;
 half _Mirage1;
 half _Mirage2;
 
+sampler2D _NoisePattern;
+half4 _NoisePattern_TexelSize;
 half _DissolveAreaSize;
 half3 _DissolveOrigin;
 half3 _DissolveSlow;
@@ -27,6 +29,8 @@ half _DissolveNoise;
 half _DissolveEdgeSharpness;
 half4 _DissolveEdgeAddColor;
 half4 _DissolveEdgeSubColor;
+half _HeightDitherYFrom;
+half _HeightDitherHeight;
 
 sampler2D _DitherPattern;
 half4 _DitherPattern_TexelSize;
