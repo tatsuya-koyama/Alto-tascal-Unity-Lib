@@ -12,6 +12,15 @@ namespace AltoLib
     {
         public bool logVerbose = true;
 
+        public bool slotEnabled = true;
+
+        /// <summary>
+        /// セーブファイルのスロット番号。複数のセーブデータを扱いたい場合は
+        /// slotEnabled = true に設定した上で、セーブ / ロード前にこの値を操作する。
+        /// （スロット番号ごとの prefix がついた状態でセーブファイルが保存される）
+        /// </summary>
+        public int slotIndex = 1;
+
         protected List<IAltoStorageData> _dataList;
 
         const int IvSeedLength = 22;
@@ -32,12 +41,16 @@ namespace AltoLib
             using (var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
             using (var getFilesDir = currentActivity.Call<AndroidJavaObject>("getFilesDir"))
             {
-                string dataPath = getFilesDir.Call<string>("getCanonicalPath");
-                return dataPath;
+                return getFilesDir.Call<string>("getCanonicalPath");
             }
             #else
             return Application.persistentDataPath;
             #endif
+        }
+
+        protected virtual string SlotPrefix()
+        {
+            return slotEnabled ? $"s{slotIndex}-" : "";
         }
 
         public AltoStorage()
@@ -62,11 +75,22 @@ namespace AltoLib
 
         public async UniTask<bool> SaveAsync(IAltoStorageData data, bool useDirtyCache = false)
         {
+            // 二重実行禁止
+            if (data.isWriting)
+            {
+                LogError($"Now file is writing, so skipped save process : {data.SaveFileName()}");
+                return false;
+            }
+
+            data.isWriting = true;
+            data.SavePreProcess();
             data.OnBeforeSave();
             #if UNITY_EDITOR
             await WriteDebugFileAsync(data);
             #endif
-            return await WriteFileAsync(data, useDirtyCache);
+            bool succeeded = await WriteFileAsync(data, useDirtyCache);
+            data.isWriting = false;
+            return succeeded;
         }
 
         async UniTask<bool> WriteFileAsync(IAltoStorageData data, bool useDirtyCache = false)
@@ -80,7 +104,7 @@ namespace AltoLib
                 dataBytes = AltoCrypto.Encrypt(dataBytes, CryptoKey(), ivSeed);
                 byte[] ivSeedBytes = Encoding.UTF8.GetBytes(ivSeed);
 
-                string path = $"{ DataPath() }/{ data.SaveFileName() }";
+                string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileName() }";
                 string tmpPath = path + ".tmp";
                 using (var fileStream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.Read))
                 {
@@ -111,7 +135,7 @@ namespace AltoLib
                 string json = JsonUtility.ToJson(data, true);
                 byte[] dataBytes = Encoding.UTF8.GetBytes(json);
 
-                string path = $"{ DataPath() }/{ data.SaveFileNameForDebug() }";
+                string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileNameForDebug() }";
                 string tmpPath = path + ".tmp";
                 Log($"Write debug file : {path}");
                 using (var fileStream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -144,12 +168,14 @@ namespace AltoLib
 
         public async UniTask<bool> LoadAsync(IAltoStorageData data)
         {
-            return await ReadFileAsync(data);
+            bool succeeded = await ReadFileAsync(data);
+            data.OnAfterLoad();
+            return succeeded;
         }
 
         async UniTask<bool> ReadFileAsync(IAltoStorageData data)
         {
-            string path = $"{ DataPath() }/{ data.SaveFileName() }";
+            string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileName() }";
             Log($"Read file : {path}");
             if (!File.Exists(path))
             {

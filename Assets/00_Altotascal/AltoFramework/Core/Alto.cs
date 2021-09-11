@@ -136,7 +136,7 @@ namespace AltoFramework
         /// </summary>
         /// <example><code>
         ///   // 使う前にはオリジナルの GameObject で初期化が必要。初期プールサイズを指定可能。
-        ///   // プール対象は Alto.Util.PoolableBehaviour を継承している必要がある
+        ///   // プール対象は AltoFramework.PoolableBehaviour を継承している必要がある
         ///   Alto.CreateObjectPool<YourComponent>(originalGameObj, 64);
         ///
         ///   // プールからオブジェクトを取得
@@ -167,7 +167,7 @@ namespace AltoFramework
         ///   シーン遷移後に前のシーンの非同期処理が走り続ける…といった事故を防ぐことができる。
         /// </summary>
         /// <example><code>
-        ///   await Alto.Async(SomeAsyncFund());
+        ///   await Alto.Async(SomeAsyncFunc());
         /// </code><example>
         public static UniTask Async(UniTask task)
         {
@@ -175,9 +175,9 @@ namespace AltoFramework
             return task.WithCancellation(ct);
         }
 
-        public static UniTask Wait(float seconds, Action action = null)
+        public static UniTask Wait(float seconds)
         {
-            return Async(time.Wait(seconds, action));
+            return Async(time.Wait(seconds));
         }
     }
 }

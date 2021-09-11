@@ -35,6 +35,8 @@ namespace AltoFramework
         UniTask InitAfterLoadScene();
         void OnStartupScene();
         UniTask Finalize();
+        UniTask CustomFadeIn();
+        UniTask CustomFadeOut();
 
         void Update();
     }
@@ -70,6 +72,16 @@ namespace AltoFramework
         }
 
         public virtual UniTask Finalize()
+        {
+            return UniTask.CompletedTask;
+        }
+
+        public virtual UniTask CustomFadeIn()
+        {
+            return UniTask.CompletedTask;
+        }
+
+        public virtual UniTask CustomFadeOut()
         {
             return UniTask.CompletedTask;
         }

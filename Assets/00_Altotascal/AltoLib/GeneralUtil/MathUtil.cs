@@ -1,4 +1,6 @@
-﻿namespace AltoLib
+﻿using System;
+
+namespace AltoLib
 {
     /// <summary>
     /// なんかどこかにありそうだけどパッと見つからなかった
@@ -13,6 +15,15 @@
         public static float GetRatio(float value, float min, float max)
         {
             return (value - min) / (max - min);
+        }
+
+        /// <summary>
+        /// int 版の Clamp.
+        /// Math.Min / Math.Max によるイディオムはよく書き間違えそうになるので
+        /// </summary>
+        public static int Clamp(int value, int min, int max)
+        {
+            return Math.Min(Math.Max(value, min), max);
         }
     }
 }

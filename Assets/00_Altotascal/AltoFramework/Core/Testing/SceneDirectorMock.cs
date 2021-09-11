@@ -14,6 +14,10 @@ namespace AltoFramework.Testing
         public event Action sceneLoaded;
         public event Action sceneUpdate;
 
+        //----------------------------------------------------------------------
+        // ISceneDirector
+        //----------------------------------------------------------------------
+
         public void Init(GameObject gameObject, IBootConfig bootConfig, IResourceStore resourceStore)
         {
         }
@@ -28,12 +32,26 @@ namespace AltoFramework.Testing
 
         public async UniTask GoToNextScene(ISceneContext nextSceneContext, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
-            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), fadeOutTime, fadeInTime);
+            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), false, fadeOutTime, fadeInTime);
         }
 
         public async UniTask GoToNextScene(string nextSceneName, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
-            await LoadSceneWithFade(null, nextSceneName, fadeOutTime, fadeInTime);
+            await LoadSceneWithFade(null, nextSceneName, false, fadeOutTime, fadeInTime);
+        }
+
+        public async UniTask GoToNextSceneWithCustomTransition(ISceneContext nextSceneContext)
+        {
+            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), true);
+        }
+
+        public async UniTask GoToNextSceneWithCustomTransition(string nextSceneName)
+        {
+            await LoadSceneWithFade(null, nextSceneName, true);
+        }
+
+        public void SetFadeColor(Color color)
+        {
         }
 
         //----------------------------------------------------------------------
@@ -43,6 +61,7 @@ namespace AltoFramework.Testing
         async UniTask LoadSceneWithFade(
             ISceneContext nextSceneContext,
             string nextSceneName,
+            bool useCustomTransition,
             float fadeOutTime = 0.3f,
             float fadeInTime = 0.3f
         )

@@ -44,6 +44,11 @@ namespace AltoFramework.Production
             _canvasObj.SetActive(false);
         }
 
+        public void SetColor(Color color)
+        {
+            _panelImage.color = color;
+        }
+
         //----------------------------------------------------------------------
         // private
         //----------------------------------------------------------------------

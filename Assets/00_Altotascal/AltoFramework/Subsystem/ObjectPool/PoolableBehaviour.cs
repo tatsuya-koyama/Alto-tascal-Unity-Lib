@@ -23,9 +23,13 @@ namespace AltoFramework
         // Called from AltoObjectPool
         //----------------------------------------------------------------------
 
-        public void SetPool(IAltoObjectPool pool)
+        internal void SetPool(IAltoObjectPool pool)
         {
             _pool = pool;
+        }
+
+        public virtual void OnCreate()
+        {
         }
 
         public virtual void OnGetFromPool()

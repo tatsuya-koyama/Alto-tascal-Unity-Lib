@@ -35,6 +35,9 @@ namespace AltoFramework
             }
         }
 
+        /// <summary>
+        /// プールから取得。プールが枯渇していた場合はインスタンスを生成する
+        /// </summary>
         public T Get()
         {
             T obj;
@@ -52,6 +55,15 @@ namespace AltoFramework
             obj.gameObject.SetActive(true);
             obj.OnGetFromPool();
             return obj;
+        }
+
+        /// <summary>
+        /// プールに余りがあれば取得。なければ null
+        /// </summary>
+        public T GetIfAvailable()
+        {
+            if (_pool.Count == 0) { return null; }
+            return Get();
         }
 
         public void Return(T obj)
@@ -85,6 +97,7 @@ namespace AltoFramework
         {
             var newObj = GameObject.Instantiate<GameObject>(_original);
             var obj = newObj.GetComponent<T>();
+            obj.OnCreate();
             obj.SetPool(this);
             ++this.reservedNum;
             return obj;

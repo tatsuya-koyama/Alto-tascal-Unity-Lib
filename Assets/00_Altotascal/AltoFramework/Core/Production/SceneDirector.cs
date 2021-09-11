@@ -20,6 +20,10 @@ namespace AltoFramework.Production
         IResourceStore _resourceStore;
         ScreenFader _screenFader;
 
+        //----------------------------------------------------------------------
+        // ISceneDirector
+        //----------------------------------------------------------------------
+
         public void Init(GameObject gameObject, IBootConfig bootConfig, IResourceStore resourceStore)
         {
             _useGlobalAudioListener = bootConfig.useGlobalAudioListener;
@@ -40,13 +44,30 @@ namespace AltoFramework.Production
         public async UniTask GoToNextScene(ISceneContext nextSceneContext, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
             AltoLog.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
-            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), fadeOutTime, fadeInTime);
+            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), false, fadeOutTime, fadeInTime);
         }
 
         public async UniTask GoToNextScene(string nextSceneName, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
             AltoLog.FW("[SceneDirector] * No scene context is given.");
-            await LoadSceneWithFade(null, nextSceneName, fadeOutTime, fadeInTime);
+            await LoadSceneWithFade(null, nextSceneName, false, fadeOutTime, fadeInTime);
+        }
+
+        public async UniTask GoToNextSceneWithCustomTransition(ISceneContext nextSceneContext)
+        {
+            AltoLog.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
+            await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), true);
+        }
+
+        public async UniTask GoToNextSceneWithCustomTransition(string nextSceneName)
+        {
+            AltoLog.FW("[SceneDirector] * No scene context is given.");
+            await LoadSceneWithFade(null, nextSceneName, true);
+        }
+
+        public void SetFadeColor(Color color)
+        {
+            _screenFader.SetColor(color);
         }
 
         //----------------------------------------------------------------------
@@ -56,6 +77,7 @@ namespace AltoFramework.Production
         async UniTask LoadSceneWithFade(
             ISceneContext nextSceneContext,
             string nextSceneName,
+            bool useCustomTransition,
             float fadeOutTime = 0.3f,
             float fadeInTime = 0.3f
         )
@@ -67,7 +89,12 @@ namespace AltoFramework.Production
             }
             isInTransition = true;
 
-            await _screenFader.FadeOut(fadeOutTime);
+            //----- 暗転と後片付け
+            if (useCustomTransition && currentSceneContext != null) {
+                await currentSceneContext.CustomFadeOut();
+            } else {
+                await _screenFader.FadeOut(fadeOutTime);
+            }
             sceneLoading?.Invoke();
 
             DestroyAllObjectsInScene();
@@ -79,8 +106,10 @@ namespace AltoFramework.Production
             SetIsSceneReady(false);
             currentSceneContext = nextSceneContext;
 
+            // 次のシーンに必要なリソースをロード、不要なものはアンロード
             await LoadAndUnloadResources(nextSceneContext);
 
+            //----- 次のシーンの読み込み
             AltoLog.FW("[SceneDirector] - Init <b>Before</b> Load Scene");
             if (nextSceneContext != null)
             {
@@ -101,7 +130,11 @@ namespace AltoFramework.Production
 
             // シーンの 1 フレーム目は重くなるので 1 フレーム待ってからフェードイン
             await UniTask.DelayFrame(1);
-            await _screenFader.FadeIn(fadeInTime);
+            if (useCustomTransition && currentSceneContext != null) {
+                await currentSceneContext.CustomFadeIn();
+            } else {
+                await _screenFader.FadeIn(fadeInTime);
+            }
 
             isInTransition = false;
             currentSceneContext?.OnStartupScene();

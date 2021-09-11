@@ -19,6 +19,7 @@ namespace AltoLib
         [SerializeField] public float maxDistance = 100.0f;
         [SerializeField] public float minPolarAngle = 5.0f;
         [SerializeField] public float maxPolarAngle = 85.0f;
+        [SerializeField] public float maxCameraY = -99f;
         [SerializeField] public bool smoothFollow = true;
         [SerializeField] public float followSpeed = 10f;
         [SerializeField] public Vector2 angleMoveSensitivity = new Vector2(2.0f, 2.0f);
@@ -163,6 +164,14 @@ namespace AltoLib
             }
             _forcePosLerp = Mathf.Clamp(_forcePosLerp, 0f, 1f);
             transform.position = Vector3.Lerp(_currentIdealPos, _forcePos, _forcePosLerp);
+
+            // 指定の y 座標より下には下がらないようにする
+            // （ターゲット落下時に見下ろすような処理を行う時用）
+            if (transform.position.y < maxCameraY) {
+                Vector3 pos = transform.position;
+                pos.y = maxCameraY;
+                transform.position = pos;
+            }
         }
 
         void DetectWall()

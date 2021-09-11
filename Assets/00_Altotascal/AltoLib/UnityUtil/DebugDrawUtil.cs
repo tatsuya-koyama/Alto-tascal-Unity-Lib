@@ -11,6 +11,7 @@ namespace AltoLib
         /// <summary>
         /// 指定位置を中心とする正方形を XY 平面に描画
         /// </summary>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawRect(Vector3 pos, float size, Color color, float duration = 0f)
         {
             float x1 = pos.x - size / 2;
@@ -27,6 +28,7 @@ namespace AltoLib
         /// 四角形の描画、4 頂点を渡ずバージョン。
         /// cornerPoints は時計回りまたは反時計回りに並んでいる想定
         /// </summary>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawRect(Vector3[] cornerPoints, Color color, float duration = 0f)
         {
             Debug.DrawLine(cornerPoints[0], cornerPoints[1], color, duration);
@@ -38,6 +40,7 @@ namespace AltoLib
         /// <summary>
         /// 四角形 (AABB) の描画、左上と右下の 2 頂点を渡ずバージョン
         /// </summary>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawRect(Vector3 leftTop, Vector3 rightBottom, Color color, float duration = 0f)
         {
             float x1 = leftTop.x;
@@ -50,6 +53,7 @@ namespace AltoLib
             Debug.DrawLine(new Vector2(x1, y2), new Vector2(x1, y1), color, duration);
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawDiamond3D(Vector3 pos, float size, Color color, float duration = 0f)
         {
             float d = size / 2;
@@ -74,6 +78,41 @@ namespace AltoLib
             DrawRect(posList, color, duration);
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        public static void DrawCude(Vector3 pos, Vector3 size, Color color, float duration = 0f)
+        {
+            Vector3 s = size / 2;
+            Vector3[] topRect    = new Vector3[4];
+            Vector3[] bottomRect = new Vector3[4];
+
+            topRect[0] = GetPos(pos, -s.x, s.y, -s.z);
+            topRect[1] = GetPos(pos,  s.x, s.y, -s.z);
+            topRect[2] = GetPos(pos,  s.x, s.y,  s.z);
+            topRect[3] = GetPos(pos, -s.x, s.y,  s.z);
+            DrawRect(topRect, color, duration);
+
+            bottomRect[0] = GetPos(pos, -s.x, -s.y, -s.z);
+            bottomRect[1] = GetPos(pos,  s.x, -s.y, -s.z);
+            bottomRect[2] = GetPos(pos,  s.x, -s.y,  s.z);
+            bottomRect[3] = GetPos(pos, -s.x, -s.y,  s.z);
+            DrawRect(bottomRect, color, duration);
+
+            Debug.DrawLine(topRect[0], bottomRect[0], color, duration);
+            Debug.DrawLine(topRect[1], bottomRect[1], color, duration);
+            Debug.DrawLine(topRect[2], bottomRect[2], color, duration);
+            Debug.DrawLine(topRect[3], bottomRect[3], color, duration);
+        }
+
+        static Vector3 GetPos(Vector3 basePos, float dx, float dy, float dz)
+        {
+            return new Vector3(
+                basePos.x + dx,
+                basePos.y + dy,
+                basePos.z + dz
+            );
+        }
+
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawCircle(
             Vector3 pos, float radius, Color color, float duration = 0f, int segments = 16
         )
@@ -81,6 +120,7 @@ namespace AltoLib
             DrawEllipse(pos, Vector3.forward, Vector3.up, radius, radius, segments, color, duration);
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void DrawEllipse(
             Vector3 pos, Vector3 forward, Vector3 up,
             float radiusX, float radiusY, int segments,

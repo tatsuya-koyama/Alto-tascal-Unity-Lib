@@ -12,20 +12,27 @@ namespace AltoLib
         string SaveFileName();
         string SaveFileNameForDebug();
 
-        void OnBeforeSave();
-        void OnCreateNewData();
-
+        void SavePreProcess();
         void OnDeserialize(string json);
+
+        void OnCreateNewData();
         void OnMigrateData(int targetVersion);
+        void OnBeforeSave();
+        void OnAfterLoad();
 
         string GetCustomHash();
         void ClearDirty(bool useCache = false);
         bool IsDirty();
+
+        bool isWriting { get; set; }
     }
 
     [System.Serializable]
     public class AltoStorageData : IAltoStorageData
     {
+        // 内部制御用
+        public bool isWriting { get; set; } = false;
+
         public int _savedSchemaVersion = 0;
 
         [NonSerialized] public bool logVerbose = true;
@@ -73,6 +80,20 @@ namespace AltoLib
         {
         }
 
+        /// <summary>
+        /// ファイルにセーブする前に呼ばれる
+        /// </summary>
+        public virtual void OnBeforeSave()
+        {
+        }
+
+        /// <summary>
+        /// ファイルからロードした後に呼ばれる
+        /// </summary>
+        public virtual void OnAfterLoad()
+        {
+        }
+
         //----------------------------------------------------------------------
         // 基本的にデフォルト実装のままで問題ないシリーズ
         //----------------------------------------------------------------------
@@ -89,7 +110,7 @@ namespace AltoLib
             return $"{ GetType().Name }.json";
         }
 
-        public virtual void OnBeforeSave()
+        public virtual void SavePreProcess()
         {
             _savedSchemaVersion = schemaVersion;
         }

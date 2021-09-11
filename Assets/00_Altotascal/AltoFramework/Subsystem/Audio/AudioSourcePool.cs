@@ -23,6 +23,7 @@ namespace AltoFramework
                 sourceObj.transform.SetParent(gameObject.transform);
                 var audioSource = sourceObj.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
+                audioSource.dopplerLevel = 0;  // ToDo : カスタム可能にする
                 var audioState = new AudioSourceState()
                 {
                     gameObject = sourceObj,

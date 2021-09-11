@@ -45,10 +45,9 @@ namespace AltoFramework.Production
         /// ※ UniTask.Delay() ではスパイク発生時に処理が飛ぶような挙動があったため、
         ///    Timekeeper.dt ベースで自前実装
         /// </summary>
-        public async UniTask Wait(float seconds, Action action = null)
+        public async UniTask Wait(float seconds)
         {
             await WaitCoroutine(seconds);
-            action?.Invoke();
         }
 
         IEnumerator WaitCoroutine(float seconds)
@@ -61,7 +60,18 @@ namespace AltoFramework.Production
             }
         }
 
-        public async UniTask WaitFrame(int frame, Action action = null)
+        public async void Delay(float seconds, Action action)
+        {
+            await WaitCoroutine(seconds);
+            action?.Invoke();
+        }
+
+        public async UniTask WaitFrame(int frame)
+        {
+            await UniTask.DelayFrame(frame);
+        }
+
+        public async void DelayFrame(int frame, Action action = null)
         {
             await UniTask.DelayFrame(frame);
             action?.Invoke();
