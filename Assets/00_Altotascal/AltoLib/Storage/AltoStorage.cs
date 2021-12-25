@@ -12,11 +12,8 @@ namespace AltoLib
     {
         public bool logVerbose = true;
 
-        public bool slotEnabled = true;
-
         /// <summary>
-        /// セーブファイルのスロット番号。複数のセーブデータを扱いたい場合は
-        /// slotEnabled = true に設定した上で、セーブ / ロード前にこの値を操作する。
+        /// 現在使用中のセーブファイルのスロット番号。セーブ / ロード前にこの値を指定しておく
         /// （スロット番号ごとの prefix がついた状態でセーブファイルが保存される）
         /// </summary>
         public int slotIndex = 1;
@@ -50,7 +47,7 @@ namespace AltoLib
 
         protected virtual string SlotPrefix()
         {
-            return slotEnabled ? $"s{slotIndex}-" : "";
+            return $"s{slotIndex}-";
         }
 
         public AltoStorage()
@@ -71,6 +68,25 @@ namespace AltoLib
             var tasks = dirtyDataList.Select(data => SaveAsync(data, true));
             var results = await UniTask.WhenAll(tasks);
             return !results.Any(x => x == false);
+        }
+
+        public async UniTask<bool> SaveAll()
+        {
+            var tasks = _dataList.Select(data => SaveAsync(data));
+            var results = await UniTask.WhenAll(tasks);
+            return !results.Any(x => x == false);
+        }
+
+        /// <summary>
+        /// スロット指定版セーブ。処理後は選択中 slotIndex は元の値に戻る
+        /// </summary>
+        public async UniTask<bool> SaveAll(int spotSlotIndex)
+        {
+            int oldSlotIndex = this.slotIndex;
+            this.slotIndex = spotSlotIndex;
+            bool result = await SaveAll();
+            this.slotIndex = oldSlotIndex;
+            return result;
         }
 
         public async UniTask<bool> SaveAsync(IAltoStorageData data, bool useDirtyCache = false)
@@ -159,11 +175,23 @@ namespace AltoLib
         // Load
         //----------------------------------------------------------------------
 
-        public async UniTask<bool> LoadAllAsync()
+        public async UniTask<bool> LoadAll()
         {
             var tasks = _dataList.Select(data => LoadAsync(data));
             var results = await UniTask.WhenAll(tasks);
             return !results.Any(x => x == false);
+        }
+
+        /// <summary>
+        /// スロット指定版ロード。処理後は選択中 slotIndex は元の値に戻る
+        /// </summary>
+        public async UniTask<bool> LoadAll(int spotSlotIndex)
+        {
+            int oldSlotIndex = this.slotIndex;
+            this.slotIndex = spotSlotIndex;
+            bool result = await LoadAll();
+            this.slotIndex = oldSlotIndex;
+            return result;
         }
 
         public async UniTask<bool> LoadAsync(IAltoStorageData data)
