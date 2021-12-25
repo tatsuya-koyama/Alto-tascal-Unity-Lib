@@ -6,6 +6,8 @@ namespace AltoLib
     {
         void MoveAngle(float moveX, float moveY);
         void MoveDistance(float moveZ);
+        void LookOther(Vector3 otherPos);
+        void StopLookOther();
     }
 
     public class AltoThirdPersonCamera : MonoBehaviour, IAltoThirdPersonCamera
@@ -45,9 +47,14 @@ namespace AltoLib
         Vector2 _currentAngleMove;
         float _currentDistanceMove;
 
+        // 操作対象以外を見る制御用
+        Vector3 _otherLookPos;
+        bool _lookingOtherPos = false;
+
         Vector2 _inputAngleMove;
         float _inputDistanceMove;
 
+        // 壁際カメラ制御用
         Vector3 _forcePos = Vector3.zero;
         bool _isPosForced = false;  // true 時、強制的に _forcePos の位置に移動
         float _forcePosLerp = 0f;
@@ -68,6 +75,17 @@ namespace AltoLib
         public void MoveDistance(float moveZ)
         {
             _inputDistanceMove = moveZ;
+        }
+
+        public void LookOther(Vector3 otherPos)
+        {
+            _otherLookPos = otherPos;
+            _lookingOtherPos = true;
+        }
+
+        public void StopLookOther()
+        {
+            _lookingOtherPos = false;
         }
 
         //----------------------------------------------------------------------
@@ -95,7 +113,9 @@ namespace AltoLib
 
         void UpdateLookPos()
         {
-            var lookPos = target.transform.position + lookPosOffset;
+            Vector3 lookPos = target.transform.position + lookPosOffset;
+            if (_lookingOtherPos) { lookPos = _otherLookPos; }
+
             if (smoothFollow)
             {
                 _currentLookPos += (lookPos - _currentLookPos) * followSpeed * dt();

@@ -8,12 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CubicColor-ground
-  m_Shader: {fileID: 4800000, guid: 21a0cedb8941740c4a5969222087064e, type: 3}
+  m_Shader: {fileID: 4800000, guid: 7d266d30b0cef4cb59b24f7ec0f3902b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2050
+  m_CustomRenderQueue: 2000
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
@@ -25,6 +25,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DitherPattern:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -40,6 +44,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoisePattern:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -48,8 +56,21 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaClip: 0
+    - _BillboardOn: 0
     - _Blend: 0
     - _Brightness: 1
     - _BumpScale: 1
@@ -58,6 +79,16 @@ Material:
     - _CubicRimOn: 0
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DissolveAreaSize: 0
+    - _DissolveDistance: 1
+    - _DissolveEdgeSharpness: 1
+    - _DissolveNoise: 1
+    - _DissolveRoughness: 1
+    - _DitherAlpha: 1
+    - _DitherCameraDistanceFrom: 0
+    - _DitherCameraDistanceTo: 0
+    - _DitherCull: 5
+    - _DitherMinAlpha: 0
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _FogDistance1: 30
@@ -79,6 +110,8 @@ Material:
     - _GradRotate_R: 0
     - _GradRotate_T: 0.7853982
     - _HSVShiftOn: 0
+    - _HeightDitherHeight: 0
+    - _HeightDitherYFrom: 0
     - _HeightFogHeight: 1
     - _HeightFogOn: 0
     - _HeightFogYFrom: 0
@@ -86,12 +119,16 @@ Material:
     - _Metallic: 0
     - _MixCubicColorOn: 0
     - _MultipleFogOn: 0
+    - _MultiplyCubicDiffuseOn: 0
     - _OcclusionStrength: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RimBurnOn: 0
     - _RimLightingOn: 0
     - _RimPower: 3
+    - _RotateSpeedX: 0
+    - _RotateSpeedY: 0
+    - _RotateSpeedZ: 0
     - _Saturation: 1
     - _ShadeContrast: 0.5
     - _ShadowPower: 1
@@ -101,12 +138,17 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecSource: 0
     - _SpecularHighlights: 1
+    - _SpecularSurfaceOn: 0
     - _SrcBlend: 1
     - _Surface: 0
     - _ToonShadeSmoothness: 0.03
     - _ToonShadeStep1: 0.33
     - _ToonShadeStep2: 0.66
     - _ToonShadingOn: 0
+    - _WindBigWave: 1
+    - _WindRotateSpeed: 1
+    - _WindSpeed: 1
+    - _WindStrength: 0
     - _WorkflowMode: 1
     - _WorldSpaceGradient: 1
     - _WorldSpaceNormal: 1
@@ -118,6 +160,10 @@ Material:
     - _BottomColor1: {r: 1, g: 1, b: 1, a: 1}
     - _BottomColor2: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveEdgeAddColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveEdgeSubColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveOrigin: {r: 0, g: 0, b: 0, a: 0}
+    - _DissolveSlow: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FogColor1: {r: 1, g: 1, b: 1, a: 1}
     - _FogColor2: {r: 1, g: 1, b: 1, a: 1}
@@ -137,8 +183,10 @@ Material:
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0.049394794, g: 0.6981132, b: 0.5699712, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecularSurfaceParams: {r: 0, g: 0, b: 0, a: 0}
     - _TopColor1: {r: 0.69725555, g: 0.7075471, b: 0.46391058, a: 1}
     - _TopColor2: {r: 0.59488434, g: 0.6981132, b: 0.47089708, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &493496740580723944
 MonoBehaviour:
   m_ObjectHideFlags: 11

@@ -135,7 +135,7 @@ namespace AltoFramework
             }
 
             float t = _easingFunc(_passedTime / _duration);
-            float x = Mathf.Lerp(_from, _to, t);
+            float x = _from + (_to - _from) * t;
             _onUpdate(x);
         }
 

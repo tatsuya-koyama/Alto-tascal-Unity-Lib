@@ -5,13 +5,13 @@ namespace AltoLib
 {
     public interface IAltoToggleItem
     {
-        void OnToggleSelect();
+        void OnToggleSelect(bool isInitialSelect);
         void OnToggleDeselect();
     }
 
     public class AltoToggleItem : IAltoToggleItem
     {
-        public virtual void OnToggleSelect() {}
+        public virtual void OnToggleSelect(bool isInitialSelect) {}
         public virtual void OnToggleDeselect() {}
     }
 
@@ -50,9 +50,11 @@ namespace AltoLib
             {
                 selectedItem.OnToggleDeselect();
             }
+
+            bool isInitialSelect = (selectedIndex == NoSelect);
             selectedIndex = index;
             selectedItem  = _items[index];
-            selectedItem.OnToggleSelect();
+            selectedItem.OnToggleSelect(isInitialSelect);
         }
     }
 }

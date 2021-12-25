@@ -65,6 +65,35 @@ namespace AltoLib.UnityExt
         }
 
         //---------------------------------------------------------------------
+        // LocalScale
+        //---------------------------------------------------------------------
+
+        public static void SetLocalScale(this Transform transform, float? x, float? y, float? z)
+        {
+            _vec.Set(
+                x ?? transform.localScale.x,
+                y ?? transform.localScale.y,
+                z ?? transform.localScale.z
+            );
+            transform.localScale = _vec;
+        }
+
+        public static void AddLocalScale(this Transform transform, float x, float y, float z)
+        {
+            _vec.Set(
+                transform.localScale.x + x,
+                transform.localScale.y + y,
+                transform.localScale.z + z
+            );
+            transform.localScale = _vec;
+        }
+
+        public static void AddLocalScale(this Transform transform, Vector3 vec)
+        {
+            transform.AddLocalScale(vec.x, vec.y, vec.z);
+        }
+
+        //---------------------------------------------------------------------
         // EulerAngles
         //---------------------------------------------------------------------
 
@@ -92,6 +121,10 @@ namespace AltoLib.UnityExt
         {
             transform.AddEulerAngles(vec.x, vec.y, vec.z);
         }
+
+        //---------------------------------------------------------------------
+        // LocalEulerAngles
+        //---------------------------------------------------------------------
 
         public static void SetLocalEulterAngles(this Transform transform, float? x, float? y, float? z)
         {

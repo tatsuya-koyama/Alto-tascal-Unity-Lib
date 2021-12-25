@@ -14,7 +14,7 @@ namespace AltoFramework
     public class DefaultBootConfig : IBootConfig
     {
         public int numBgmSourcePool => 2;
-        public int numSeSourcePool  => 8;
+        public int numSeSourcePool  => 16;
         public bool useGlobalAudioListener => true;
 
         public virtual void OnGameBoot() {}

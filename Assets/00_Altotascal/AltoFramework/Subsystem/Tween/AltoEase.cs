@@ -1,4 +1,6 @@
-﻿namespace AltoFramework
+﻿using UnityEngine;
+
+namespace AltoFramework
 {
     /// <summary>
     ///   イージング関数。引数 t には 0 〜 1 の値が渡される想定。
@@ -102,6 +104,42 @@
             }
             float v = (-2 * t) + 2;
             return 1 - (v * v * v * v * v) / 2;
+        }
+
+        //----------------------------------------------------------------------
+        // Back
+        //----------------------------------------------------------------------
+
+        public static float InBack(float t)
+        {
+            const float s = 1.70158f;
+            return t * t * ((s + 1) * t - s);
+        }
+
+        public static float OutBack(float t)
+        {
+            const float s = 1.70158f;
+            t = t - 1;
+            return t * t * ((s + 1) * t + s) + 1;
+        }
+
+        //----------------------------------------------------------------------
+        // Elastic
+        //----------------------------------------------------------------------
+
+        public static float InElastic(float t)
+        {
+            return 1 - AltoEase.OutElastic(1 - t);
+        }
+
+        public static float OutElastic(float t)
+        {
+            if (t == 0f) { return 0f; }
+            if (t == 1f) { return 1f; }
+
+            float p = 0.3f;
+            float s = p / 4;
+            return Mathf.Pow(2, -10 * t) * Mathf.Sin((t - s) * (2 * Mathf.PI) / p) + 1;
         }
     }
 }
