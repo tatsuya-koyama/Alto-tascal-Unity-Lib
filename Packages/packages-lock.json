@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.cysharp.unitask": {
-      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.0.31",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "4d554a67182e6c47ebb1bc6e413e99bb067dff1c"
+      "hash": "53907a3719eccc19197a6449a4f6492a201d00ad"
     },
     "com.unity.addressables": {
       "version": "1.18.19",
