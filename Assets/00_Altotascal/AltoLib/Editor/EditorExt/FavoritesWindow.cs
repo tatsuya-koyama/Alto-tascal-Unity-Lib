@@ -233,9 +233,10 @@ namespace AltoLib
 
         void SortByType()
         {
-            SortByName();
             _assets.infoList.Sort((a, b) => {
-                return a.type.CompareTo(b.type);
+                int cmp1 = a.type.CompareTo(b.type);
+                if (cmp1 != 0) { return cmp1; }
+                return a.name.CompareTo(b.name);
             });
         }
 
