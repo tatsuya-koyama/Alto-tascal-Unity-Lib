@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -44,10 +45,11 @@ namespace AltoLib
             return $"{ base.ToString() } - { JsonUtility.ToJson(this) }";
         }
 
+        [Conditional("ALTO_DEBUG")]
         void Log(string message)
         {
             if (!logVerbose) { return; }
-            Debug.Log($"[{this.GetType()}] {message}");
+            UnityEngine.Debug.Log($"[{this.GetType()}] {message}");
         }
 
         //----------------------------------------------------------------------

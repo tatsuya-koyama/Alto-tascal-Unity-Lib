@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace AltoLib
@@ -148,15 +149,17 @@ namespace AltoLib
         // private
         //----------------------------------------------------------------------
 
+        [Conditional("ALTO_DEBUG")]
         void Log(string message)
         {
             if (!logVerbose) { return; }
-            Debug.Log($"<color=#9086e9>[AltoFSM]{_logIndent} </color>{message}");
+            UnityEngine.Debug.Log($"<color=#9086e9>[AltoFSM]{_logIndent} </color>{message}");
         }
 
+        [Conditional("ALTO_DEBUG")]
         void LogError(string message)
         {
-            Debug.LogError($"<color=#9086e9>[AltoFSM]{_logIndent} </color> [Error] {message}");
+            UnityEngine.Debug.LogError($"<color=#9086e9>[AltoFSM]{_logIndent} </color> [Error] {message}");
         }
 
         TState GetOrCreateState<TState>() where TState : AltoState, new()

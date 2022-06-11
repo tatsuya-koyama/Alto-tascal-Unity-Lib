@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -136,7 +137,7 @@ namespace AltoLib
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UnityEngine.Debug.LogException(e);
                 return false;
             }
         }
@@ -166,7 +167,7 @@ namespace AltoLib
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UnityEngine.Debug.LogException(e);
                 return false;
             }
         }
@@ -235,7 +236,7 @@ namespace AltoLib
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                UnityEngine.Debug.LogException(e);
                 return false;
             }
         }
@@ -263,15 +264,17 @@ namespace AltoLib
         // private
         //----------------------------------------------------------------------
 
+        [Conditional("ALTO_DEBUG")]
         protected void Log(string message)
         {
             if (!logVerbose) { return; }
-            Debug.Log($"<color=#61d521>[AltoStorage]</color> {message}");
+            UnityEngine.Debug.Log($"<color=#61d521>[AltoStorage]</color> {message}");
         }
 
+        [Conditional("ALTO_DEBUG")]
         protected void LogError(string message)
         {
-            Debug.LogError($"<color=#61d521>[AltoStorage]</color> [Error] {message}");
+            UnityEngine.Debug.LogError($"<color=#61d521>[AltoStorage]</color> [Error] {message}");
         }
     }
 }
