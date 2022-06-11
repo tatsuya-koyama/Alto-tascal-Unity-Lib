@@ -8,6 +8,7 @@ namespace AltoLib
         void MoveDistance(float moveZ);
         void LookOther(Vector3 otherPos);
         void StopLookOther();
+        void FollowAtOnce();
     }
 
     public class AltoThirdPersonCamera : MonoBehaviour, IAltoThirdPersonCamera
@@ -21,7 +22,7 @@ namespace AltoLib
         [SerializeField] public float maxDistance = 100.0f;
         [SerializeField] public float minPolarAngle = 5.0f;
         [SerializeField] public float maxPolarAngle = 85.0f;
-        [SerializeField] public float maxCameraY = -99f;
+        [SerializeField] public float minCameraY = -99f;
         [SerializeField] public bool smoothFollow = true;
         [SerializeField] public float followSpeed = 10f;
         [SerializeField] public Vector2 angleMoveSensitivity = new Vector2(2.0f, 2.0f);
@@ -39,6 +40,8 @@ namespace AltoLib
         [SerializeField] public float autoZoomRange = 60f;
         [SerializeField] public float autoZoomDistance = 5f;
         [SerializeField] public Vector3 autoZoomLookPosOffset = new Vector3(0, 2f, 0);
+
+        [SerializeField] public float shakePower = 0f;
 
         [SerializeField] public bool drawDebug = true;
 
@@ -88,6 +91,11 @@ namespace AltoLib
             _lookingOtherPos = false;
         }
 
+        public void FollowAtOnce()
+        {
+            _currentLookPos = target.transform.position + lookPosOffset;
+        }
+
         //----------------------------------------------------------------------
         // MonoBehaviour
         //----------------------------------------------------------------------
@@ -105,6 +113,7 @@ namespace AltoLib
             UpdateDistance();
             DetectWall();
             UpdateCameraPos();
+            Shake();
         }
 
         //----------------------------------------------------------------------
@@ -187,9 +196,9 @@ namespace AltoLib
 
             // 指定の y 座標より下には下がらないようにする
             // （ターゲット落下時に見下ろすような処理を行う時用）
-            if (transform.position.y < maxCameraY) {
+            if (transform.position.y < minCameraY) {
                 Vector3 pos = transform.position;
-                pos.y = maxCameraY;
+                pos.y = minCameraY;
                 transform.position = pos;
             }
         }
@@ -242,6 +251,18 @@ namespace AltoLib
                 lookPos.y + newDistance * Mathf.Cos(dp),
                 lookPos.z + newDistance * Mathf.Sin(dp) * Mathf.Sin(da)
             );
+        }
+
+        void Shake()
+        {
+            if (shakePower <= 0.00001f) { return; }
+
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-shakePower, shakePower),
+                Random.Range(-shakePower, shakePower),
+                Random.Range(-shakePower, shakePower)
+            );
+            transform.position = transform.position + randomOffset;
         }
 
         float dt()

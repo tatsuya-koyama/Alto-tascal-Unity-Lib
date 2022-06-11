@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace AltoLib
@@ -16,6 +17,10 @@ namespace AltoLib
             public bool isPressed = false;
             public Vector2 originPos = Vector2.zero;
             public Vector2 currentPos = Vector2.zero;
+
+            public event Action<float> pointerUpEvent;  // 引数 : PointerDown から PointerUp までの経過秒数
+
+            float _pointerDownTime;
 
             public void Init(bool isLeft, float sensitivity)
             {
@@ -43,6 +48,17 @@ namespace AltoLib
                 if (aspect > 1f) { v *= aspect; }
 
                 return Mathf.Clamp(v * sensitivity, -1f, 1f);
+            }
+
+            internal void OnPointerDown()
+            {
+                _pointerDownTime = Time.time;
+            }
+
+            internal void OnPointerUp()
+            {
+                float pressedTime = Time.time - _pointerDownTime;
+                pointerUpEvent?.Invoke(pressedTime);
             }
         }
 
@@ -73,11 +89,13 @@ namespace AltoLib
             {
                 if (_leftPointer.isPressed) { return; }
                 InitPointer(_leftPointer, data.pointerId, pos);
+                _leftPointer.OnPointerDown();
             }
             else
             {
                 if (_rightPointer.isPressed) { return; }
                 InitPointer(_rightPointer, data.pointerId, pos);
+                _rightPointer.OnPointerDown();
             }
         }
 
@@ -109,10 +127,12 @@ namespace AltoLib
             if (data.pointerId == _leftPointer.pointerId)
             {
                 _leftPointer.isPressed = false;
+                _leftPointer.OnPointerUp();
             }
             if (data.pointerId == _rightPointer.pointerId)
             {
                 _rightPointer.isPressed = false;
+                _rightPointer.OnPointerUp();
             }
         }
 

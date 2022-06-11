@@ -23,6 +23,10 @@ namespace AltoLib
             {
                 ArrangeByFirstTwo();
             }
+            if (GUILayout.Button("選択 obj をカメラの\n目の前に移動", GUILayout.MinHeight(40)))
+            {
+                WarpGameObjToFrontOfCamera();
+            }
         }
 
         /// <summary>
@@ -47,6 +51,20 @@ namespace AltoLib
                 Undo.RecordObject(objs[i].transform, "ArrangeByFirstTwo");
                 objs[i].transform.position = pos;
             }
+        }
+
+        void WarpGameObjToFrontOfCamera()
+        {
+            var obj = Selection.activeGameObject;
+            if (obj == null)
+            {
+                AltoLog.Error("オブジェクトを選択してください");
+                return;
+            }
+
+            var camera = SceneView.lastActiveSceneView.camera;
+            var pos = camera.transform.position + (camera.transform.forward * 5f);
+            obj.transform.position = pos;
         }
     }
 }
