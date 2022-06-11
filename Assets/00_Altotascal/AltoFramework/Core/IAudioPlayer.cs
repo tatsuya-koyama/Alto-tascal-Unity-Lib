@@ -66,6 +66,9 @@ namespace AltoFramework
             float duckTime, float volumeScale = 0.25f,
             float fadeOutTime = 0.2f, float fadeInTime = 0.4f
         );
+        UniTask FadeVolume(
+            float _duration, float volumeFrom, float volumeTo, AltoEasingFunc ease = null
+        );
 
         void Pause(AudioClip audioClip = null);
         void Pause(string audioPath);

@@ -297,6 +297,28 @@ namespace AltoFramework
             await UniTask.Delay(TimeSpan.FromSeconds(duckTime + fadeOutTime + fadeInTime));
         }
 
+        /// <summary>
+        /// マスターボリュームをフェードで変更する。
+        /// 現状リセット機能は無いので元に戻す際は手動で元の音量に FadeVolume() すること
+        /// </summary>
+        public async UniTask FadeVolume(
+            float _duration, float volumeFrom, float volumeTo,
+            AltoEasingFunc ease = null
+        )
+        {
+            float duration = Mathf.Max(_duration, 0.01f);
+            if (ease == null)
+            {
+                ease = (volumeFrom > volumeTo) ? (AltoEasingFunc)AltoEase.Out2
+                                               : (AltoEasingFunc)AltoEase.Linear;
+            }
+
+            _tween.NewTween().FromTo(volumeFrom, volumeTo, duration, ease).OnUpdate(t => {
+                duckingVolume = t;
+            });
+            await UniTask.Delay(TimeSpan.FromSeconds(duration));
+        }
+
         //----------------------------------------------------------------------
         // Pause / Resume
         //----------------------------------------------------------------------
