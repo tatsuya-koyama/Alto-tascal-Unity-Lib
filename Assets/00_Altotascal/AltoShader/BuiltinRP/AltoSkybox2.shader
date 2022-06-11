@@ -10,6 +10,7 @@
         _RotationX ("Rotation X", Range(0, 360)) = 0
         _RotationY ("Rotation Y", Range(0, 360)) = 0
         _RotationZ ("Rotation Z", Range(0, 360)) = 0
+        _UvAdjust ("UV Adjust", Range(0, 0.01)) = 0
         [NoScaleOffset] _FrontTex ("Front [+Z]   (HDR)", 2D) = "grey" {}
         [NoScaleOffset] _BackTex ("Back [-Z]   (HDR)", 2D) = "grey" {}
         [NoScaleOffset] _LeftTex ("Left [+X]   (HDR)", 2D) = "grey" {}
@@ -35,6 +36,7 @@
         float _RotationX;
         float _RotationY;
         float _RotationZ;
+        float _UvAdjust;
 
         float3 RotateAroundX(float3 vertex, float degrees)
         {
@@ -86,7 +88,7 @@
             rotated = RotateAroundX(rotated, _RotationX);
             rotated = RotateAroundZ(rotated, _RotationZ);
             o.vertex = UnityObjectToClipPos(rotated);
-            o.texcoord = v.texcoord;
+            o.texcoord = v.texcoord * (1 - _UvAdjust) + (_UvAdjust / 2);
             return o;
         }
 

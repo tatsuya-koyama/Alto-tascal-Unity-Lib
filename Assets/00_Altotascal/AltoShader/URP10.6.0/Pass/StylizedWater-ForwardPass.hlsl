@@ -345,8 +345,17 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
 
     half3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
     half3 emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+
     half4 specular = SampleSpecularSmoothness(uv, alpha, _SpecColor, TEXTURE2D_ARGS(_SpecGlossMap, sampler_SpecGlossMap));
     half smoothness = specular.a;
+
+    // どうも smoothness の値がモバイル実機と Mac で変わってしまう？ようなので
+    // 無理やり固定するオプション
+    UNITY_BRANCH
+    if (_FixSmoothness > 0)
+    {
+        smoothness = _FixSmoothness;
+    }
 
     InputData inputData;
     InitializeInputData(input, normalTS, inputData);

@@ -371,7 +371,6 @@ void DitheringByHeight(Varyings input, half from, half to)
     float2 ditherCoord = screenPos * _DitherPattern_TexelSize.xy;
     float dither = tex2D(_DitherPattern, ditherCoord).r;
 
-    //float noise = rand(screenPos) * 0.5 - 0.25;
     float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.5 - 0.25;
     float alpha = saturate((input.posWS.y - from + noise) / (to - from));
     clip(alpha * alpha - dither);
@@ -555,16 +554,6 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     InputData inputData;
     InitializeInputData(input, normalTS, inputData);
 
-    half4 color = Alto_UniversalFragmentBlinnPhong(
-        inputData, input.cubicColor, diffuse, specular, smoothness, emission, alpha
-    );
-
-    UNITY_BRANCH
-    if (_DissolveAreaSize > 0)
-    {
-        color.rgb = DissolveEffect(input, color.rgb);
-    }
-
     UNITY_BRANCH
     if (_DitherAlpha < 1) { Dithering(input); }
 
@@ -584,6 +573,16 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
     if (_DitherCull > 0)
     {
         DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
+    }
+
+    half4 color = Alto_UniversalFragmentBlinnPhong(
+        inputData, input.cubicColor, diffuse, specular, smoothness, emission, alpha
+    );
+
+    UNITY_BRANCH
+    if (_DissolveAreaSize > 0)
+    {
+        color.rgb = DissolveEffect(input, color.rgb);
     }
 
 #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
@@ -617,7 +616,8 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
         color.rgb = lerp(color.rgb, _HeightFogColor.rgb, heightFogFactor * _HeightFogColor.a);
     }
 
-    return color;
+    // 一部 iOS 端末で Bloom が爆発する謎の不具合があったので
+    return min(color, half4(3, 3, 3, 1));
 }
 
 #endif

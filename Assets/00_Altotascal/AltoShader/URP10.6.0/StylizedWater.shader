@@ -21,6 +21,7 @@ Shader "Altotascal/URP 10.6.0/Stylized Water"
         _SurfaceSpecular("Surface Specular", Float) = 1.0
         _SurfaceNoise("Surface Noise", Float) = 1.0
         _SurfaceParams("Surface Diversity Params", Vector) = (1, 1, 1, 1)
+        _FixSmoothness("Fix Smoothness", Float) = 0.0
 
         [ToggleOff] _EdgeFadeOutOn("Edge Fade Out", Float) = 0.0
         _EdgeFadeOutOrigin("Edge Fade Out Origin", Vector) = (0, 0, 0, 0)

@@ -22,6 +22,7 @@ half _RiseAndFall;
 half _SurfaceSpecular;
 half _SurfaceNoise;
 half4 _SurfaceParams;
+half _FixSmoothness;
 
 half _EdgeFadeOutOn;
 half4 _EdgeFadeOutOrigin;

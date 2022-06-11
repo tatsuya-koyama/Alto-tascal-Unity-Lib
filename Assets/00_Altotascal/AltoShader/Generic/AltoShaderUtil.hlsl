@@ -107,6 +107,27 @@ half3 shiftColor(half3 rgb, half3 hsv)
     return color;
 }
 
+half3 shiftColorFloat(half3 rgb, float3 hsv)
+{
+    half3 color = half3(rgb);
+    float VSU = hsv.z * hsv.y * cos(hsv.x * 3.14159265 / 180);
+    float VSW = hsv.z * hsv.y * sin(hsv.x * 3.14159265 / 180);
+
+    color.x = (.299 * hsv.z + .701 * VSU + .168 * VSW) * rgb.x
+            + (.587 * hsv.z - .587 * VSU + .330 * VSW) * rgb.y
+            + (.114 * hsv.z - .114 * VSU - .497 * VSW) * rgb.z;
+
+    color.y = (.299 * hsv.z - .299 * VSU - .328 * VSW) * rgb.x
+            + (.587 * hsv.z + .413 * VSU + .035 * VSW) * rgb.y
+            + (.114 * hsv.z - .114 * VSU + .292 * VSW) * rgb.z;
+
+    color.z = (.299 * hsv.z - .300 * VSU + 1.25 * VSW) * rgb.x
+            + (.587 * hsv.z - .588 * VSU - 1.05 * VSW) * rgb.y
+            + (.114 * hsv.z + .886 * VSU - .203 * VSW) * rgb.z;
+
+    return color;
+}
+
 //==============================================================================
 // Rotate
 //==============================================================================

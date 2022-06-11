@@ -26,6 +26,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty surfaceSpecular;
             public MaterialProperty surfaceNoise;
             public MaterialProperty surfaceParams;
+            public MaterialProperty fixSmoothness;
 
             public MaterialProperty edgeFadeOutOn;
             public MaterialProperty edgeFadeOutOrigin;
@@ -63,6 +64,7 @@ namespace AltoLib.ShaderGUI
                 surfaceSpecular       = BaseShaderGUI.FindProperty("_SurfaceSpecular", properties);
                 surfaceNoise          = BaseShaderGUI.FindProperty("_SurfaceNoise", properties);
                 surfaceParams         = BaseShaderGUI.FindProperty("_SurfaceParams", properties);
+                fixSmoothness         = BaseShaderGUI.FindProperty("_FixSmoothness", properties);
 
                 edgeFadeOutOn         = BaseShaderGUI.FindProperty("_EdgeFadeOutOn", properties);
                 edgeFadeOutOrigin     = BaseShaderGUI.FindProperty("_EdgeFadeOutOrigin", properties);
@@ -155,6 +157,7 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Surface Specular", "surfaceSpecular", 0f, 10f);
             _util.DrawSlider("Surface Noise", "surfaceNoise", 0f, 10f);
             _util.DrawVector4("Surface Diversity Params", "surfaceParams");
+            _util.DrawSlider("Fix Smoothness", "fixSmoothness", 0f, 1000f);
         }
 
         void DrawEdgeFadeOutProps()
