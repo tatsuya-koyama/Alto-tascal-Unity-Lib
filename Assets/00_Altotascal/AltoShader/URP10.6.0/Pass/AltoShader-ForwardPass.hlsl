@@ -436,6 +436,47 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     return input;
 }
 
+//------------------------------------------------------------------------------
+// Screen-Space Surface
+//------------------------------------------------------------------------------
+
+half3 ScreenSpaceSurface(Varyings input, InputData inputData, half3 color)
+{
+    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
+    screenPos = inputData.normalizedScreenSpaceUV
+              + (_WorldSpaceCameraPos.xy * 0.05) + (_WorldSpaceCameraPos.zz * 0.02);
+    float2 texCoord = screenPos * _ScreenParams.xy * _SpecGlossMap_TexelSize.xy * _SpaceSurfaceScale;
+    half v = SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, texCoord).r;
+    half3 hsv = half3(
+        v * _SpecularSurfaceParams.x,
+        1 + v * _SpecularSurfaceParams.y,
+        1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
+    );
+    return shiftColor(color.rgb, hsv);
+}
+
+half3 WorldSpaceSurface(Varyings input, InputData inputData, half3 color)
+{
+    half dirX = step(0.5, abs(dot(input.normal, VecRight)));
+    half dirY = step(0.5, abs(dot(input.normal, VecTop  )));
+    half dirZ = step(0.5, abs(dot(input.normal, VecBack )));
+
+    dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
+    dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
+
+    float2 screenPos = ((input.posWS.xy * dirZ)
+                      + (input.posWS.yz * dirX)
+                      + (input.posWS.zx * dirY)) * 0.5;
+    float2 texCoord = screenPos * _SpaceSurfaceScale;
+    half v = SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, texCoord).r;
+    half3 hsv = half3(
+        v * _SpecularSurfaceParams.x,
+        1 + v * _SpecularSurfaceParams.y,
+        1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
+    );
+    return shiftColor(color.rgb, hsv);
+}
+
 //==============================================================================
 // Vertex Functions (Copied from ShaderVariablesFunctions.hlsl)
 //==============================================================================
@@ -596,6 +637,18 @@ half4 LitPassFragmentSimple(Varyings input) : SV_Target
             1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
         );
         color.rgb = shiftColor(color.rgb, hsv);
+    }
+
+    UNITY_BRANCH
+    if (_ScreenSpaceSurfaceOn > 0)
+    {
+        color.rgb = ScreenSpaceSurface(input, inputData, color);
+    }
+
+    UNITY_BRANCH
+    if (_WorldSpaceSurfaceOn > 0)
+    {
+        color.rgb = WorldSpaceSurface(input, inputData, color);
     }
 #endif
 

@@ -35,7 +35,7 @@ namespace AltoLib
 
         protected Vector2 _scrollPos = Vector2.zero;
 
-        [MenuItem("Alto/GameObject Arranger")]
+        [MenuItem("Alto/Tools/GameObject Arranger")]
         static void ShowWindow()
         {
             var window = CreateInstance<GameObjectArranger>();

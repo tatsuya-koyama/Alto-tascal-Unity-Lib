@@ -130,12 +130,14 @@ Material:
     - _RotateSpeedY: 0
     - _RotateSpeedZ: 0
     - _Saturation: 1
+    - _ScreenSpaceSurfaceOn: 0
     - _ShadeContrast: 0.5
     - _ShadowPower: 1
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
+    - _SpaceSurfaceScale: 1
     - _SpecSource: 0
     - _SpecularHighlights: 1
     - _SpecularSurfaceOn: 0
@@ -152,6 +154,7 @@ Material:
     - _WorkflowMode: 1
     - _WorldSpaceGradient: 1
     - _WorldSpaceNormal: 1
+    - _WorldSpaceSurfaceOn: 0
     - _ZWrite: 1
     m_Colors:
     - _BackColor1: {r: 0.9528302, g: 0.6067551, b: 0.88136816, a: 1}

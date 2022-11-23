@@ -113,6 +113,11 @@ half  _HeightFogHeight;
 
 half  _SpecularSurfaceOn;
 half4 _SpecularSurfaceParams;
+half  _ScreenSpaceSurfaceOn;
+half  _WorldSpaceSurfaceOn;
+half  _SpaceSurfaceScale;
+
+half4 _SpecGlossMap_TexelSize;
 CBUFFER_END
 
 #ifdef UNITY_DOTS_INSTANCING_ENABLED

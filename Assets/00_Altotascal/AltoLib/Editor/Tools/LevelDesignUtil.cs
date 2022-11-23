@@ -9,7 +9,7 @@ namespace AltoLib
 {
     public class LevelDesignUtil : EditorWindow
     {
-        [MenuItem("Alto/Level Design Util")]
+        [MenuItem("Alto/Tools/Level Design Util")]
         static void ShowWindow()
         {
             var window = CreateInstance<LevelDesignUtil>();

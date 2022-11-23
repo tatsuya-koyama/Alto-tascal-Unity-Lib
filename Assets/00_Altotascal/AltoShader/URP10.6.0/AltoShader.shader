@@ -102,6 +102,9 @@ Shader "Altotascal/URP 10.6.0/Alto Shader"
 
         [ToggleOff]_SpecularSurfaceOn("Specular Surface", Float) = 0.0
         _SpecularSurfaceParams("Specular Surface Params", Vector) = (0, 0, 0, 0)
+        _ScreenSpaceSurfaceOn("Screen Space Surface", Float) = 0.0
+        _WorldSpaceSurfaceOn("World Space Surface", Float) = 0.0
+        _SpaceSurfaceScale("Screen / World Space Surface Scale", Float) = 1.0
 
         // Basic props
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}

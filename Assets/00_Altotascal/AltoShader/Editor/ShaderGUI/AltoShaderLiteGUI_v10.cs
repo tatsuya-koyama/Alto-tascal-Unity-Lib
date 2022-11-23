@@ -64,6 +64,9 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty heightFogHeight;
 
             public MaterialProperty specularSurfaceOn;
+            public MaterialProperty screenSpaceSurfaceOn;
+            public MaterialProperty worldSpaceSurfaceOn;
+            public MaterialProperty spaceSurfaceScale;
             public MaterialProperty specularSurfaceParams;
 
             public CustomProperties(MaterialProperty[] properties)
@@ -125,6 +128,9 @@ namespace AltoLib.ShaderGUI
                 heightFogHeight          = BaseShaderGUI.FindProperty("_HeightFogHeight", properties);
 
                 specularSurfaceOn        = BaseShaderGUI.FindProperty("_SpecularSurfaceOn", properties);
+                screenSpaceSurfaceOn     = BaseShaderGUI.FindProperty("_ScreenSpaceSurfaceOn", properties);
+                worldSpaceSurfaceOn      = BaseShaderGUI.FindProperty("_WorldSpaceSurfaceOn", properties);
+                spaceSurfaceScale        = BaseShaderGUI.FindProperty("_SpaceSurfaceScale", properties);
                 specularSurfaceParams    = BaseShaderGUI.FindProperty("_SpecularSurfaceParams", properties);
             }
 
@@ -234,6 +240,9 @@ namespace AltoLib.ShaderGUI
 
             _util.DrawSlider("Shade Contrast", "shadeContrast", -2f, 8f);
             _util.DrawToggle("Specular Surface", "specularSurfaceOn");
+            _util.DrawToggle("Screen-Space Surface", "screenSpaceSurfaceOn");
+            _util.DrawToggle("World-Space Surface", "worldSpaceSurfaceOn");
+            _util.DrawSlider("Surface Scale", "spaceSurfaceScale", -10f, 10f);
             _util.DrawVector4("Specular Surface Params", "specularSurfaceParams");
         }
 
