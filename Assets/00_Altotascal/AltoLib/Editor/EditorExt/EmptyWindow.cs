@@ -5,7 +5,7 @@ namespace AltoLib
 {
     public class EmptyWindow : EditorWindow
     {
-        [MenuItem("Alto/Empty Window")]
+        [MenuItem("Alto/Editor/Empty Window")]
         static void ShowWindow()
         {
             var window = CreateInstance<EmptyWindow>();

@@ -8,7 +8,7 @@ namespace AltoLib
 {
     public class FavoritesWindow : EditorWindow
     {
-        [MenuItem("Alto/Favorites Window")]
+        [MenuItem("Alto/Editor/Favorites Window")]
         static void ShowWindow()
         {
             GetWindow<FavoritesWindow>("★ Favorites");

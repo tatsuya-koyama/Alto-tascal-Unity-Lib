@@ -7,25 +7,25 @@ namespace AltoLib
 {
     public class ScreenCapture
     {
-        [MenuItem("Alto/Screen Capture x 1")]
+        [MenuItem("Alto/Screen Capture/x 1")]
         static void CaptureScreen_x1()
         {
             CaptureScreen(1);
         }
 
-        [MenuItem("Alto/Screen Capture x 2")]
+        [MenuItem("Alto/Screen Capture/x 2")]
         static void CaptureScreen_x2()
         {
             CaptureScreen(2);
         }
 
-        [MenuItem("Alto/Screen Capture x 3")]
+        [MenuItem("Alto/Screen Capture/x 3")]
         static void CaptureScreen_x3()
         {
             CaptureScreen(3);
         }
 
-        [MenuItem("Alto/Screen Capture x 4")]
+        [MenuItem("Alto/Screen Capture/x 4")]
         static void CaptureScreen_x4()
         {
             CaptureScreen(4);

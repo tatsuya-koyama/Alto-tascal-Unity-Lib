@@ -7,7 +7,7 @@ namespace AltoLib
 {
     public static class ColoredProjectView2
     {
-        const string MenuPath = "Alto/ColoredProjectView (Block)";
+        const string MenuPath = "Alto/Editor/ColoredProjectView (Block)";
 
         static Dictionary<string, int> _colorMap = new Dictionary<string, int>();
         static int _idCount;
