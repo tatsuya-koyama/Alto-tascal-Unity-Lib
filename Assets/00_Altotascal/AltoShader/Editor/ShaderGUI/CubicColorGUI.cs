@@ -101,9 +101,9 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        protected override void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList) {}
+        protected override void DrawCustomPropAtTop() {}
 
-        protected override void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList)
+        protected override void DrawCustomPropAtBottom()
         {
             DrawShadingProps();
             DrawRimProps();

@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_SHADER_10_FORWARD_PASS_INCLUDED
-#define ALTO_SHADER_10_FORWARD_PASS_INCLUDED
+﻿#ifndef ALTO_SHADER_14_FORWARD_PASS_INCLUDED
+#define ALTO_SHADER_14_FORWARD_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"

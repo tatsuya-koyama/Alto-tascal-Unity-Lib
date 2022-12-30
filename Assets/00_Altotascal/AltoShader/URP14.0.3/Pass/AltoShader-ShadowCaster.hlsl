@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_SHADER_10_SHADOW_CASTER_INCLUDED
-#define ALTO_SHADER_10_SHADOW_CASTER_INCLUDED
+﻿#ifndef ALTO_SHADER_14_SHADOW_CASTER_INCLUDED
+#define ALTO_SHADER_14_SHADOW_CASTER_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"

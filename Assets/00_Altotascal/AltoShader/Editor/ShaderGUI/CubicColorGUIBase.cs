@@ -117,6 +117,12 @@ namespace AltoLib.ShaderGUI
         bool _showBlock_B = true;
         bool _showBlock_D = true;
 
+        public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
+        {
+            base.OnGUI(materialEditorIn, properties);
+            Alto_DrawAdditionalFoldouts();
+        }
+
         public override void FindProperties(MaterialProperty[] properties)
         {
             base.FindProperties(properties);
@@ -124,19 +130,19 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
+        public void Alto_DrawAdditionalFoldouts()
         {
             GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
             EditorGUILayout.LabelField("Custom Properties", labelStyle);
 
-            DrawCustomPropAtTop(materialScopesList);
+            DrawCustomPropAtTop();
             DrawCubicColorProps();
-            DrawCustomPropAtBottom(materialScopesList);
+            DrawCustomPropAtBottom();
         }
 
-        protected virtual void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList) {}
-        protected virtual void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList) {}
+        protected virtual void DrawCustomPropAtTop() {}
+        protected virtual void DrawCustomPropAtBottom() {}
 
         void DrawCubicColorProps()
         {

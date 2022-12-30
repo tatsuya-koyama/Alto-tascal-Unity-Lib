@@ -100,16 +100,16 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        protected override void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList)
+        protected override void DrawCustomPropAtTop()
         {
             _util.DrawToggle("Billboard", "billboardOn");
             DrawDitherProps();
             DrawWindProps();
         }
 
-        protected override void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList)
+        protected override void DrawCustomPropAtBottom()
         {
-            base.DrawCustomPropAtBottom(materialScopesList);
+            base.DrawCustomPropAtBottom();
             DrawMirageProps();
             DrawDissolveProps();
         }

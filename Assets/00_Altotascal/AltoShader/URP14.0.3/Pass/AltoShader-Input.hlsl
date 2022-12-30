@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_SHADER_10_INPUT_INCLUDED
-#define ALTO_SHADER_10_INPUT_INCLUDED
+﻿#ifndef ALTO_SHADER_14_INPUT_INCLUDED
+#define ALTO_SHADER_14_INPUT_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
