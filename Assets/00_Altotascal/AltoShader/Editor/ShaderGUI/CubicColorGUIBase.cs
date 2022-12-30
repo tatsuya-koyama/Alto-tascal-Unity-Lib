@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -123,19 +124,19 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void DrawAdditionalFoldouts(Material material)
+        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
         {
             GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
             EditorGUILayout.LabelField("Custom Properties", labelStyle);
 
-            DrawCustomPropAtTop(material);
+            DrawCustomPropAtTop(materialScopesList);
             DrawCubicColorProps();
-            DrawCustomPropAtBottom(material);
+            DrawCustomPropAtBottom(materialScopesList);
         }
 
-        protected virtual void DrawCustomPropAtTop(Material material) {}
-        protected virtual void DrawCustomPropAtBottom(Material material) {}
+        protected virtual void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList) {}
+        protected virtual void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList) {}
 
         void DrawCubicColorProps()
         {

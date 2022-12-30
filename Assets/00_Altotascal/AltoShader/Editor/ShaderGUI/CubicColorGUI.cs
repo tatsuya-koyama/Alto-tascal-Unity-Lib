@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -100,9 +101,9 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        protected override void DrawCustomPropAtTop(Material material) {}
+        protected override void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList) {}
 
-        protected override void DrawCustomPropAtBottom(Material material)
+        protected override void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList)
         {
             DrawShadingProps();
             DrawRimProps();

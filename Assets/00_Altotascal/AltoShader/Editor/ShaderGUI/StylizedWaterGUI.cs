@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace AltoLib.ShaderGUI
@@ -112,7 +113,7 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void DrawAdditionalFoldouts(Material material)
+        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
         {
             DrawDitherProps();
             DrawWaterColorProps();

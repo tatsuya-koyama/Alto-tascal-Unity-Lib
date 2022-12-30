@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace AltoLib.ShaderGUI
@@ -149,7 +150,7 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        protected override void DrawCustomPropAtTop(Material material)
+        protected override void DrawCustomPropAtTop(MaterialHeaderScopeList materialScopesList)
         {
             _util.DrawToggle("Billboard", "billboardOn");
             DrawDitherProps();
@@ -157,7 +158,7 @@ namespace AltoLib.ShaderGUI
             DrawRotateProps();
         }
 
-        protected override void DrawCustomPropAtBottom(Material material)
+        protected override void DrawCustomPropAtBottom(MaterialHeaderScopeList materialScopesList)
         {
             DrawShadingProps();
             DrawRimProps();

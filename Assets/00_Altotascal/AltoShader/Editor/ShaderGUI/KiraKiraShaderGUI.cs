@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace AltoLib.ShaderGUI
@@ -110,7 +111,7 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void DrawAdditionalFoldouts(Material material)
+        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
         {
             GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
