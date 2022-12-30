@@ -159,5 +159,25 @@ namespace AltoLib.Tests
             fsm.SendEvent(StateEvent.Stand);
             Assert.That(fsm.IsState<StandState>(), Is.False, "ガードされて遷移しない");
         }
+
+        [Test]
+        public void TestSequentialTransition()
+        {
+            var controller = new TestController();
+            var fsm = new AltoFSM<TestController>(controller);
+
+            fsm.AddSequentialTransitions<StandState>(StateEvent.GoNext)
+               .Then<WalkState>()
+               .Then<RunState>()
+               .Then<TalkState>();
+            fsm.SetState<StandState>();
+
+            fsm.SendEvent(StateEvent.GoNext);
+            Assert.That(fsm.IsState<WalkState>(), Is.True);
+            fsm.SendEvent(StateEvent.GoNext);
+            Assert.That(fsm.IsState<RunState>(), Is.True);
+            fsm.SendEvent(StateEvent.GoNext);
+            Assert.That(fsm.IsState<TalkState>(), Is.True);
+        }
     }
 }

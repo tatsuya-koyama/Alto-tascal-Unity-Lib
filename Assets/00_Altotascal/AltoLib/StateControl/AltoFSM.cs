@@ -146,6 +146,48 @@ namespace AltoLib
         }
 
         //----------------------------------------------------------------------
+        // 単純な一方向遷移を手軽に登録するためのヘルパー。
+        // メソッドチェーンで以下のように書ける：
+        //
+        //     fsm.AddSequentialTransitions<State_1st>(StateEvent.GoNext)
+        //        .Then<State_2nd>()
+        //        .Then<State_3rd>();
+        //----------------------------------------------------------------------
+
+        AltoState _prevSequentialState;
+        ValueType _sequentialTrigger;
+
+        public AltoFSM<TContext> AddSequentialTransitions<TFirstState>(ValueType triggerEventId)
+            where TFirstState : AltoState, new()
+        {
+            _prevSequentialState = GetOrCreateState<TFirstState>();
+            _sequentialTrigger = triggerEventId;
+            return this;
+        }
+
+        public AltoFSM<TContext> Then<TNextState>() where TNextState : AltoState, new()
+        {
+            if (_prevSequentialState == null)
+            {
+                LogError("Please start from AddSequentialTransitions()");
+                return null;
+            }
+
+            int eventId = (int)_sequentialTrigger;
+            var nextState = GetOrCreateState<TNextState>();
+
+            if (_prevSequentialState._transitionTable.ContainsKey(eventId))
+            {
+                LogError($"Event already registered : {_prevSequentialState.GetType().Name} / {eventId}");
+                return null;
+            }
+
+            _prevSequentialState._transitionTable.Add(eventId, nextState);
+            _prevSequentialState = nextState;
+            return this;
+        }
+
+        //----------------------------------------------------------------------
         // private
         //----------------------------------------------------------------------
 
