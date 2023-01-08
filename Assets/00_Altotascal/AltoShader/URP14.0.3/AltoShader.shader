@@ -679,5 +679,5 @@ Shader "Altotascal/URP 14.0.3/Alto Shader"
     }
 
     Fallback  "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "AltoLib.ShaderGUI.AltoShaderLiteGUI_v10"
+    CustomEditor "AltoLib.ShaderGUI.AltoShaderGUI"
 }
