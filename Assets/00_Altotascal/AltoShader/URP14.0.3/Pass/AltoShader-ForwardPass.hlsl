@@ -220,105 +220,6 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceD
     //^^^^^ AltoShader Custom ^^^^^
 }
 
-
-/*
-half4 old_Alto_UniversalFragmentBlinnPhong(
-    InputData inputData, half3 cubicColor,
-    half3 diffuse, half4 specularGloss, half smoothness, half3 emission, half alpha
-)
-{
-    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
-#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
-    half4 shadowMask = inputData.shadowMask;
-#elif !defined (LIGHTMAP_ON)
-    half4 shadowMask = unity_ProbesOcclusion;
-#else
-    half4 shadowMask = half4(1, 1, 1, 1);
-#endif
-
-    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
-
-    #if defined(_SCREEN_SPACE_OCCLUSION)
-        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
-        mainLight.color *= aoFactor.directAmbientOcclusion;
-        inputData.bakedGI *= aoFactor.indirectAmbientOcclusion;
-    #endif
-
-    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
-
-    half3 attenuatedLightColor = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-    half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
-    half3 diffuseColor = inputData.bakedGI + (attenuatedLightColor * lightIntensity);
-    half3 specularColor = Alto_LightingSpecular(attenuatedLightColor, mainLight.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
-
-#ifdef _ADDITIONAL_LIGHTS
-    uint pixelLightCount = GetAdditionalLightsCount();
-    for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
-    {
-        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
-        #if defined(_SCREEN_SPACE_OCCLUSION)
-            light.color *= aoFactor.directAmbientOcclusion;
-        #endif
-        half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-        diffuseColor += Alto_LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
-        specularColor += Alto_LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
-    }
-#endif
-
-#ifdef _ADDITIONAL_LIGHTS_VERTEX
-    diffuseColor += inputData.vertexLighting;
-#endif
-
-    UNITY_BRANCH
-    if (_MultiplyCubicDiffuseOn > 0)
-    {
-        diffuse = lerp(diffuse, diffuse * cubicColor, _CubicColorPower);
-    }
-    else
-    {
-        diffuse = lerp(diffuse, cubicColor, _CubicColorPower);
-    }
-    half3 finalColor = diffuseColor * diffuse + emission;
-
-    // 0 is shadow, 1 is lighted
-    half lightLevel = (diffuseColor.r + diffuseColor.g + diffuseColor.b) / 3;
-
-    UNITY_BRANCH
-    if (_ColoredShadowOn > 0)
-    {
-        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-        finalColor = lerp(finalColor, _ShadowColor * lightLevel, (1 - lightLevel) * _ShadowPower);
-    }
-
-    half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
-
-    UNITY_BRANCH
-    if (_RimLightingOn > 0)
-    {
-        finalColor += RimLight(inputData, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
-    }
-
-    UNITY_BRANCH
-    if (_RimBurnOn > 0)
-    {
-        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * _RimColor.a * lightLevel;
-    }
-
-    UNITY_BRANCH
-    if (_HSVShiftOn > 0)
-    {
-        half3 hsv = half3(_Hue, _Saturation, _Brightness);
-        finalColor = shiftColor(finalColor, hsv);
-    }
-
-#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    finalColor += specularColor;
-#endif
-
-    return half4(finalColor, alpha);
-}
-*/
-
 //==============================================================================
 // Vertex and Fragment inputs
 //==============================================================================
@@ -370,37 +271,6 @@ struct Varyings
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
-
-/*
-struct Varyings
-{
-    float2 uv                       : TEXCOORD0;
-    DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 1);
-
-    float3 posWS                    : TEXCOORD2;    // xyz: posWS
-
-#ifdef _NORMALMAP
-    float4 normal                   : TEXCOORD3;    // xyz: normal, w: viewDir.x
-    float4 tangent                  : TEXCOORD4;    // xyz: tangent, w: viewDir.y
-    float4 bitangent                : TEXCOORD5;    // xyz: bitangent, w: viewDir.z
-#else
-    float3  normal                  : TEXCOORD3;
-    float3 viewDir                  : TEXCOORD4;
-#endif
-
-    half4 fogFactorAndVertexLight   : TEXCOORD6; // x: fogFactor, yzw: vertex light
-
-#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    float4 shadowCoord              : TEXCOORD7;
-#endif
-
-    float4 positionCS               : SV_POSITION;
-
-    float4 cubicColor : COLOR0;  // xyz : rgb, w: distance to camera
-    UNITY_VERTEX_INPUT_INSTANCE_ID
-    UNITY_VERTEX_OUTPUT_STEREO
-};
-*/
 
 void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData)
 {
@@ -458,41 +328,6 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     #endif
     #endif
 }
-
-/*
-void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData)
-{
-    inputData.positionWS = input.posWS;
-
-#ifdef _NORMALMAP
-    half3 viewDirWS = half3(input.normal.w, input.tangent.w, input.bitangent.w);
-    inputData.normalWS = TransformTangentToWorld(normalTS,
-        half3x3(input.tangent.xyz, input.bitangent.xyz, input.normal.xyz));
-#else
-    half3 viewDirWS = input.viewDir;
-    inputData.normalWS = input.normal;
-#endif
-
-    inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
-    viewDirWS = SafeNormalize(viewDirWS);
-
-    inputData.viewDirectionWS = viewDirWS;
-
-#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    inputData.shadowCoord = input.shadowCoord;
-#elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-    inputData.shadowCoord = TransformWorldToShadowCoord(inputData.positionWS);
-#else
-    inputData.shadowCoord = float4(0, 0, 0, 0);
-#endif
-
-    inputData.fogCoord = input.fogFactorAndVertexLight.x;
-    inputData.vertexLighting = input.fogFactorAndVertexLight.yzw;
-    inputData.bakedGI = SAMPLE_GI(input.lightmapUV, input.vertexSH, inputData.normalWS);
-    inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
-    inputData.shadowMask = SAMPLE_SHADOWMASK(input.lightmapUV);
-}
-*/
 
 //------------------------------------------------------------------------------
 // Cubic (6-directional) Color
@@ -769,45 +604,7 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
 
     return input;
 }
-/*
-VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
-{
-    VertexPositionInputs input;
-    input.positionWS = TransformObjectToWorld(positionOS);
 
-    UNITY_BRANCH
-    if (_WindStrength > 0)
-    {
-        input.positionWS = WorldPosBlowingInWind(input.positionWS, positionOS);
-    }
-
-    input.positionVS = TransformWorldToView(input.positionWS);
-
-    UNITY_BRANCH
-    if (_BillboardOn > 0)
-    {
-        float2 scale = float2(
-            length(float3(UNITY_MATRIX_M[0].x, UNITY_MATRIX_M[1].x, UNITY_MATRIX_M[2].x)),
-            length(float3(UNITY_MATRIX_M[0].y, UNITY_MATRIX_M[1].y, UNITY_MATRIX_M[2].y))
-        );
-        input.positionCS = mul(
-            UNITY_MATRIX_P,
-            mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1))
-                + float4(positionOS.xy, 0, 0) * float4(scale.x, scale.y, 1, 1)
-        );
-    }
-    else
-    {
-        input.positionCS = TransformWorldToHClip(input.positionWS);
-    }
-
-    float4 ndc = input.positionCS * 0.5f;
-    input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
-    input.positionNDC.zw = input.positionCS.zw;
-
-    return input;
-}
-*/
 VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
 {
     VertexNormalInputs tbn;
@@ -816,20 +613,6 @@ VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
     tbn.normalWS = TransformObjectToWorldNormal(normalOS);
     return tbn;
 }
-
-/*
-VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
-{
-    VertexNormalInputs tbn;
-
-    // mikkts space compliant. only normalize when extracting normal at frag.
-    real sign = tangentOS.w * GetOddNegativeScale();
-    tbn.normalWS = TransformObjectToWorldNormal(normalOS);
-    tbn.tangentWS = TransformObjectToWorldDir(tangentOS.xyz);
-    tbn.bitangentWS = cross(tbn.normalWS, tbn.tangentWS) * sign;
-    return tbn;
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //                  Vertex and Fragment functions                            //
@@ -916,77 +699,6 @@ Varyings LitPassVertexSimple(Attributes input)
 
     return output;
 }
-
-/*
-// Used in Standard (Simple Lighting) shader
-Varyings LitPassVertexSimple(Attributes input)
-{
-    Varyings output = (Varyings)0;
-
-    UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_TRANSFER_INSTANCE_ID(input, output);
-    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-    //-----------------------------------------------------
-    // Rotate vertex and normal
-    //-----------------------------------------------------
-    UNITY_BRANCH
-    if (_RotateSpeedX != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.yz = mul(m, input.positionOS.yz);
-        input.normalOS  .yz = mul(m, input.normalOS  .yz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedY != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xz = mul(m, input.positionOS.xz);
-        input.normalOS  .xz = mul(m, input.normalOS  .xz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedZ != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xy = mul(m, input.positionOS.xy);
-        input.normalOS  .xy = mul(m, input.normalOS  .xy);
-    }
-
-    //-----------------------------------------------------
-    VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
-    VertexNormalInputs normalInput = Alto_GetVertexNormalInputs(input.normalOS, input.tangentOS);
-    half3 viewDirWS = GetWorldSpaceViewDir(vertexInput.positionWS);
-    half3 vertexLight = VertexLighting(vertexInput.positionWS, normalInput.normalWS);
-    half fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
-
-    output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    output.posWS.xyz = vertexInput.positionWS;
-    output.positionCS = vertexInput.positionCS;
-
-#ifdef _NORMALMAP
-    output.normal = half4(normalInput.normalWS, viewDirWS.x);
-    output.tangent = half4(normalInput.tangentWS, viewDirWS.y);
-    output.bitangent = half4(normalInput.bitangentWS, viewDirWS.z);
-#else
-    output.normal = NormalizeNormalPerVertex(normalInput.normalWS);
-    output.viewDir = viewDirWS;
-#endif
-
-    OUTPUT_LIGHTMAP_UV(input.lightmapUV, unity_LightmapST, output.lightmapUV);
-    OUTPUT_SH(output.normal.xyz, output.vertexSH);
-
-    output.fogFactorAndVertexLight = half4(fogFactor, vertexLight);
-
-#if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-    output.shadowCoord = GetShadowCoord(vertexInput);
-#endif
-
-    output.cubicColor.rgb = CubicColor(input, normalInput, output.posWS);
-    output.cubicColor.w = length(vertexInput.positionVS) * step(sign(vertexInput.positionVS.z), 0);
-
-    return output;
-}
-*/
 
 //==============================================================================
 // Fragment function
@@ -1106,108 +818,4 @@ void LitPassFragmentSimple(
 #endif
 }
 
-// Used for StandardSimpleLighting shader
-/*
-half4 LitPassFragmentSimple(Varyings input) : SV_Target
-{
-    UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-
-    float2 uv = input.uv;
-    half4 diffuseAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    half3 diffuse = diffuseAlpha.rgb * _BaseColor.rgb;
-
-    half alpha = diffuseAlpha.a * _BaseColor.a;
-    AlphaDiscard(alpha, _Cutoff);
-
-    #ifdef _ALPHAPREMULTIPLY_ON
-        diffuse *= alpha;
-    #endif
-
-    half3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
-    half3 emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
-    half4 specular = SampleSpecularSmoothness(uv, alpha, _SpecColor, TEXTURE2D_ARGS(_SpecGlossMap, sampler_SpecGlossMap));
-    half smoothness = specular.a;
-
-    InputData inputData;
-    InitializeInputData(input, normalTS, inputData);
-
-    UNITY_BRANCH
-    if (_DitherAlpha < 1) { Dithering(input); }
-
-    UNITY_BRANCH
-    if (_DitherCameraDistanceFrom > 0)
-    {
-        DitheringByCameraDistance(input, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
-    }
-
-    UNITY_BRANCH
-    if (_HeightDitherHeight > 0)
-    {
-        DitheringByHeight(input, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
-    }
-
-    UNITY_BRANCH
-    if (_DitherCull > 0)
-    {
-        DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
-    }
-
-    half4 color = Alto_UniversalFragmentBlinnPhong(
-        inputData, input.cubicColor, diffuse, specular, smoothness, emission, alpha
-    );
-
-    UNITY_BRANCH
-    if (_DissolveAreaSize > 0)
-    {
-        color.rgb = DissolveEffect(input, color.rgb);
-    }
-
-#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    UNITY_BRANCH
-    if (_SpecularSurfaceOn > 0)
-    {
-        half v = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, uv).r;
-        half3 hsv = half3(
-            v * _SpecularSurfaceParams.x,
-            1 + v * _SpecularSurfaceParams.y,
-            1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
-        );
-        color.rgb = shiftColor(color.rgb, hsv);
-    }
-
-    UNITY_BRANCH
-    if (_ScreenSpaceSurfaceOn > 0)
-    {
-        color.rgb = ScreenSpaceSurface(input, inputData, color);
-    }
-
-    UNITY_BRANCH
-    if (_WorldSpaceSurfaceOn > 0)
-    {
-        color.rgb = WorldSpaceSurface(input, inputData, color);
-    }
-#endif
-
-    color.rgb = MixFog(color.rgb, inputData.fogCoord);
-    color.a = OutputAlpha(color.a, _Surface);
-
-    UNITY_BRANCH
-    if (_MultipleFogOn > 0)
-    {
-        color.rgb = MixMultipleColorFog(color.rgb, input.cubicColor.w);
-    }
-
-    UNITY_BRANCH
-    if (_HeightFogOn > 0)
-    {
-        half yTo = _HeightFogYFrom + _HeightFogHeight;
-        half heightFogFactor = 1 - smoothstep(_HeightFogYFrom, yTo, input.posWS.y);
-        color.rgb = lerp(color.rgb, _HeightFogColor.rgb, heightFogFactor * _HeightFogColor.a);
-    }
-
-    // 一部 iOS 端末で Bloom が爆発する謎の不具合があったので
-    return min(color, half4(3, 3, 3, 1));
-}
-*/
 #endif
