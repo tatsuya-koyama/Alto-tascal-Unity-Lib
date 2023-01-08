@@ -120,6 +120,7 @@ namespace AltoLib.ShaderGUI
         public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
         {
             base.OnGUI(materialEditorIn, properties);
+            CoreEditorUtils.DrawHeaderFoldout("AltoShader Params", true);
             Alto_DrawAdditionalFoldouts();
         }
 
@@ -134,7 +135,6 @@ namespace AltoLib.ShaderGUI
         {
             GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
-            EditorGUILayout.LabelField("Custom Properties", labelStyle);
 
             DrawCustomPropAtTop();
             DrawCubicColorProps();

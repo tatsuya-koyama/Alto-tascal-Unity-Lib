@@ -48,6 +48,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty coloredShadowOn;
             public MaterialProperty shadowColor;
             public MaterialProperty shadowPower;
+            public MaterialProperty coloredShadePower;
             public MaterialProperty hsvShiftOn;
             public MaterialProperty hue;
             public MaterialProperty saturation;
@@ -112,6 +113,7 @@ namespace AltoLib.ShaderGUI
                 coloredShadowOn          = BaseShaderGUI.FindProperty("_ColoredShadowOn", properties);
                 shadowColor              = BaseShaderGUI.FindProperty("_ShadowColor", properties);
                 shadowPower              = BaseShaderGUI.FindProperty("_ShadowPower", properties);
+                coloredShadePower        = BaseShaderGUI.FindProperty("_ColoredShadePower", properties);
                 hsvShiftOn               = BaseShaderGUI.FindProperty("_HSVShiftOn", properties);
                 hue                      = BaseShaderGUI.FindProperty("_Hue", properties);
                 saturation               = BaseShaderGUI.FindProperty("_Saturation", properties);
@@ -275,6 +277,7 @@ namespace AltoLib.ShaderGUI
             {
                 materialEditor.ColorProperty(_customProperties.shadowColor, "Shadow Color");
                 _util.DrawSlider("Shadow Power", "shadowPower", 0f, 2f);
+                _util.DrawSlider("Shade Power", "coloredShadePower", 0f, 2f);
             }
             EditorGUI.EndDisabledGroup();
         }

@@ -95,6 +95,7 @@ half  _CubicRimOn;
 half  _ColoredShadowOn;
 half4 _ShadowColor;
 half  _ShadowPower;
+half  _ColoredShadePower;
 half  _HSVShiftOn;
 half  _Hue;
 half  _Saturation;

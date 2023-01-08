@@ -84,6 +84,7 @@ Shader "Altotascal/URP 14.0.3/Alto Shader"
         [ToggleOff] _ColoredShadowOn("Colored Shadow", Float) = 0.0
         _ShadowColor("Shadow Color", Color) = (0, 0, 1, 1)
         _ShadowPower("Shadow Power", Range(0, 1.0))= 1.0
+        _ColoredShadePower("Colored Shade Power", Range(-1.0, 1.0))= 0.0
         [ToggleOff] _HSVShiftOn("HSV Shift", Float) = 0.0
         _Hue("Hue", Range(0, 360)) = 0.0
         _Saturation("Saturation", Range(0, 8)) = 1.0
@@ -215,8 +216,8 @@ Shader "Altotascal/URP 14.0.3/Alto Shader"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/SimpleLitInput.hlsl"
-            #include "Pass/SimpleLitForwardPass.hlsl"
+            #include "Pass/AltoShader-Input.hlsl"
+            #include "Pass/AltoShader-ForwardPass.hlsl"
             ENDHLSL
         }
 
@@ -506,7 +507,7 @@ Shader "Altotascal/URP 14.0.3/Alto Shader"
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
             #include "Pass/AltoShader-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitForwardPass.hlsl"
+            #include "Pass/AltoShader-ForwardPass.hlsl"
             ENDHLSL
         }
 

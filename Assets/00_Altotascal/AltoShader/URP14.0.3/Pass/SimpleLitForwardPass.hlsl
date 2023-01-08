@@ -116,7 +116,7 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceD
     if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
 #endif
     {
-        lightingData.mainLightColor += CalculateBlinnPhong(mainLight, inputData, surfaceData);
+        lightingData.mainLightColor += Alto_CalculateBlinnPhong(mainLight, inputData, surfaceData);
     }
 
     #if defined(_ADDITIONAL_LIGHTS)
@@ -132,7 +132,7 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceD
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
         {
-            lightingData.additionalLightsColor += CalculateBlinnPhong(light, inputData, surfaceData);
+            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
         }
     }
     #endif
@@ -143,7 +143,7 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceD
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
         {
-            lightingData.additionalLightsColor += CalculateBlinnPhong(light, inputData, surfaceData);
+            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
         }
     LIGHT_LOOP_END
     #endif
