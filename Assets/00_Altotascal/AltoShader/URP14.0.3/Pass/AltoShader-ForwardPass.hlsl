@@ -767,7 +767,7 @@ void LitPassFragmentSimple(
     UNITY_BRANCH
     if (_SpecularSurfaceOn > 0)
     {
-        half v = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, uv).r;
+        half v = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, input.uv).r;
         half3 hsv = half3(
             v * _SpecularSurfaceParams.x,
             1 + v * _SpecularSurfaceParams.y,

@@ -2,14 +2,27 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CubicColor-ground
   m_Shader: {fileID: 4800000, guid: 7d266d30b0cef4cb59b24f7ec0f3902b, type: 3}
-  m_ShaderKeywords: 
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _BILLBOARDON_OFF
+  - _CUBICRIMON_OFF
+  - _HEIGHTFOGON_OFF
+  - _HSVSHIFTON_OFF
+  - _MIXCUBICCOLORON_OFF
+  - _MULTIPLEFOGON_OFF
+  - _MULTIPLYCUBICDIFFUSEON_OFF
+  - _RIMBURNON_OFF
+  - _RIMLIGHTINGON_OFF
+  - _SPECULARSURFACEON_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -17,6 +30,7 @@ Material:
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
+  m_LockedProperties: _ShadowColor
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -68,12 +82,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _AlphaClip: 0
     - _BillboardOn: 0
     - _Blend: 0
     - _Brightness: 1
     - _BumpScale: 1
+    - _ColoredShadePower: 0
     - _ColoredShadowOn: 1
     - _CubicColorPower: 1
     - _CubicRimOn: 0
@@ -130,12 +146,14 @@ Material:
     - _RotateSpeedY: 0
     - _RotateSpeedZ: 0
     - _Saturation: 1
+    - _ScreenSpaceSurfaceOn: 0
     - _ShadeContrast: 0.5
     - _ShadowPower: 1
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
+    - _SpaceSurfaceScale: 1
     - _SpecSource: 0
     - _SpecularHighlights: 1
     - _SpecularSurfaceOn: 0
@@ -152,6 +170,7 @@ Material:
     - _WorkflowMode: 1
     - _WorldSpaceGradient: 1
     - _WorldSpaceNormal: 1
+    - _WorldSpaceSurfaceOn: 0
     - _ZWrite: 1
     m_Colors:
     - _BackColor1: {r: 1, g: 1, b: 1, a: 1}
