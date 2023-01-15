@@ -167,6 +167,7 @@ namespace AltoLib.ShaderGUI
         protected override void DrawCustomPropAtTop()
         {
             _util.DrawToggle("Billboard", "billboardOn");
+            DrawShadingProps();
             DrawDitherProps();
             DrawWindProps();
             DrawRotateProps();
@@ -174,7 +175,6 @@ namespace AltoLib.ShaderGUI
 
         protected override void DrawCustomPropAtBottom()
         {
-            DrawShadingProps();
             DrawRimProps();
             DrawShadowProps();
             DrawHsvProps();

@@ -272,8 +272,8 @@ namespace AltoLib.ShaderGUI
                 {
                     EditorGUILayout.BeginVertical();
                     {
-                        materialEditor.ColorProperty(color1, "");
-                        materialEditor.ColorProperty(color2, "");
+                        materialEditor.ColorProperty(color1, "Color 1");
+                        materialEditor.ColorProperty(color2, "Color 2");
                     }
                     EditorGUILayout.EndVertical();
 

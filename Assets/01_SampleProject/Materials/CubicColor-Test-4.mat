@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CubicColor-Test-4
+  m_Shader: {fileID: 4800000, guid: 7d266d30b0cef4cb59b24f7ec0f3902b, type: 3}
+  m_Parent: {fileID: 2100000, guid: 41b88cef1668041979dd4f5dd0753e40, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _SPECGLOSSMAP
+  m_InvalidKeywords:
+  - _BILLBOARDON_OFF
+  - _HEIGHTFOGON_OFF
+  - _HSVSHIFTON_OFF
+  - _MULTIPLEFOGON_OFF
+  - _RIMBURNON_OFF
+  - _SPECULARHIGHLIGHTS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 0.5, y: 0.5}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 0.5, y: 0.5}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColoredShadePower: 0
+    m_Colors:
+    - _BackColor1: {r: 1, g: 1, b: 0, a: 1}
+    - _BackColor2: {r: 1, g: 1, b: 0, a: 1}
+    - _BottomColor1: {r: 1, g: 0, b: 1, a: 1}
+    - _BottomColor2: {r: 1, g: 0, b: 1, a: 1}
+    - _FrontColor1: {r: 0, g: 0, b: 1, a: 1}
+    - _FrontColor2: {r: 0, g: 0, b: 1, a: 1}
+    - _LeftColor1: {r: 0, g: 1, b: 1, a: 1}
+    - _LeftColor2: {r: 0, g: 1, b: 1, a: 1}
+    - _RightColor1: {r: 0, g: 1, b: 0, a: 1}
+    - _RightColor2: {r: 0, g: 1, b: 0, a: 1}
+    - _SpecColor: {r: 0.654902, g: 0.78900546, b: 0.90588236, a: 0.5}
+    - _SpecularSurfaceParams: {r: 0, g: 0, b: 0.4, a: 0.1}
+    - _TopColor1: {r: 1, g: 0, b: 0, a: 1}
+    - _TopColor2: {r: 1, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []

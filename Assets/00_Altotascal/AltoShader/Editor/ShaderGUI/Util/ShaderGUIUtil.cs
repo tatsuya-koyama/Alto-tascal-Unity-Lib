@@ -17,7 +17,11 @@ namespace AltoLib.ShaderGUI
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
             float value = prop.floatValue / factor;
+
+            MaterialEditor.BeginProperty(prop);
             value = EditorGUILayout.FloatField(label, value);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.floatValue = value * factor;
@@ -30,7 +34,11 @@ namespace AltoLib.ShaderGUI
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
             float value = prop.floatValue / factor;
+
+            MaterialEditor.BeginProperty(prop);
             value = EditorGUILayout.Slider(label, value, min, max);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.floatValue = value * factor;
@@ -42,7 +50,11 @@ namespace AltoLib.ShaderGUI
         {
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
+
+            MaterialEditor.BeginProperty(prop);
             bool isOn = EditorGUILayout.Toggle(label, prop.floatValue == 1.0f);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.floatValue = isOn ? 1.0f : 0f;
@@ -55,7 +67,11 @@ namespace AltoLib.ShaderGUI
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
             Vector4 value = prop.vectorValue;
+
+            MaterialEditor.BeginProperty(prop);
             value = EditorGUILayout.Vector2Field(label, value);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.vectorValue = value;
@@ -68,7 +84,11 @@ namespace AltoLib.ShaderGUI
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
             Vector4 value = prop.vectorValue;
+
+            MaterialEditor.BeginProperty(prop);
             value = EditorGUILayout.Vector3Field(label, value);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.vectorValue = value;
@@ -81,7 +101,11 @@ namespace AltoLib.ShaderGUI
             EditorGUI.BeginChangeCheck();
             var prop = GetProperty(propName);
             Vector4 value = prop.vectorValue;
+
+            MaterialEditor.BeginProperty(prop);
             value = EditorGUILayout.Vector4Field(label, value);
+            MaterialEditor.EndProperty();
+
             if (EditorGUI.EndChangeCheck())
             {
                 prop.vectorValue = value;
