@@ -89,7 +89,7 @@ Material:
     - _Blend: 0
     - _Brightness: 1
     - _BumpScale: 1
-    - _ColoredShadePower: 0
+    - _ColoredShadePower: 0.5
     - _ColoredShadowOn: 1
     - _CubicColorPower: 1
     - _CubicRimOn: 1

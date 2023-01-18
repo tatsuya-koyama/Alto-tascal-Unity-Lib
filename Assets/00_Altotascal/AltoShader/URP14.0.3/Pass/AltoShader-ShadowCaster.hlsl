@@ -3,9 +3,16 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+#if defined(LOD_FADE_CROSSFADE)
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
 #include "../Generic/AltoShaderUtil.hlsl"
 
+// Shadow Casting Light geometric parameters. These variables are used when applying the shadow Normal Bias and are set by UnityEngine.Rendering.Universal.ShadowUtils.SetupShadowCasterConstantBuffer in com.unity.render-pipelines.universal/Runtime/ShadowUtils.cs
+// For Directional lights, _LightDirection is used when applying shadow Normal Bias.
+// For Spot lights and Point lights, _LightPosition is used to compute the actual light direction because it is different at each shadow caster geometry vertex.
 float3 _LightDirection;
+float3 _LightPosition;
 
 struct Attributes
 {
@@ -21,6 +28,7 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
 };
 
+//_____ AltoShader Custom _____
 float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
 {
     float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2;
@@ -40,50 +48,59 @@ float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
     positionWS.y += abs(sin(theta)) * positionOS.y * 0.01 * _WindStrength;
     return positionWS;
 }
+//^^^^^ AltoShader Custom ^^^^^
 
 float4 GetShadowPositionHClip(Attributes input)
 {
-    //-----------------------------------------------------
-    // Rotate vertex and normal
-    //-----------------------------------------------------
+    //_____ AltoShader Custom _____
+    //----- Rotate vertex and normal
     UNITY_BRANCH
     if (_RotateSpeedX != 0)
     {
         float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
         input.positionOS.yz = mul(m, input.positionOS.yz);
-        input.normalOS  .yz = mul(m, input.normalOS  .yz);
+        //input.normalOS  .yz = mul(m, input.normalOS  .yz);
     }
     UNITY_BRANCH
     if (_RotateSpeedY != 0)
     {
         float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
         input.positionOS.xz = mul(m, input.positionOS.xz);
-        input.normalOS  .xz = mul(m, input.normalOS  .xz);
+        //input.normalOS  .xz = mul(m, input.normalOS  .xz);
     }
     UNITY_BRANCH
     if (_RotateSpeedZ != 0)
     {
         float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
         input.positionOS.xy = mul(m, input.positionOS.xy);
-        input.normalOS  .xy = mul(m, input.normalOS  .xy);
+        //input.normalOS  .xy = mul(m, input.normalOS  .xy);
     }
+    //^^^^^ AltoShader Custom ^^^^^
 
-    //-----------------------------------------------------
     float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
     float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
 
+    //_____ AltoShader Custom _____
+    //----- Wind Animation
     UNITY_BRANCH
     if (_WindStrength > 0)
     {
         positionWS = WorldPosBlowingInWind(positionWS, input.positionOS);
     }
+    //^^^^^ AltoShader Custom ^^^^^
 
-    float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
+#if _CASTING_PUNCTUAL_LIGHT_SHADOW
+    float3 lightDirectionWS = normalize(_LightPosition - positionWS);
+#else
+    float3 lightDirectionWS = _LightDirection;
+#endif
+
+    float4 positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, lightDirectionWS));
 
 #if UNITY_REVERSED_Z
-    positionCS.z = min(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
+    positionCS.z = min(positionCS.z, UNITY_NEAR_CLIP_VALUE);
 #else
-    positionCS.z = max(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
+    positionCS.z = max(positionCS.z, UNITY_NEAR_CLIP_VALUE);
 #endif
 
     return positionCS;
@@ -102,7 +119,11 @@ Varyings ShadowPassVertex(Attributes input)
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
+
+#ifdef LOD_FADE_CROSSFADE
+    LODFadeCrossFade(input.positionCS);
+#endif
+
     return 0;
 }
-
 #endif

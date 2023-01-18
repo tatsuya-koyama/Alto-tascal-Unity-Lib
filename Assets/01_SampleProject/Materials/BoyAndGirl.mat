@@ -23,6 +23,7 @@ Material:
   - _MULTIPLYCUBICDIFFUSEON_OFF
   - _RECEIVESHADOWS_OFF
   - _RIMBURNON_OFF
+  - _SPECULARHIGHLIGHTS_OFF
   - _SPECULARSURFACEON_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -90,7 +91,7 @@ Material:
     - _Blend: 0
     - _Brightness: 1
     - _BumpScale: 1
-    - _ColoredShadePower: 0
+    - _ColoredShadePower: 0.3
     - _ColoredShadowOn: 1
     - _CubicColorPower: 0.1
     - _CubicRimOn: 1
@@ -201,7 +202,7 @@ Material:
     - _RightColor1: {r: 0.89016676, g: 1, b: 0.6179246, a: 1}
     - _RightColor2: {r: 0.51767004, g: 0.8207547, b: 0.112273075, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0.65528244, g: 0.38803846, b: 0.754717, a: 1}
+    - _ShadowColor: {r: 0.8000518, g: 0.40792987, b: 0.8396226, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _SpecularSurfaceParams: {r: 0, g: 0, b: 0, a: 0}
     - _TopColor1: {r: 1, g: 0.935965, b: 0.6179246, a: 1}

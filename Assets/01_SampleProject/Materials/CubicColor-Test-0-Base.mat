@@ -165,13 +165,13 @@ Material:
     - _WindSpeed: 1
     - _WindStrength: 0
     - _WorkflowMode: 1
-    - _WorldSpaceGradient: 1
+    - _WorldSpaceGradient: 0
     - _WorldSpaceNormal: 1
     - _WorldSpaceSurfaceOn: 0
     - _ZWrite: 1
     m_Colors:
-    - _BackColor1: {r: 0.9254902, g: 0.7176471, b: 0.8489402, a: 1}
-    - _BackColor2: {r: 0.8396226, g: 0.13069598, b: 0.21359923, a: 1}
+    - _BackColor1: {r: 0.26321647, g: 0.54056793, b: 0.6132076, a: 1}
+    - _BackColor2: {r: 0, g: 0.18232039, b: 0.6226415, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BottomColor1: {r: 0.38679248, g: 0.26455146, b: 0.38439557, a: 1}
     - _BottomColor2: {r: 0.4056604, g: 0.05549129, b: 0.12283143, a: 1}
@@ -192,10 +192,10 @@ Material:
     - _GradOrigin_R: {r: 0, g: 2, b: -12, a: 0}
     - _GradOrigin_T: {r: -7, g: 0, b: 0, a: 0}
     - _HeightFogColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LeftColor1: {r: 1, g: 0.9016713, b: 0.8254717, a: 1}
-    - _LeftColor2: {r: 1, g: 0.7758621, b: 0, a: 1}
-    - _RightColor1: {r: 0.4308473, g: 0.6277931, b: 0.8867924, a: 1}
-    - _RightColor2: {r: 0.059763268, g: 0.2556263, b: 0.745283, a: 1}
+    - _LeftColor1: {r: 0.9254902, g: 0.7176471, b: 0.84705883, a: 1}
+    - _LeftColor2: {r: 0.8392157, g: 0.12941177, b: 0.21176471, a: 1}
+    - _RightColor1: {r: 1, g: 0.9016713, b: 0.82547176, a: 1}
+    - _RightColor2: {r: 1, g: 0.7758621, b: 0, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0, g: 0.44939613, b: 1, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}

@@ -148,7 +148,7 @@ Material:
     - _Saturation: 1
     - _ScreenSpaceSurfaceOn: 0
     - _ShadeContrast: 0.5
-    - _ShadowPower: 1
+    - _ShadowPower: 1.3
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
@@ -200,7 +200,7 @@ Material:
     - _RightColor1: {r: 1, g: 1, b: 1, a: 1}
     - _RightColor2: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0.049394794, g: 0.6981132, b: 0.5699712, a: 1}
+    - _ShadowColor: {r: 0, g: 0.735849, b: 0.5886792, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularSurfaceParams: {r: 0, g: 0, b: 0, a: 0}
     - _TopColor1: {r: 0.69725555, g: 0.7075471, b: 0.46391058, a: 1}

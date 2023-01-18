@@ -3,6 +3,7 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"
+#include "AltoShader-SharedLogic.hlsl"
 
 //==============================================================================
 // Lighting Functions (Copied from Lighting.hlsl)

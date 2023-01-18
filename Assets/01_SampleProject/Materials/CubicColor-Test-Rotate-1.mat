@@ -33,9 +33,9 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _RotateSpeedX: 1
-    - _RotateSpeedY: 0.83
-    - _RotateSpeedZ: 0.7
+    - _RotateSpeedX: 0.5
+    - _RotateSpeedY: 0.43
+    - _RotateSpeedZ: 0.35
     - _WindStrength: 1
     - _WorldSpaceNormal: 0
     m_Colors: []
