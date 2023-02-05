@@ -498,28 +498,6 @@ void DitheringByHeight(Varyings input, half from, half to)
 }
 
 //------------------------------------------------------------------------------
-// Wind animation
-//------------------------------------------------------------------------------
-
-float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
-{
-    float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2;
-    float theta = thetaOffset + (_Time.y * 2 * _WindSpeed)
-                + max(0, sin(_Time.y * 0.5 * _WindBigWave) * 4);
-    float wave = cos(theta);
-
-    float2 wind = float2(0, 0);
-    wind.x = wave * positionOS.y * 0.08 * _WindStrength;
-    float windAngle = (positionWS.x + positionWS.z) * 0.3
-                    + (_Time.y * _WindRotateSpeed);
-    wind = rotate(wind, windAngle);
-
-    positionWS.xz += wind.xy;
-    positionWS.y += abs(sin(theta)) * positionOS.y * 0.02 * _WindStrength;
-    return positionWS;
-}
-
-//------------------------------------------------------------------------------
 // Screen-Space Surface
 //------------------------------------------------------------------------------
 
@@ -575,7 +553,7 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     UNITY_BRANCH
     if (_WindStrength > 0)
     {
-        input.positionWS = WorldPosBlowingInWind(input.positionWS, positionOS);
+        input.positionWS = AltoShared_WorldPosBlowingInWind(input.positionWS, positionOS);
     }
 
     input.positionVS = TransformWorldToView(input.positionWS);
@@ -628,30 +606,10 @@ Varyings LitPassVertexSimple(Attributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    //-----------------------------------------------------
+    //_____ AltoShader Custom _____
     // Rotate vertex and normal
-    //-----------------------------------------------------
-    UNITY_BRANCH
-    if (_RotateSpeedX != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.yz = mul(m, input.positionOS.yz);
-        input.normalOS  .yz = mul(m, input.normalOS  .yz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedY != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xz = mul(m, input.positionOS.xz);
-        input.normalOS  .xz = mul(m, input.normalOS  .xz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedZ != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xy = mul(m, input.positionOS.xy);
-        input.normalOS  .xy = mul(m, input.normalOS  .xy);
-    }
+    AltoShared_RotatePosAndNormal(input.positionOS, input.normalOS);
+    //^^^^^ AltoShader Custom ^^^^^
 
     //-----------------------------------------------------
     VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);

@@ -6,6 +6,7 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 #include "../Generic/AltoShaderUtil.hlsl"
+#include "AltoShader-SharedLogic.hlsl"
 
 struct Attributes
 {
@@ -59,25 +60,8 @@ float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
 Varyings DepthNormalsVertex(Attributes input)
 {
     //_____ AltoShader Custom _____
-    //----- Rotate vertex and normal
-    UNITY_BRANCH
-    if (_RotateSpeedX != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.yz = mul(m, input.positionOS.yz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedY != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xz = mul(m, input.positionOS.xz);
-    }
-    UNITY_BRANCH
-    if (_RotateSpeedZ != 0)
-    {
-        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
-        input.positionOS.xy = mul(m, input.positionOS.xy);
-    }
+    //----- Rotate vertex
+    AltoShared_RotatePos(input.positionOS);
     //^^^^^ AltoShader Custom ^^^^^
 
     //_____ AltoShader Custom _____

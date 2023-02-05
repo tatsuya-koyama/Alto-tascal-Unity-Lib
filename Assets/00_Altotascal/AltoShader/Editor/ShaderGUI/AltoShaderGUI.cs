@@ -246,7 +246,12 @@ namespace AltoLib.ShaderGUI
             _util.DrawToggle("Screen-Space Surface", "screenSpaceSurfaceOn");
             _util.DrawToggle("World-Space Surface", "worldSpaceSurfaceOn");
             _util.DrawSlider("Surface Scale", "spaceSurfaceScale", -10f, 10f);
-            _util.DrawVector4("Specular Surface Params", "specularSurfaceParams");
+            _util.DrawVector4AsSliders("specularSurfaceParams",
+                "[Param] Hue", 0f, 360f,
+                "[Param] Saturate", -2f, 2f,
+                "[Param] Strength", -2f, 2f,
+                "[Param] Brightness", -2f, 2f
+            );
         }
 
         void DrawRimProps()

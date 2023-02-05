@@ -25,4 +25,51 @@ float3 AltoShared_WorldPosBlowingInWind(float3 positionWS, float3 positionOS, fl
     return positionWS;
 }
 
+void AltoShared_RotatePos(inout float4 positionOS)
+{
+    UNITY_BRANCH
+    if (_RotateSpeedX != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.yz = mul(m, positionOS.yz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedY != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.xz = mul(m, positionOS.xz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedZ != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.xy = mul(m, positionOS.xy);
+    }
+}
+
+void AltoShared_RotatePosAndNormal(inout float4 positionOS, inout float3 normalOS)
+{
+    UNITY_BRANCH
+    if (_RotateSpeedX != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedX, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.yz = mul(m, positionOS.yz);
+        normalOS  .yz = mul(m, normalOS  .yz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedY != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedY, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.xz = mul(m, positionOS.xz);
+        normalOS  .xz = mul(m, normalOS  .xz);
+    }
+    UNITY_BRANCH
+    if (_RotateSpeedZ != 0)
+    {
+        float s, c; sincos(_Time.y * _RotateSpeedZ, s, c); half2x2 m = half2x2(c, -s, s, c);
+        positionOS.xy = mul(m, positionOS.xy);
+        normalOS  .xy = mul(m, normalOS  .xy);
+    }
+}
+
 #endif

@@ -113,6 +113,32 @@ namespace AltoLib.ShaderGUI
             return value;
         }
 
+        public Vector4 DrawVector4AsSliders(
+            string propName,
+            string label1, float min1, float max1,
+            string label2, float min2, float max2,
+            string label3, float min3, float max3,
+            string label4, float min4, float max4
+        )
+        {
+            EditorGUI.BeginChangeCheck();
+            var prop = GetProperty(propName);
+            Vector4 value = prop.vectorValue;
+
+            MaterialEditor.BeginProperty(prop);
+            value.x = EditorGUILayout.Slider(label1, value.x, min1, max1);
+            value.y = EditorGUILayout.Slider(label2, value.y, min2, max2);
+            value.z = EditorGUILayout.Slider(label3, value.z, min3, max3);
+            value.w = EditorGUILayout.Slider(label4, value.w, min4, max4);
+            MaterialEditor.EndProperty();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                prop.vectorValue = value;
+            }
+            return value;
+        }
+
         MaterialProperty GetProperty(string propName)
         {
             MaterialProperty prop = null;

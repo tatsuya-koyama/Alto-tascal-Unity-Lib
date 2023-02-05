@@ -195,11 +195,11 @@ Material:
     - _LeftColor1: {r: 0.9254902, g: 0.7176471, b: 0.84705883, a: 1}
     - _LeftColor2: {r: 0.8392157, g: 0.12941177, b: 0.21176471, a: 1}
     - _RightColor1: {r: 1, g: 0.9016713, b: 0.82547176, a: 1}
-    - _RightColor2: {r: 1, g: 0.7758621, b: 0, a: 1}
+    - _RightColor2: {r: 0.9245283, g: 0.66993695, b: 0.082858644, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0, g: 0.44939613, b: 1, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
-    - _SpecularSurfaceParams: {r: 0, g: 0.3, b: 0.3, a: -0.05}
+    - _SpecularSurfaceParams: {r: 0, g: 0.35, b: 0.35, a: -0.05}
     - _TopColor1: {r: 0.7297395, g: 0.8980392, b: 0.69803923, a: 1}
     - _TopColor2: {r: 0.15294118, g: 0.69803923, b: 0.5921569, a: 1}
   m_BuildTextureStacks: []
