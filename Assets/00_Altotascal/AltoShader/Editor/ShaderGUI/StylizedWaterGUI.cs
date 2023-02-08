@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace AltoLib.ShaderGUI
 {
-    /// <summary>
-    /// Shader GUI for Altotascal/URP 7.3.1/Stylized Water
-    /// </summary>
     public class StylizedWaterGUI : SimpleLitGUIBase
     {
         class CustomProperties : ICustomProperties
@@ -20,6 +17,10 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty multiplyUnderwater;
             public MaterialProperty waterDistortion;
 
+            public MaterialProperty rimLightingOn;
+            public MaterialProperty rimColor;
+            public MaterialProperty rimPower;
+
             public MaterialProperty waveCycle;
             public MaterialProperty waveSpeed;
             public MaterialProperty wavePower;
@@ -27,7 +28,6 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty surfaceSpecular;
             public MaterialProperty surfaceNoise;
             public MaterialProperty surfaceParams;
-            public MaterialProperty fixSmoothness;
 
             public MaterialProperty edgeFadeOutOn;
             public MaterialProperty edgeFadeOutOrigin;
@@ -58,6 +58,10 @@ namespace AltoLib.ShaderGUI
                 multiplyUnderwater    = BaseShaderGUI.FindProperty("_MultiplyUnderwaterColor", properties);
                 waterDistortion       = BaseShaderGUI.FindProperty("_WaterDistortion", properties);
 
+                rimLightingOn         = BaseShaderGUI.FindProperty("_RimLightingOn", properties);
+                rimColor              = BaseShaderGUI.FindProperty("_RimColor", properties);
+                rimPower              = BaseShaderGUI.FindProperty("_RimPower", properties);
+
                 waveCycle             = BaseShaderGUI.FindProperty("_WaveCycle", properties);
                 waveSpeed             = BaseShaderGUI.FindProperty("_WaveSpeed", properties);
                 wavePower             = BaseShaderGUI.FindProperty("_WavePower", properties);
@@ -65,7 +69,6 @@ namespace AltoLib.ShaderGUI
                 surfaceSpecular       = BaseShaderGUI.FindProperty("_SurfaceSpecular", properties);
                 surfaceNoise          = BaseShaderGUI.FindProperty("_SurfaceNoise", properties);
                 surfaceParams         = BaseShaderGUI.FindProperty("_SurfaceParams", properties);
-                fixSmoothness         = BaseShaderGUI.FindProperty("_FixSmoothness", properties);
 
                 edgeFadeOutOn         = BaseShaderGUI.FindProperty("_EdgeFadeOutOn", properties);
                 edgeFadeOutOrigin     = BaseShaderGUI.FindProperty("_EdgeFadeOutOrigin", properties);
@@ -101,10 +104,18 @@ namespace AltoLib.ShaderGUI
 
         ShaderGUIUtil _util;
         bool _showWaterColorProps  = true;
+        bool _showRimProps         = true;
         bool _showSurfaceProps     = true;
         bool _showEdgeFadeOutProps = true;
         bool _showDissolveProps    = true;
         bool _showDitherProps      = true;
+
+        public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
+        {
+            base.OnGUI(materialEditorIn, properties);
+            CoreEditorUtils.DrawHeaderFoldout("AltoShader Params", true);
+            Alto_DrawAdditionalFoldouts();
+        }
 
         public override void FindProperties(MaterialProperty[] properties)
         {
@@ -113,10 +124,11 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
+        public void Alto_DrawAdditionalFoldouts()
         {
             DrawDitherProps();
             DrawWaterColorProps();
+            DrawRimProps();
             DrawSurfaceProps();
             DrawEdgeFadeOutProps();
             DrawDissolveProps();
@@ -146,6 +158,21 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Water Distortion", "waterDistortion", 0f, 10f);
         }
 
+        void DrawRimProps()
+        {
+            _showRimProps = _util.Foldout(_showRimProps, "Rim Lighting");
+            if (!_showRimProps) { return; }
+
+            bool rimLightingOn = _util.DrawToggle("Rim Lighting", "rimLightingOn");
+
+            EditorGUI.BeginDisabledGroup(!rimLightingOn);
+            {
+                materialEditor.ColorProperty(_customProperties.rimColor, "Rim Color");
+                _util.DrawSlider("Rim Power", "rimPower", 0f, 8f);
+            }
+            EditorGUI.EndDisabledGroup();
+        }
+
         void DrawSurfaceProps()
         {
             _showSurfaceProps = _util.Foldout(_showSurfaceProps, "Surface Wave");
@@ -158,7 +185,6 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Surface Specular", "surfaceSpecular", 0f, 10f);
             _util.DrawSlider("Surface Noise", "surfaceNoise", 0f, 10f);
             _util.DrawVector4("Surface Diversity Params", "surfaceParams");
-            _util.DrawSlider("Fix Smoothness", "fixSmoothness", 0f, 1000f);
         }
 
         void DrawEdgeFadeOutProps()
