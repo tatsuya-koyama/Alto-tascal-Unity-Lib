@@ -104,6 +104,13 @@ namespace AltoLib.ShaderGUI
         bool _showNeonProps     = true;
         bool _showFlickerProps  = true;
 
+        public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
+        {
+            base.OnGUI(materialEditorIn, properties);
+            CoreEditorUtils.DrawHeaderFoldout("AltoShader Params", true);
+            Alto_DrawAdditionalFoldouts();
+        }
+
         public override void FindProperties(MaterialProperty[] properties)
         {
             base.FindProperties(properties);
@@ -111,7 +118,7 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        public override void FillAdditionalFoldouts(MaterialHeaderScopeList materialScopesList)
+        public void Alto_DrawAdditionalFoldouts()
         {
             GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
             labelStyle.normal.textColor = EditorStyles.label.normal.textColor;

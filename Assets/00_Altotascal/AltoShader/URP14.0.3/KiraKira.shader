@@ -1,5 +1,5 @@
 // Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 10.6.0/KiraKira Shader"
+Shader "Altotascal/URP 14.0.3/KiraKira Shader"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
@@ -98,9 +98,10 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             Tags { "LightMode" = "UniversalForward" }
 
             // Use same blending / depth states as Standard shader
-            Blend[_SrcBlend][_DstBlend]
+            Blend[_SrcBlend][_DstBlend], [_SrcBlendAlpha][_DstBlendAlpha]
             ZWrite[_ZWrite]
             Cull[_Cull]
+            AlphaToMask[_AlphaToMask]
 
             HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
@@ -108,34 +109,43 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
-            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+            #pragma shader_feature_local_fragment _SURFACE_TYPE_TRANSPARENT
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _ _ALPHAPREMULTIPLY_ON _ALPHAMODULATE_ON
+            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
             // -------------------------------------
             // Universal Pipeline keywords
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile _ SHADOWS_SHADOWMASK
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
+            #pragma multi_compile_fragment _ _LIGHT_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            #pragma multi_compile _ _FORWARD_PLUS
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
 
             // -------------------------------------
             // Unity defined keywords
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
+            #pragma multi_compile_fragment _ DEBUG_DISPLAY
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
+            #pragma instancing_options renderinglayer
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
             #pragma vertex LitPassVertexSimple
@@ -170,6 +180,16 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             // GPU Instancing
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
+
+            // -------------------------------------
+            // Universal Pipeline keywords
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+
+            // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
+            #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
 
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
@@ -204,22 +224,28 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
 
             // -------------------------------------
             // Universal Pipeline keywords
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             //#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             //#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile _ _SHADOWS_SOFT
-            #pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
 
             // -------------------------------------
             // Unity defined keywords
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DYNAMICLIGHTMAP_ON
+            #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
+            #pragma multi_compile _ SHADOWS_SHADOWMASK
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
+            #pragma instancing_options renderinglayer
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
             #pragma vertex LitPassVertexSimple
@@ -237,7 +263,7 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             Tags{"LightMode" = "DepthOnly"}
 
             ZWrite On
-            ColorMask 0
+            ColorMask R
             Cull[_Cull]
 
             HLSLPROGRAM
@@ -251,6 +277,10 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
@@ -284,13 +314,19 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            // Universal Pipeline keywords
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
+
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
             #include "Pass/KiraKira-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
 
@@ -308,6 +344,7 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
 
             #pragma vertex UniversalVertexMeta
             #pragma fragment UniversalFragmentMetaSimple
+            #pragma shader_feature EDITOR_VISUALIZATION
 
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
@@ -317,6 +354,7 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
 
             ENDHLSL
         }
+
         Pass
         {
             Name "Universal2D"
@@ -349,48 +387,63 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             Tags { "LightMode" = "UniversalForward" }
 
             // Use same blending / depth states as Standard shader
-            Blend[_SrcBlend][_DstBlend]
+            Blend[_SrcBlend][_DstBlend], [_SrcBlendAlpha][_DstBlendAlpha]
             ZWrite[_ZWrite]
             Cull[_Cull]
+            AlphaToMask[_AlphaToMask]
 
             HLSLPROGRAM
             #pragma only_renderers gles gles3 glcore d3d11
             #pragma target 2.0
 
+            // DOTS instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+            #pragma target 3.5 DOTS_INSTANCING_ON
+
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
-            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+            #pragma shader_feature_local_fragment _SURFACE_TYPE_TRANSPARENT
+            #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local_fragment _ _ALPHAPREMULTIPLY_ON _ALPHAMODULATE_ON
+            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
             // -------------------------------------
             // Universal Pipeline keywords
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
-            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
             #pragma multi_compile _ SHADOWS_SHADOWMASK
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
+            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            #pragma multi_compile _ _FORWARD_PLUS
 
 
             // -------------------------------------
             // Unity defined keywords
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
+            #pragma multi_compile_fragment _ DEBUG_DISPLAY
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
 
             #pragma vertex LitPassVertexSimple
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
             #include "Pass/KiraKira-Input.hlsl"
-            #include "Pass/KiraKira-ForwardPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitForwardPass.hlsl"
             ENDHLSL
         }
 
@@ -408,10 +461,28 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             #pragma only_renderers gles gles3 glcore d3d11
             #pragma target 2.0
 
+            // DOTS instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+            #pragma target 3.5 DOTS_INSTANCING_ON
+
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+
+            // -------------------------------------
+            // Universal Pipeline keywords
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+
+            // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
+            #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
 
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
@@ -427,12 +498,16 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             Tags{"LightMode" = "DepthOnly"}
 
             ZWrite On
-            ColorMask 0
+            ColorMask R
             Cull[_Cull]
 
             HLSLPROGRAM
             #pragma only_renderers gles gles3 glcore d3d11
             #pragma target 2.0
+
+            // DOTS instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+            #pragma target 3.5 DOTS_INSTANCING_ON
 
             #pragma vertex DepthOnlyVertex
             #pragma fragment DepthOnlyFragment
@@ -440,6 +515,14 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
 
             #include "Pass/KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
@@ -459,6 +542,10 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             #pragma only_renderers gles gles3 glcore d3d11
             #pragma target 2.0
 
+            // DOTS instancing
+            #pragma multi_compile _ DOTS_INSTANCING_ON
+            #pragma target 3.5 DOTS_INSTANCING_ON
+
             #pragma vertex DepthNormalsVertex
             #pragma fragment DepthNormalsFragment
 
@@ -468,12 +555,16 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
 
             #include "Pass/KiraKira-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthNormalsPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
 
@@ -481,7 +572,7 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
         Pass
         {
             Name "Meta"
-            Tags{ "LightMode" = "Meta" }
+            Tags{ "LightMode" =  "Meta" }
 
             Cull Off
 
@@ -494,12 +585,14 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
 
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
+            #pragma shader_feature EDITOR_VISUALIZATION
 
             #include "Pass/KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
         }
+
         Pass
         {
             Name "Universal2D"
@@ -520,6 +613,7 @@ Shader "Altotascal/URP 10.6.0/KiraKira Shader"
             ENDHLSL
         }
     }
-    Fallback "Hidden/Universal Render Pipeline/FallbackError"
+
+    Fallback  "Hidden/Universal Render Pipeline/FallbackError"
     CustomEditor "AltoLib.ShaderGUI.KiraKiraShaderGUI_v10"
 }

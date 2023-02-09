@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_10_STYLIZED_WATER_INPUT_INCLUDED
-#define ALTO_10_STYLIZED_WATER_INPUT_INCLUDED
+﻿#ifndef ALTO_14_STYLIZED_WATER_INPUT_INCLUDED
+#define ALTO_14_STYLIZED_WATER_INPUT_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"

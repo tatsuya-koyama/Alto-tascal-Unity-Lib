@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_10_STYLIZED_WATER_PASS_INCLUDED
-#define ALTO_10_STYLIZED_WATER_PASS_INCLUDED
+﻿#ifndef ALTO_14_STYLIZED_WATER_PASS_INCLUDED
+#define ALTO_14_STYLIZED_WATER_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "SimpleLitCoreLogic.hlsl"
@@ -292,7 +292,9 @@ Varyings LitPassVertexSimple(Attributes input)
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionWS.xyz = vertexInput.positionWS;
     output.positionCS = vertexInput.positionCS;
+    //_____ AltoShader Custom _____
     output.screenPos = ComputeScreenPos(vertexInput.positionCS);
+    //^^^^^ AltoShader Custom ^^^^^
 
 #ifdef _NORMALMAP
     half3 viewDirWS = GetWorldSpaceViewDir(vertexInput.positionWS);
