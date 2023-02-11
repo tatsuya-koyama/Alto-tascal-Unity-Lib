@@ -14,16 +14,18 @@ ____
 - [Tatsuya Koyama](https://twitter.com/tatsuya_koyama) が趣味のゲーム開発をする際に書いたコードをまとめたものです
 - 趣味のコードでありサポートなどはできませんが、サイトで実装を紹介する際のリファレンスコード的に置いておきます
 
-![](Docs/img/cubic-color-shader.jpg)
+デモ動画 :
 
-- URP 10.6.0 で動作する独自シェーダなどが入っています
+[![](https://img.youtube.com/vi/GimRchE1N68/0.jpg)](https://www.youtube.com/watch?v=GimRchE1N68)
+
+- URP 14.0.3 で動作する独自シェーダなどが入っています
 - あとはシーンのリソース管理やメッセージングなどを扱うフレームワークや、FSM やオブジェクトプールなどの各種ライブラリ
   - 趣味開発でのニーズに応じてちょっとずつ足されていく見込み
 
 
 ## 動作確認環境
 
-- Unity 2020.3.22f1
+- Unity 2022.2.0b16
 
 開発は macOS Monterey 12.0.1 で行っています。
 
@@ -31,8 +33,8 @@ ____
 ## 依存パッケージ
 
 - [UniTask](https://github.com/Cysharp/UniTask) 2.0.31
-- Addressables 1.18.19
-- Universal RP 10.6.0
+- Addressables 1.21.1
+- Universal RP 14.0.3
 
 
 ## 作者サイト
