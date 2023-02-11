@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DitherPattern:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9d88a79211e414732968ebca028a3e37, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
@@ -101,8 +101,8 @@ Material:
     - _DissolveNoise: 1
     - _DissolveRoughness: 1
     - _DitherAlpha: 1
-    - _DitherCameraDistanceFrom: 0
-    - _DitherCameraDistanceTo: 0
+    - _DitherCameraDistanceFrom: 3
+    - _DitherCameraDistanceTo: 1
     - _DitherCull: 5
     - _DitherMinAlpha: 0
     - _DstBlend: 0
