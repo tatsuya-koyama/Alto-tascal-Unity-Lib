@@ -14,9 +14,12 @@ ____
 - [Tatsuya Koyama](https://twitter.com/tatsuya_koyama) が趣味のゲーム開発をする際に書いたコードをまとめたものです
 - 趣味のコードでありサポートなどはできませんが、サイトで実装を紹介する際のリファレンスコード的に置いておきます
 
-デモ動画 :
+### デモ動画
+
+https://youtu.be/GimRchE1N68
 
 [![](https://img.youtube.com/vi/GimRchE1N68/0.jpg)](https://www.youtube.com/watch?v=GimRchE1N68)
+
 
 - URP 14.0.3 で動作する独自シェーダなどが入っています
 - あとはシーンのリソース管理やメッセージングなどを扱うフレームワークや、FSM やオブジェクトプールなどの各種ライブラリ
