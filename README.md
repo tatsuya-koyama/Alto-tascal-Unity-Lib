@@ -21,14 +21,14 @@ https://youtu.be/GimRchE1N68
 [![](https://img.youtube.com/vi/GimRchE1N68/0.jpg)](https://www.youtube.com/watch?v=GimRchE1N68)
 
 
-- URP 14.0.3 で動作する独自シェーダなどが入っています
+- URP 14.0.6 で動作する独自シェーダなどが入っています
 - あとはシーンのリソース管理やメッセージングなどを扱うフレームワークや、FSM やオブジェクトプールなどの各種ライブラリ
   - 趣味開発でのニーズに応じてちょっとずつ足されていく見込み
 
 
 ## 動作確認環境
 
-- Unity 2022.2.0b16
+- Unity 2022.2.6f1
 
 開発は macOS Monterey 12.0.1 で行っています。
 
@@ -36,8 +36,8 @@ https://youtu.be/GimRchE1N68
 ## 依存パッケージ
 
 - [UniTask](https://github.com/Cysharp/UniTask) 2.0.31
-- Addressables 1.21.1
-- Universal RP 14.0.3
+- Addressables 1.21.2
+- Universal RP 14.0.6
 
 
 ## 作者サイト

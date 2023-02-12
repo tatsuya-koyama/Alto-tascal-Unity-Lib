@@ -1,59 +1,19 @@
-﻿// Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 14.0.3/Stylized Water"
+// Shader targeted for low end devices. Single Pass Forward Rendering.
+Shader "Altotascal/URP 14.0.6/Simple Lit"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
     {
-        // Custom props
-        _WaterColorDepth("Water Color Depth", Float) = 1.0
-        [ToggleOff] _DepthDebug("Depth Texture Debug", Float) = 0.0
-        _FoamColor("Foam Color", Color) = (1, 1, 1, 1)
-        _FoamSharpness("Foam Sharpness", Float) = 1.0
-        _FoamFactor("Foam Factor", Float) = 1.0
-        _UnderwaterColor("Underwater Color", Color) = (0, 0.5, 1, 0)
-        [ToggleOff] _MultiplyUnderwaterColor("Multiply Underwater Color", Float) = 0.0
-        _WaterDistortion("Water Distortion", Float) = 1.0
-
-        [ToggleOff] _RimLightingOn("Rim Lighting", Float) = 0.0
-        _RimColor("Rim Color", Color) = (1, 1, 1, 1)
-        _RimPower("Rim Power", Range(0.5, 8.0)) = 3.0
-
-        _WaveCycle("Wave Cycle", Float) = 1.0
-        _WaveSpeed("Wave Speed", Float) = 1.0
-        _WavePower("Wave Power", Float) = 1.0
-        _RiseAndFall("Rise and Fall", Float) = 0.0
-        _SurfaceSpecular("Surface Specular", Float) = 1.0
-        _SurfaceNoise("Surface Noise", Float) = 1.0
-        _SurfaceParams("Surface Diversity Params", Vector) = (1, 1, 1, 1)
-
-        [ToggleOff] _EdgeFadeOutOn("Edge Fade Out", Float) = 0.0
-        _EdgeFadeOutOrigin("Edge Fade Out Origin", Vector) = (0, 0, 0, 0)
-        _EdgeFadeOutDistance("Edge Fade Out Distance", Float) = 10
-        _EdgeSharpness("Edge Sharpness", Float) = 0.8
-
-        _DissolveAreaSize("Dissolve Area Size", Float) = 0.0
-        _DissolveOrigin("Dissolve Origin Pos", Vector) = (0, 0, 0, 0)
-        _DissolveSlow("Dissolve Slow Factor", Vector) = (1, 1, 1, 1)
-        _DissolveDistance("Dissolve Distance", Float) = 1.0
-        _DissolveRoughness("Dissolve Roughness", Float) = 1.0
-        _DissolveNoise("Dissolve Noise", Float) = 1.0
-        _DissolveEdgeSharpness("Dissolve Edge Sharpness", Float) = 1.0
-        _DissolveEdgeAddColor("Dissolve Edge Add Color", Color) = (1, 1, 1, 1)
-        _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
-
-        _DitherPattern("Dithering Pattern", 2D) = "white" {}
-        _DitherCull("Dither Culling", Float) = 5.0
-
-        // Basic props
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}
         [MainColor]   _BaseColor("Base Color", Color) = (1, 1, 1, 1)
 
         _Cutoff("Alpha Clipping", Range(0.0, 1.0)) = 0.5
 
+        _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
         _SpecColor("Specular Color", Color) = (0.5, 0.5, 0.5, 0.5)
         _SpecGlossMap("Specular Map", 2D) = "white" {}
-        [Enum(Specular Alpha,0,Albedo Alpha,1)] _SmoothnessSource("Smoothness Source", Float) = 0.0
-        [ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
+        _SmoothnessSource("Smoothness Source", Float) = 0.0
+        _SpecularHighlights("Specular Highlights", Float) = 1.0
 
         [HideInInspector] _BumpScale("Scale", Float) = 1.0
         [NoScaleOffset] _BumpMap("Normal Map", 2D) = "bump" {}
@@ -62,19 +22,21 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
         [NoScaleOffset]_EmissionMap("Emission Map", 2D) = "white" {}
 
         // Blending state
-        [HideInInspector] _Surface("__surface", Float) = 0.0
-        [HideInInspector] _Blend("__blend", Float) = 0.0
-        [HideInInspector] _AlphaClip("__clip", Float) = 0.0
+        _Surface("__surface", Float) = 0.0
+        _Blend("__blend", Float) = 0.0
+        _Cull("__cull", Float) = 2.0
+        [ToggleUI] _AlphaClip("__clip", Float) = 0.0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
         [HideInInspector] _DstBlend("__dst", Float) = 0.0
+        [HideInInspector] _SrcBlendAlpha("__srcA", Float) = 1.0
+        [HideInInspector] _DstBlendAlpha("__dstA", Float) = 0.0
         [HideInInspector] _ZWrite("__zw", Float) = 1.0
-        [HideInInspector] _Cull("__cull", Float) = 2.0
+        [HideInInspector] _BlendModePreserveSpecular("_BlendModePreserveSpecular", Float) = 1.0
+        [HideInInspector] _AlphaToMask("__alphaToMask", Float) = 0.0
 
-        [ToggleOff] _ReceiveShadows("Receive Shadows", Float) = 1.0
-
+        [ToggleUI] _ReceiveShadows("Receive Shadows", Float) = 1.0
         // Editmode props
-        [HideInInspector] _QueueOffset("Queue offset", Float) = 0.0
-        [HideInInspector] _Smoothness("Smoothness", Float) = 0.5
+        _QueueOffset("Queue offset", Float) = 0.0
 
         // ObsoleteProperties
         [HideInInspector] _MainTex("BaseMap", 2D) = "white" {}
@@ -153,8 +115,8 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/StylizedWater-Input.hlsl"
-            #include "Pass/StylizedWater-ForwardPass.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
+            #include "Pass/SimpleLitForwardPass.hlsl"
             ENDHLSL
         }
 
@@ -195,7 +157,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -253,7 +215,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -288,7 +250,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -326,7 +288,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -350,7 +312,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -371,7 +333,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
@@ -443,7 +405,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitForwardPass.hlsl"
             ENDHLSL
         }
@@ -488,7 +450,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -525,7 +487,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -564,7 +526,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -588,7 +550,7 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
             #pragma shader_feature EDITOR_VISUALIZATION
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -609,12 +571,12 @@ Shader "Altotascal/URP 14.0.3/Stylized Water"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "Pass/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
     }
 
     Fallback  "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "AltoLib.ShaderGUI.StylizedWaterGUI"
+    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.SimpleLitShader"
 }

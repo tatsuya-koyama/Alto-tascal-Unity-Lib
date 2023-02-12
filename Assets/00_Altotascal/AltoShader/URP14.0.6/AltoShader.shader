@@ -1,5 +1,5 @@
 ﻿// Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 14.0.3/Alto Shader"
+Shader "Altotascal/URP 14.0.6/Alto Shader"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
