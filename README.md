@@ -28,20 +28,20 @@ https://youtu.be/GimRchE1N68
 
 ## 動作確認環境
 
-- Unity 2022.2.6f1
+- Unity 2022.3.7f1
 
-開発は macOS Monterey 12.0.1 で行っています。
+開発は macOS Monterey 12.6.5 で行っています。
 
 
 ## 依存パッケージ
 
-- [UniTask](https://github.com/Cysharp/UniTask) 2.0.31
-- Addressables 1.21.2
-- Universal RP 14.0.6
+- [UniTask](https://github.com/Cysharp/UniTask) 2.4.1
+- Addressables 1.21.12
+- Universal RP 14.0.8
 
 
 ## 作者サイト
 
 - [Alto-tascal](https://tatsuya-koyama.com/)
 
-たまに解説記事など書くかもしれません。
+いつか解説記事など書くかもしれません。

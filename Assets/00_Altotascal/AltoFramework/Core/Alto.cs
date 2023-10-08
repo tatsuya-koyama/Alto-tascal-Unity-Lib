@@ -172,7 +172,7 @@ namespace AltoFramework
         public static UniTask Async(UniTask task)
         {
             var ct = sceneContext.CancelTokenSource.Token;
-            return task.WithCancellation(ct);
+            return task.AttachExternalCancellation(ct);
         }
 
         public static UniTask Wait(float seconds)
