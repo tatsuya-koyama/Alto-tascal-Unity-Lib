@@ -16,6 +16,7 @@ namespace AltoLib
 
         Vector2 _scrollView;
         AssetInfo _lastOpenedAsset;
+        AssetInfo _prevOpenedAsset;
 
         //----------------------------------------------------------------------
         // Data structure
@@ -113,14 +114,15 @@ namespace AltoLib
 
             _scrollView = GUILayout.BeginScrollView(_scrollView);
             {
+                bool isCanceled;
                 foreach (var info in _assets.infoList)
                 {
                     GUILayout.BeginHorizontal();
                     {
-                        bool isCanceled = DrawAssetRow(info);
-                        if (isCanceled) { break; }
+                        isCanceled = DrawAssetRow(info);
                     }
                     GUILayout.EndHorizontal();
+                    if (isCanceled) { break; }
                 }
             }
             GUILayout.EndScrollView();
@@ -161,7 +163,12 @@ namespace AltoLib
             if (info == _lastOpenedAsset)
             {
                 style.fontStyle = FontStyle.Bold;
-                style.normal.textColor = Color.yellow;
+                style.normal.textColor = new Color(1f, 1f, 0f);
+            }
+            if (info == _prevOpenedAsset)
+            {
+                style.fontStyle = FontStyle.Bold;
+                style.normal.textColor = new Color(1f, 0.75f, 0.5f);
             }
 
             float width = position.width - 70f;
@@ -210,9 +217,10 @@ namespace AltoLib
 
         void OpenAsset(AssetInfo info)
         {
-            // Mark last-opened non-folder asset
+            // Mark recently opened non-folder assets
             if (info.type != "UnityEditor.DefaultAsset")
             {
+                _prevOpenedAsset = _lastOpenedAsset;
                 _lastOpenedAsset = info;
             }
 
