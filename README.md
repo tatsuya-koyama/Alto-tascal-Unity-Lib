@@ -28,16 +28,16 @@ https://youtu.be/GimRchE1N68
 
 ## 動作確認環境
 
-- Unity 2022.3.7f1
+- Unity 2022.3.19f1
 
-開発は macOS Monterey 12.6.5 で行っています。
+開発は macOS Ventura 13.6.1 で行っています。
 
 
 ## 依存パッケージ
 
 - [UniTask](https://github.com/Cysharp/UniTask) 2.4.1
-- Addressables 1.21.12
-- Universal RP 14.0.8
+- Addressables 1.21.19
+- Universal RP 14.0.9
 
 
 ## 作者サイト
