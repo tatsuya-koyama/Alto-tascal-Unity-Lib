@@ -1,21 +1,29 @@
-#if ALTO_DEV
-// Define "ALTO_DEV" symbol to enable this inspector extension.
 using System;
 using UnityEngine;
 using UnityEditor;
 
 /// <summary>
-/// インスペクタに、そのアセットを Project View でハイライトするボタンを設置
+/// インスペクタ上部に、そのアセットを Project View でハイライトするボタンを表示
 /// </summary>
 namespace AltoLib
 {
     [InitializeOnLoad]
     public static class PingFromInspector
     {
+        const string MenuPath = "Alto/Editor/Ping Button From Inspector";
+
+        [MenuItem(MenuPath)]
+        static void ToggleEnabled()
+        {
+            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+        }
+
         static PingFromInspector()
         {
             Editor.finishedDefaultHeaderGUI += editor =>
             {
+                if (!Menu.GetChecked(MenuPath)) { return; }
+
                 var path = AssetDatabase.GetAssetPath(editor.target);
                 if (String.IsNullOrEmpty(path)) { return; }
 
@@ -38,4 +46,3 @@ namespace AltoLib
         }
     }
 }
-#endif
