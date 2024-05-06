@@ -113,6 +113,9 @@ namespace AltoLib
         /// </summary>
         protected virtual void SetField(TSchema dataRecord, string key, string value)
         {
+            // 先頭が # で始まるカラム名はスキップ
+            if (key.StartsWith(CommentSymbol)) { return; }
+
             FieldInfo fieldInfo = dataRecord.GetType().GetField(key, BindingFlags.Public | BindingFlags.Instance);
             if (fieldInfo == null)
             {

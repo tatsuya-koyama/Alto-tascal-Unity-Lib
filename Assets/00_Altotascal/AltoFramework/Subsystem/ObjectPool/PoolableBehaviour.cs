@@ -8,7 +8,7 @@ namespace AltoFramework
     {
         protected IAltoObjectPool _pool;
 
-        protected void ReturnToPool()
+        public void ReturnToPool()
         {
             if (_pool == null)
             {

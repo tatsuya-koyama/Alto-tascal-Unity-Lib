@@ -51,12 +51,32 @@ namespace AltoLib
         /// TryParse のラップ版。Enum.TryParse() は "123" といった数字文字列が渡されたときに
         /// エラーにならないので、ここでは定義済みの Enum であるかどうかのチェックを含めている
         /// </summary>
-        public static bool TryParse<T>(string str, out T result) where T : struct
+        public static bool TryParse<T>(string str, out T result, bool verbose = true) where T : struct
         {
+            bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
+            if (!parsed && verbose)
+            {
+                AltoLog.Error($"[EnumUtil] Parse error : {str}");
+            }
+            return parsed;
+        }
+
+        /// <summary>
+        /// 未定義の場合に defaultValue をセットする TryParse().
+        /// 空文字列 / null の場合も defaultValue にする
+        /// </summary>        
+        public static bool TryParse<T>(string str, out T result, T defaultValue, bool verbose = true) where T : struct
+        {
+            if (String.IsNullOrEmpty(str))
+            {
+                result = defaultValue;
+                return false;
+            }
             bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
             if (!parsed)
             {
-                AltoLog.Error($"[EnumUtil] Parse error : {str}");
+                result = defaultValue;
+                if (verbose) { AltoLog.Error($"[EnumUtil] Parse error : {str}"); }
             }
             return parsed;
         }
