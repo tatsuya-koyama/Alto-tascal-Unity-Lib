@@ -126,7 +126,7 @@ namespace AltoLib.UnityExt
         // LocalEulerAngles
         //---------------------------------------------------------------------
 
-        public static void SetLocalEulterAngles(this Transform transform, float? x, float? y, float? z)
+        public static void SetLocalEulerAngles(this Transform transform, float? x, float? y, float? z)
         {
             _vec.Set(
                 x ?? transform.localEulerAngles.x,
