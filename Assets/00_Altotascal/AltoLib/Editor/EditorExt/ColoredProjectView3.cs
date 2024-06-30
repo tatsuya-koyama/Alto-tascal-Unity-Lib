@@ -9,8 +9,9 @@ namespace AltoLib
     {
         const string MenuPath = "Alto/Editor/ColoredProjectView (Kind)";
         static readonly string[] Keywords = {
-            "altoframework", "altolib", "altoshader",
-            "scene", "material", "editor", "resource", "prefab", "shader", "script", "texture", "mesh"
+            "altoframework", "altolib", "altoshader", "scene", "material",
+            "editor", "resource", "prefab", "shader", "script",
+            "texture", "mesh", "animation", "animator",
         };
 
         [MenuItem(MenuPath)]
@@ -48,9 +49,6 @@ namespace AltoLib
 
         static Color GetColor(int pathLevel, string assetPath)
         {
-            var fileName = Path.GetFileName(assetPath);
-            string[] folderNames = assetPath.Split('/');
-
             int id, depth;
             (id, depth) = GetColorIdAndDepth(pathLevel, assetPath);
 

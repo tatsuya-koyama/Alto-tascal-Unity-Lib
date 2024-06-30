@@ -7,6 +7,8 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+dotnet_diagnostic.IDE0002.severity = none
+dotnet_diagnostic.IDE0047.severity = none
 
 [*.shader]
 indent_style = space

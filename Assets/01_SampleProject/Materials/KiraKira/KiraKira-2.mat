@@ -28,8 +28,8 @@ Material:
   - _EMISSION
   m_InvalidKeywords:
   - _EMISSIONNEONON_OFF
-  - _FLICKERON_OFF
   - _IGNOREFOG_OFF
+  - _ILLUSIONON_OFF
   - _NEONON_OFF
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
