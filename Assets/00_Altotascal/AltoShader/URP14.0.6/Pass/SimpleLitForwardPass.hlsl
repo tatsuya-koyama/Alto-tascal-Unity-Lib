@@ -8,10 +8,6 @@
 #include "SimpleLitCoreLogic.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"
 
-//==============================================================================
-// Vertex and Fragment inputs
-//==============================================================================
-
 struct Attributes
 {
     float4 positionOS    : POSITION;
