@@ -1,5 +1,5 @@
 ﻿// Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 14.0.6/Stylized Water"
+Shader "Altotascal/URP 14.0.11/Stylized Water"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
