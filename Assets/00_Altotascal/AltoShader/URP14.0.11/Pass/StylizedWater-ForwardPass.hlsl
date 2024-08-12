@@ -2,6 +2,9 @@
 #define ALTO_14_STYLIZED_WATER_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#if defined(LOD_FADE_CROSSFADE)
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
 #include "SimpleLitCoreLogic.hlsl"
 #include "../Generic/AltoShaderUtil.hlsl"
 
@@ -189,11 +192,11 @@ half4 WaterColor(Varyings input, half4 baseColor)
     UNITY_BRANCH
     if (_MultiplyUnderwaterColor > 0)
     {
-        color.rgb = lerp(color.rgb, color.rgb * _UnderwaterColor.rgb, distortion * _UnderwaterColor.a);
+        color.rgb = lerp(color.rgb, color.rgb * _UnderwaterColor.rgb, _UnderwaterColor.a);
     }
     else
     {
-        color.rgb = lerp(color.rgb, _UnderwaterColor.rgb, distortion * _UnderwaterColor.a);
+        color.rgb = lerp(color.rgb, _UnderwaterColor.rgb, _UnderwaterColor.a);
     }
 
     float foamLine = 1 - saturate(3.0 * depth * _FoamSharpness);
@@ -267,6 +270,7 @@ half3 DissolveEffect(Varyings input, half3 srcColor)
 // Vertex function
 //==============================================================================
 
+// Used in Standard (Simple Lighting) shader
 Varyings LitPassVertexSimple(Attributes input)
 {
     Varyings output = (Varyings)0;
@@ -275,7 +279,7 @@ Varyings LitPassVertexSimple(Attributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs_Custom(input.positionOS.xyz);
+    VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
 
     //_____ AltoShader Custom _____
     input.normalOS = AddWaveSurfaceNormal(input, vertexInput.positionWS);
@@ -321,8 +325,6 @@ Varyings LitPassVertexSimple(Attributes input)
     #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
         output.shadowCoord = GetShadowCoord(vertexInput);
     #endif
-
-    output.cameraValue.x = length(TransformWorldToView(vertexInput.positionWS));
 
     return output;
 }

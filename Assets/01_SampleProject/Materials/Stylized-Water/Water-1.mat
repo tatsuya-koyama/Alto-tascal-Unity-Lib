@@ -96,7 +96,7 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
-    - _BlendModePreserveSpecular: 1
+    - _BlendModePreserveSpecular: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -112,7 +112,7 @@ Material:
     - _DissolveRoughness: 1
     - _DitherCull: 5
     - _DstBlend: 10
-    - _DstBlendAlpha: 0
+    - _DstBlendAlpha: 10
     - _EdgeFadeOutDistance: 20
     - _EdgeFadeOutOn: 1
     - _EdgeSharpness: 0.6
