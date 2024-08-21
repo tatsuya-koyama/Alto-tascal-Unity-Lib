@@ -21,6 +21,8 @@ Shader "Altotascal/URP 14.0.11/Stylized Water"
         _WaveCycle("Wave Cycle", Float) = 1.0
         _WaveSpeed("Wave Speed", Float) = 1.0
         _WavePower("Wave Power", Float) = 1.0
+        _NormalShiftX("Normal map shift speed X", Float) = 0.0
+        _NormalShiftY("Normal map shift speed Y", Float) = 0.0
         _RiseAndFall("Rise and Fall", Float) = 0.0
         _SurfaceSpecular("Surface Specular", Float) = 1.0
         _SurfaceNoise("Surface Noise", Float) = 1.0

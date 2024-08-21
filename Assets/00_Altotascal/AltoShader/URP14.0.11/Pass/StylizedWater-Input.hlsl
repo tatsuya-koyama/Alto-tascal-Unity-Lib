@@ -22,6 +22,8 @@ half  _RimPower;
 half _WaveCycle;
 half _WaveSpeed;
 half _WavePower;
+half _NormalShiftX;
+half _NormalShiftY;
 half _RiseAndFall;
 half _SurfaceSpecular;
 half _SurfaceNoise;

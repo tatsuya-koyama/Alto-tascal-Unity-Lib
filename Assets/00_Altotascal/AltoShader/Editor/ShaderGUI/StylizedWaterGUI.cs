@@ -24,6 +24,8 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty waveCycle;
             public MaterialProperty waveSpeed;
             public MaterialProperty wavePower;
+            public MaterialProperty normalShiftX;
+            public MaterialProperty normalShiftY;
             public MaterialProperty riseAndFall;
             public MaterialProperty surfaceSpecular;
             public MaterialProperty surfaceNoise;
@@ -65,6 +67,8 @@ namespace AltoLib.ShaderGUI
                 waveCycle             = BaseShaderGUI.FindProperty("_WaveCycle", properties);
                 waveSpeed             = BaseShaderGUI.FindProperty("_WaveSpeed", properties);
                 wavePower             = BaseShaderGUI.FindProperty("_WavePower", properties);
+                normalShiftX          = BaseShaderGUI.FindProperty("_NormalShiftX", properties);
+                normalShiftY          = BaseShaderGUI.FindProperty("_NormalShiftY", properties);
                 riseAndFall           = BaseShaderGUI.FindProperty("_RiseAndFall", properties);
                 surfaceSpecular       = BaseShaderGUI.FindProperty("_SurfaceSpecular", properties);
                 surfaceNoise          = BaseShaderGUI.FindProperty("_SurfaceNoise", properties);
@@ -178,9 +182,11 @@ namespace AltoLib.ShaderGUI
             _showSurfaceProps = _util.Foldout(_showSurfaceProps, "Surface Wave");
             if (!_showSurfaceProps) { return; }
 
-            _util.DrawSlider("Wave Cycle", "waveCycle", 0f, 4f);
+            _util.DrawSlider("Wave Cycle", "waveCycle", 0f, 40f);
             _util.DrawSlider("Wave Speed", "waveSpeed", 0f, 10f);
             _util.DrawSlider("Wave Power", "wavePower", 0f, 10f);
+            _util.DrawSlider("Normal Shift Speed X", "normalShiftX", -10f, 10f);
+            _util.DrawSlider("Normal Shift Speed Y", "normalShiftY", -10f, 10f);
             _util.DrawSlider("Rise and Fall", "riseAndFall", 0f, 10f);
             _util.DrawSlider("Surface Specular", "surfaceSpecular", 0f, 10f);
             _util.DrawSlider("Surface Noise", "surfaceNoise", 0f, 10f);

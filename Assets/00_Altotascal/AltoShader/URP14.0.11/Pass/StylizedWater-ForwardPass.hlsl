@@ -186,7 +186,7 @@ half4 WaterColor(Varyings input, half4 baseColor)
         grabUv.y += cos(_Time.y * 9.57 + (input.positionWS.z * 5)) * distortionPower;
         half4 grabColor = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, grabUv);
         color.rgb = lerp(grabColor.rgb, baseColor.rgb, baseColor.a);
-        //color.a = 1;
+        color.a = 1;
     }
 
     UNITY_BRANCH
@@ -279,7 +279,7 @@ Varyings LitPassVertexSimple(Attributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
+    VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs_Custom(input.positionOS.xyz);
 
     //_____ AltoShader Custom _____
     input.normalOS = AddWaveSurfaceNormal(input, vertexInput.positionWS);
@@ -345,7 +345,10 @@ void LitPassFragmentSimple(
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     SurfaceData surfaceData;
-    InitializeSimpleLitSurfaceData(input.uv, surfaceData);
+    //_____ AltoShader Custom _____
+    half2 waterUv = input.uv + half2(_NormalShiftX, _NormalShiftY) * _Time.x;
+    InitializeSimpleLitSurfaceData(waterUv, surfaceData);
+    //^^^^^ AltoShader Custom ^^^^^
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
