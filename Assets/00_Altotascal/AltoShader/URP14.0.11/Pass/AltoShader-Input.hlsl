@@ -91,6 +91,8 @@ half  _RimLightingOn;
 half  _RimBurnOn;
 half4 _RimColor;
 half  _RimPower;
+half  _RimSurfaceFade;
+half  _RimSurfacePower;
 half  _CubicRimOn;
 half  _ColoredShadowOn;
 half4 _ShadowColor;
@@ -113,10 +115,16 @@ half  _HeightFogYFrom;
 half  _HeightFogHeight;
 
 half  _SpecularSurfaceOn;
-half4 _SpecularSurfaceParams;
-half  _ScreenSpaceSurfaceOn;
 half  _WorldSpaceSurfaceOn;
-half  _SpaceSurfaceScale;
+half4 _Sp_TilingParams;
+half  _Sp_RScale;
+half  _Sp_GScale;
+half  _Sp_BScale;
+half  _Sp_PreOffset;
+half  _Sp_ValueScale;
+half  _Sp_PostOffset;
+half  _Sp_Hue;
+half  _Sp_Saturate;
 
 half4 _SpecGlossMap_TexelSize;
 CBUFFER_END

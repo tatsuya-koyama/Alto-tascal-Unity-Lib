@@ -78,8 +78,10 @@ Shader "Altotascal/URP 14.0.11/Alto Shader"
         _ShadeContrast("Shade Contrast", Range(-1.0, 1.0)) = 0.5
         [ToggleOff] _RimLightingOn("Rim Lighting", Float) = 0.0
         [ToggleOff] _RimBurnOn("Rim Burn", Float) = 0.0
-        _RimColor("Rim Color", Color) = (1, 1, 1, 1)
+        [HDR] _RimColor("Rim Color", Color) = (1, 1, 1, 1)
         _RimPower("Rim Power", Range(0.5, 8.0)) = 3.0
+        _RimSurfaceFade("Rim Surface Fade", Float) = 1.0
+        _RimSurfacePower("Rim Surface Power", Float) = 1.0
         [ToggleOff] _CubicRimOn("Use Cubic Color as Rim", Float) = 0.0
         [ToggleOff] _ColoredShadowOn("Colored Shadow", Float) = 0.0
         _ShadowColor("Shadow Color", Color) = (0, 0, 1, 1)
@@ -102,10 +104,16 @@ Shader "Altotascal/URP 14.0.11/Alto Shader"
         _HeightFogHeight("Height", Float) = 1
 
         [ToggleOff]_SpecularSurfaceOn("Specular Surface", Float) = 0.0
-        _SpecularSurfaceParams("Specular Surface Params", Vector) = (0, 0, 0, 0)
-        _ScreenSpaceSurfaceOn("Screen Space Surface", Float) = 0.0
         _WorldSpaceSurfaceOn("World Space Surface", Float) = 0.0
-        _SpaceSurfaceScale("Screen / World Space Surface Scale", Float) = 1.0
+        _Sp_TilingParams("Specular : Tiling Params", Vector) = (0, 0, 1, 1)
+        _Sp_RScale("Specular : R scale", Float) = 1.0
+        _Sp_GScale("Specular : G scale", Float) = 1.0
+        _Sp_BScale("Specular : B scale", Float) = 1.0
+        _Sp_PreOffset("Specular : Pre Offset", Float) = 0.0
+        _Sp_ValueScale("Specular : Value Scale", Float) = 1.0
+        _Sp_PostOffset("Specular : Post Offset", Float) = 0.0
+        _Sp_Hue("Specular : Hue", Float) = 0.0
+        _Sp_Saturate("Specular : Saturate", Float) = 0.0
 
         // Basic props
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}

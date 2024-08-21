@@ -139,6 +139,8 @@ Material:
     - _RimBurnOn: 0
     - _RimLightingOn: 1
     - _RimPower: 4
+    - _RimSurfaceFade: 1
+    - _RimSurfacePower: 1
     - _RotateSpeedX: 0
     - _RotateSpeedY: 0
     - _RotateSpeedZ: 0
@@ -150,6 +152,14 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
+    - _Sp_BScale: 1
+    - _Sp_GScale: 1
+    - _Sp_Hue: 0
+    - _Sp_PostOffset: 0
+    - _Sp_PreOffset: 0
+    - _Sp_RScale: 1
+    - _Sp_Saturate: 0
+    - _Sp_ValueScale: 0.5
     - _SpaceSurfaceScale: 1
     - _SpecSource: 0
     - _SpecularHighlights: 0
@@ -198,6 +208,7 @@ Material:
     - _RightColor2: {r: 0.9245283, g: 0.66993695, b: 0.082858644, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0, g: 0.44939613, b: 1, a: 1}
+    - _Sp_TilingParams: {r: 0, g: 0, b: 1, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _SpecularSurfaceParams: {r: 0, g: 0.35, b: 0.35, a: -0.05}
     - _TopColor1: {r: 0.7297395, g: 0.8980392, b: 0.69803923, a: 1}

@@ -6,224 +6,15 @@
 #include "AltoShader-SharedLogic.hlsl"
 
 //==============================================================================
-// Lighting Functions (Copied from Lighting.hlsl)
+// Constants, and Vertex / Fragment inputs
 //==============================================================================
 
-half Alto_LightIntensity(half3 lightDir, half3 normal)
-{
-    half NdotL = dot(normal, lightDir);
-
-    // Like a Half-Lambert
-    half offset = 1 - abs(_ShadeContrast);
-    return saturate(NdotL * _ShadeContrast + offset);
-}
-
-half3 Alto_LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
-{
-    return lightColor * Alto_LightIntensity(lightDir, normal);
-}
-
-half3 Alto_LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half4 specular, half smoothness)
-{
-    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
-    half NdotH = half(saturate(dot(normal, halfVec)));
-    half modifier = pow(NdotH, smoothness);
-    half3 specularReflection = specular.rgb * modifier;
-    return lightColor * specularReflection;
-}
-
-half3 Alto_CalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
-{
-    half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-    half3 lightDiffuseColor = Alto_LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
-
-    half3 lightSpecularColor = half3(0,0,0);
-    #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    half smoothness = exp2(10 * surfaceData.smoothness + 1);
-
-    lightSpecularColor += Alto_LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, half4(surfaceData.specular, 1), smoothness);
-    #endif
-
-#if _ALPHAPREMULTIPLY_ON
-    return lightDiffuseColor * surfaceData.albedo * surfaceData.alpha + lightSpecularColor;
-#else
-    return lightDiffuseColor * surfaceData.albedo + lightSpecularColor;
-#endif
-}
-
-half3 Alto_CalculateLightingColor(LightingData lightingData, half3 albedo)
-{
-    half3 lightingColor = 0;
-
-    if (IsOnlyAOLightingFeatureEnabled())
-    {
-        return lightingData.giColor; // Contains white + AO
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_GLOBAL_ILLUMINATION))
-    {
-        lightingColor += lightingData.giColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_MAIN_LIGHT))
-    {
-        lightingColor += lightingData.mainLightColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_ADDITIONAL_LIGHTS))
-    {
-        lightingColor += lightingData.additionalLightsColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_VERTEX_LIGHTING))
-    {
-        lightingColor += lightingData.vertexLightingColor;
-    }
-
-    lightingColor *= albedo;
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_EMISSION))
-    {
-        lightingColor += lightingData.emissionColor;
-    }
-
-    return lightingColor;
-}
-
-half4 Alto_CalculateFinalColor(LightingData lightingData, half alpha)
-{
-    half3 finalColor = Alto_CalculateLightingColor(lightingData, 1);
-
-    return half4(finalColor, alpha);
-}
-
-half3 RimLight(InputData inputData, half3 rimColor)
-{
-    half rim = 1.0 - saturate(dot(normalize(inputData.viewDirectionWS), inputData.normalWS));
-    return rimColor * pow(rim, _RimPower);
-}
-
-half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceData, half3 cubicColor)
-{
-    //_____ AltoShader Custom _____
-    UNITY_BRANCH
-    if (_MultiplyCubicDiffuseOn > 0)
-    {
-        surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * cubicColor, _CubicColorPower);
-    }
-    else
-    {
-        surfaceData.albedo = lerp(surfaceData.albedo, cubicColor, _CubicColorPower);
-    }
-    //^^^^^ AltoShader Custom ^^^^^
-
-    #if defined(DEBUG_DISPLAY)
-    half4 debugColor;
-
-    if (CanDebugOverrideOutputColor(inputData, surfaceData, debugColor))
-    {
-        return debugColor;
-    }
-    #endif
-
-    uint meshRenderingLayers = GetMeshRenderingLayer();
-    half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
-    Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
-
-    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);
-
-    inputData.bakedGI *= surfaceData.albedo;
-
-    LightingData lightingData = CreateLightingData(inputData, surfaceData);
-#ifdef _LIGHT_LAYERS
-    if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
-#endif
-    {
-        lightingData.mainLightColor += Alto_CalculateBlinnPhong(mainLight, inputData, surfaceData);
-    }
-    #if defined(_ADDITIONAL_LIGHTS)
-    uint pixelLightCount = GetAdditionalLightsCount();
-
-    #if USE_FORWARD_PLUS
-    for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
-    {
-        FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
-
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-#ifdef _LIGHT_LAYERS
-        if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
-#endif
-        {
-            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
-        }
-    }
-    #endif
-
-    LIGHT_LOOP_BEGIN(pixelLightCount)
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
-#ifdef _LIGHT_LAYERS
-        if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
-#endif
-        {
-            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
-        }
-    LIGHT_LOOP_END
-    #endif
-
-    #if defined(_ADDITIONAL_LIGHTS_VERTEX)
-    lightingData.vertexLightingColor += inputData.vertexLighting * surfaceData.albedo;
-    #endif
-
-    // return Alto_CalculateFinalColor(lightingData, surfaceData.alpha);
-
-    //_____ AltoShader Custom _____
-    half3 finalColor = Alto_CalculateFinalColor(lightingData, surfaceData.alpha).rgb;
-
-    // 0 is shadow, 1 is lighted
-    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation;
-
-    UNITY_BRANCH
-    if (_ColoredShadePower > 0)
-    {
-        half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
-        lightLevel *= (1 - (1 - lightIntensity) * _ColoredShadePower);
-    }
-
-    UNITY_BRANCH
-    if (_ColoredShadowOn > 0)
-    {
-        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-        finalColor = lerp(finalColor, _ShadowColor * lightLevel, (1 - lightLevel) * _ShadowPower);
-    }
-
-    half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
-
-    UNITY_BRANCH
-    if (_RimLightingOn > 0)
-    {
-        finalColor += RimLight(inputData, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
-    }
-
-    UNITY_BRANCH
-    if (_RimBurnOn > 0)
-    {
-        finalColor -= RimLight(inputData, 1 - rimColor.rgb) * _RimColor.a * lightLevel;
-    }
-
-    UNITY_BRANCH
-    if (_HSVShiftOn > 0)
-    {
-        half3 hsv = half3(_Hue, _Saturation, _Brightness);
-        finalColor = shiftColor(finalColor, hsv);
-    }
-    return half4(finalColor, surfaceData.alpha);
-    //^^^^^ AltoShader Custom ^^^^^
-}
-
-//==============================================================================
-// Vertex and Fragment inputs
-//==============================================================================
+static const half3 VecTop    = half3( 0,  1,  0);
+static const half3 VecBottom = half3( 0, -1,  0);
+static const half3 VecRight  = half3( 1,  0,  0);
+static const half3 VecFront  = half3( 0,  0, -1);
+static const half3 VecLeft   = half3(-1,  0,  0);
+static const half3 VecBack   = half3( 0,  0,  1);
 
 struct Attributes
 {
@@ -330,16 +121,296 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     #endif
 }
 
+//==============================================================================
+// Lighting Functions (Copied from Lighting.hlsl)
+//==============================================================================
+
+half Alto_LightIntensity(half3 lightDir, half3 normal)
+{
+    half NdotL = dot(normal, lightDir);
+
+    // Like a Half-Lambert
+    half offset = 1 - abs(_ShadeContrast);
+    return saturate(NdotL * _ShadeContrast + offset);
+}
+
+half3 Alto_LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
+{
+    return lightColor * Alto_LightIntensity(lightDir, normal);
+}
+
+half3 Alto_LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half4 specular, half smoothness)
+{
+    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
+    half NdotH = half(saturate(dot(normal, halfVec)));
+    half modifier = pow(NdotH, smoothness);
+    half3 specularReflection = specular.rgb * modifier;
+    return lightColor * specularReflection;
+}
+
+half3 Alto_CalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
+{
+    half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
+    half3 lightDiffuseColor = Alto_LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
+
+    half3 lightSpecularColor = half3(0,0,0);
+    #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
+    half smoothness = exp2(10 * surfaceData.smoothness + 1);
+
+    lightSpecularColor += Alto_LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, half4(surfaceData.specular, 1), smoothness);
+    #endif
+
+#if _ALPHAPREMULTIPLY_ON
+    return lightDiffuseColor * surfaceData.albedo * surfaceData.alpha + lightSpecularColor;
+#else
+    return lightDiffuseColor * surfaceData.albedo + lightSpecularColor;
+#endif
+}
+
+half3 Alto_CalculateLightingColor(LightingData lightingData, half3 albedo)
+{
+    half3 lightingColor = 0;
+
+    if (IsOnlyAOLightingFeatureEnabled())
+    {
+        return lightingData.giColor; // Contains white + AO
+    }
+
+    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_GLOBAL_ILLUMINATION))
+    {
+        lightingColor += lightingData.giColor;
+    }
+
+    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_MAIN_LIGHT))
+    {
+        lightingColor += lightingData.mainLightColor;
+    }
+
+    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_ADDITIONAL_LIGHTS))
+    {
+        lightingColor += lightingData.additionalLightsColor;
+    }
+
+    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_VERTEX_LIGHTING))
+    {
+        lightingColor += lightingData.vertexLightingColor;
+    }
+
+    lightingColor *= albedo;
+
+    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_EMISSION))
+    {
+        lightingColor += lightingData.emissionColor;
+    }
+
+    return lightingColor;
+}
+
+half4 Alto_CalculateFinalColor(LightingData lightingData, half alpha)
+{
+    half3 finalColor = Alto_CalculateLightingColor(lightingData, 1);
+
+    return half4(finalColor, alpha);
+}
+
+half3 RimLight(InputData inputData, half3 rimColor)
+{
+    half rim = 1.0 - saturate(dot(normalize(inputData.viewDirectionWS), inputData.normalWS));
+    return rimColor * pow(rim, _RimPower);
+}
+
+//------------------------------------------------------------------------------
+// Specular Texture Surface
+//------------------------------------------------------------------------------
+
+half ExtractSpecularChannel(float2 uv)
+{
+    half4 sp = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, uv);
+    return ((sp.r * _Sp_RScale)
+          + (sp.g * _Sp_GScale)
+          + (sp.b * _Sp_BScale)) / 3.0;
+}
+
+half SampleSpecularValue(Varyings input, InputData inputData)
+{
+    UNITY_BRANCH
+    if (_WorldSpaceSurfaceOn > 0)
+    {
+        half dirX = step(0.5, abs(dot(input.normalWS, VecRight)));
+        half dirY = step(0.5, abs(dot(input.normalWS, VecTop  )));
+        half dirZ = step(0.5, abs(dot(input.normalWS, VecBack )));
+
+        dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
+        dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
+
+        float2 screenPos = ((input.positionWS.yx * dirZ)
+                          + (input.positionWS.zy * dirX)
+                          + (input.positionWS.xz * dirY));
+        screenPos.xy -= _Sp_TilingParams.xy;
+        screenPos.xy /= _Sp_TilingParams.zw;
+        return ExtractSpecularChannel(screenPos);
+    }
+
+    UNITY_BRANCH
+    if (_SpecularSurfaceOn > 0)
+    {
+        return ExtractSpecularChannel(input.uv);
+    }
+
+    return 0;
+}
+
+half3 ApplySpecularSurface(half specularValue, half3 color)
+{
+    half b = max(specularValue + _Sp_PreOffset, 0) * _Sp_ValueScale;
+    half v = 1 + b + _Sp_PostOffset;
+    half3 hsv = half3(
+        v * _Sp_Hue,
+        1 + (specularValue * _Sp_Saturate),
+        v
+    );
+    return shiftColor(color, hsv);
+}
+
+//------------------------------------------------------------------------------
+// Custom BlinnPhong
+//------------------------------------------------------------------------------
+
+half4 Alto_UniversalFragmentBlinnPhong(
+    Varyings input, InputData inputData, SurfaceData surfaceData, half3 cubicColor
+)
+{
+    //_____ AltoShader Custom _____
+    UNITY_BRANCH
+    if (_MultiplyCubicDiffuseOn > 0)
+    {
+        surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * cubicColor, _CubicColorPower);
+    }
+    else
+    {
+        surfaceData.albedo = lerp(surfaceData.albedo, cubicColor, _CubicColorPower);
+    }
+    //^^^^^ AltoShader Custom ^^^^^
+
+    #if defined(DEBUG_DISPLAY)
+    half4 debugColor;
+
+    if (CanDebugOverrideOutputColor(inputData, surfaceData, debugColor))
+    {
+        return debugColor;
+    }
+    #endif
+
+    uint meshRenderingLayers = GetMeshRenderingLayer();
+    half4 shadowMask = CalculateShadowMask(inputData);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);
+
+    inputData.bakedGI *= surfaceData.albedo;
+
+    LightingData lightingData = CreateLightingData(inputData, surfaceData);
+#ifdef _LIGHT_LAYERS
+    if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
+#endif
+    {
+        lightingData.mainLightColor += Alto_CalculateBlinnPhong(mainLight, inputData, surfaceData);
+    }
+    #if defined(_ADDITIONAL_LIGHTS)
+    uint pixelLightCount = GetAdditionalLightsCount();
+
+    #if USE_FORWARD_PLUS
+    for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
+    {
+        FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
+
+        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+#ifdef _LIGHT_LAYERS
+        if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+#endif
+        {
+            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
+        }
+    }
+    #endif
+
+    LIGHT_LOOP_BEGIN(pixelLightCount)
+        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+#ifdef _LIGHT_LAYERS
+        if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+#endif
+        {
+            lightingData.additionalLightsColor += Alto_CalculateBlinnPhong(light, inputData, surfaceData);
+        }
+    LIGHT_LOOP_END
+    #endif
+
+    #if defined(_ADDITIONAL_LIGHTS_VERTEX)
+    lightingData.vertexLightingColor += inputData.vertexLighting * surfaceData.albedo;
+    #endif
+
+    // return Alto_CalculateFinalColor(lightingData, surfaceData.alpha);
+
+    //_____ AltoShader Custom _____
+    half3 finalColor = Alto_CalculateFinalColor(lightingData, surfaceData.alpha).rgb;
+
+    // 0 is shadow, 1 is lighted
+    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation;
+
+    UNITY_BRANCH
+    if (_ColoredShadePower > 0)
+    {
+        half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
+        lightLevel *= (1 - (1 - lightIntensity) * _ColoredShadePower);
+    }
+
+    UNITY_BRANCH
+    if (_ColoredShadowOn > 0)
+    {
+        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation);
+        finalColor = lerp(finalColor, _ShadowColor * lightLevel, (1 - lightLevel) * _ShadowPower);
+    }
+
+    half specularValue = SampleSpecularValue(input, inputData);
+
+#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
+    UNITY_BRANCH
+    if (_SpecularSurfaceOn > 0 || _WorldSpaceSurfaceOn > 0)
+    {
+        finalColor = ApplySpecularSurface(specularValue, finalColor);
+    }
+#endif
+
+    half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
+
+    UNITY_BRANCH
+    if (_RimLightingOn > 0)
+    {
+        half3 rim = RimLight(inputData, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        finalColor += lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
+    }
+
+    UNITY_BRANCH
+    if (_RimBurnOn > 0)
+    {
+        half3 rim = RimLight(inputData, 1 - rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        finalColor -= lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
+    }
+
+    UNITY_BRANCH
+    if (_HSVShiftOn > 0)
+    {
+        half3 hsv = half3(_Hue, _Saturation, _Brightness);
+        finalColor = shiftColor(finalColor, hsv);
+    }
+    return half4(finalColor, surfaceData.alpha);
+    //^^^^^ AltoShader Custom ^^^^^
+}
+
 //------------------------------------------------------------------------------
 // Cubic (6-directional) Color
 //------------------------------------------------------------------------------
-
-static const half3 VecTop    = half3( 0,  1,  0);
-static const half3 VecBottom = half3( 0, -1,  0);
-static const half3 VecRight  = half3( 1,  0,  0);
-static const half3 VecFront  = half3( 0,  0, -1);
-static const half3 VecLeft   = half3(-1,  0,  0);
-static const half3 VecBack   = half3( 0,  0,  1);
 
 half3 CubicColor(Attributes input, VertexNormalInputs normalInput, float3 posWorld)
 {
@@ -495,47 +566,6 @@ void DitheringByHeight(Varyings input, half from, half to)
     float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.5 - 0.25;
     float alpha = saturate((input.positionWS.y - from + noise) / (to - from));
     clip(alpha * alpha - dither);
-}
-
-//------------------------------------------------------------------------------
-// Screen-Space Surface
-//------------------------------------------------------------------------------
-
-half3 ScreenSpaceSurface(Varyings input, InputData inputData, half3 color)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
-    screenPos = inputData.normalizedScreenSpaceUV
-              + (_WorldSpaceCameraPos.xy * 0.05) + (_WorldSpaceCameraPos.zz * 0.02);
-    float2 texCoord = screenPos * _ScreenParams.xy * _SpecGlossMap_TexelSize.xy * _SpaceSurfaceScale;
-    half v = SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, texCoord).r;
-    half3 hsv = half3(
-        v * _SpecularSurfaceParams.x,
-        1 + v * _SpecularSurfaceParams.y,
-        1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
-    );
-    return shiftColor(color.rgb, hsv);
-}
-
-half3 WorldSpaceSurface(Varyings input, InputData inputData, half3 color)
-{
-    half dirX = step(0.5, abs(dot(input.normalWS, VecRight)));
-    half dirY = step(0.5, abs(dot(input.normalWS, VecTop  )));
-    half dirZ = step(0.5, abs(dot(input.normalWS, VecBack )));
-
-    dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
-    dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
-
-    float2 screenPos = ((input.positionWS.xy * dirZ)
-                      + (input.positionWS.yz * dirX)
-                      + (input.positionWS.zx * dirY)) * 0.5;
-    float2 texCoord = screenPos * _SpaceSurfaceScale;
-    half v = SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, texCoord).r;
-    half3 hsv = half3(
-        v * _SpecularSurfaceParams.x,
-        1 + v * _SpecularSurfaceParams.y,
-        1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
-    );
-    return shiftColor(color.rgb, hsv);
 }
 
 //==============================================================================
@@ -713,7 +743,7 @@ void LitPassFragmentSimple(
     }
     //^^^^^ AltoShader Custom ^^^^^
 
-    half4 color = Alto_UniversalFragmentBlinnPhong(inputData, surfaceData, input.cubicColor);
+    half4 color = Alto_UniversalFragmentBlinnPhong(input, inputData, surfaceData, input.cubicColor);
 
     //_____ AltoShader Custom _____
     UNITY_BRANCH
@@ -721,32 +751,6 @@ void LitPassFragmentSimple(
     {
         color.rgb = DissolveEffect(input, color.rgb);
     }
-
-#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    UNITY_BRANCH
-    if (_SpecularSurfaceOn > 0)
-    {
-        half v = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, input.uv).r;
-        half3 hsv = half3(
-            v * _SpecularSurfaceParams.x,
-            1 + v * _SpecularSurfaceParams.y,
-            1 - v * _SpecularSurfaceParams.z + _SpecularSurfaceParams.w
-        );
-        color.rgb = shiftColor(color.rgb, hsv);
-    }
-
-    UNITY_BRANCH
-    if (_ScreenSpaceSurfaceOn > 0)
-    {
-        color.rgb = ScreenSpaceSurface(input, inputData, color);
-    }
-
-    UNITY_BRANCH
-    if (_WorldSpaceSurfaceOn > 0)
-    {
-        color.rgb = WorldSpaceSurface(input, inputData, color);
-    }
-#endif
     //^^^^^ AltoShader Custom ^^^^^
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
