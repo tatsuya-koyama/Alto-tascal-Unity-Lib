@@ -4,12 +4,12 @@ namespace AltoLib
 {
     public class SafeAreaCanvas : MonoBehaviour
     {
-        RectTransform _panel;
+        RectTransform _rect;
         Rect _lastSafeArea = new Rect(0, 0, 0, 0);
 
         void Awake()
         {
-            _panel = GetComponent<RectTransform>();
+            _rect = GetComponent<RectTransform>();
             UpdateSafeArea();
         }
 
@@ -21,10 +21,7 @@ namespace AltoLib
         void UpdateSafeArea()
         {
             Rect safeArea = Screen.safeArea;
-            if (safeArea == _lastSafeArea)
-            {
-                return;
-            }
+            if (safeArea == _lastSafeArea) { return; }
 
             _lastSafeArea = safeArea;
 
@@ -34,8 +31,8 @@ namespace AltoLib
             anchorMin.y /= Screen.height;
             anchorMax.x /= Screen.width;
             anchorMax.y /= Screen.height;
-            _panel.anchorMin = anchorMin;
-            _panel.anchorMax = anchorMax;
+            _rect.anchorMin = anchorMin;
+            _rect.anchorMax = anchorMax;
         }
     }
 }

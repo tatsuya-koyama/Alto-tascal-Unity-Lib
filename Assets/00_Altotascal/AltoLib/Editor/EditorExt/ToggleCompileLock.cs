@@ -6,18 +6,23 @@ namespace AltoLib
 {
     public class ToggleCompileLock
     {
-        [MenuItem("Alto/自動コンパイルを OFF にする")]
-        static void Lock ()
-        {
-        Debug.Log("自動コンパイルを無効化。Ctrl + R で手動コンパイルできます");
-        EditorApplication.LockReloadAssemblies();
-        }
+        const string MenuPath = "Alto/Unity の自動コンパイル OFF";
 
-        [MenuItem("Alto/自動コンパイルを ON に戻す")]
-        static void Unlock ()
+        [MenuItem(MenuPath)]
+        static void ToggleLock()
         {
-        Debug.Log("自動コンパイルを有効化（Unity デフォルトの挙動）");
-        EditorApplication.UnlockReloadAssemblies();
+            var isLocked = Menu.GetChecked(MenuPath);
+            if (isLocked)
+            {
+                Debug.Log("自動コンパイルを有効化（Unity デフォルトの挙動）");
+                EditorApplication.UnlockReloadAssemblies();
+            }
+            else
+            {
+                Debug.Log("自動コンパイルを無効化。Ctrl + R で手動コンパイルできます");
+                EditorApplication.LockReloadAssemblies();
+            }
+            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
         }
     }
 }

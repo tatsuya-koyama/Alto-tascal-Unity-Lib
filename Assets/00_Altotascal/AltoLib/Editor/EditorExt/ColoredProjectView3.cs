@@ -11,7 +11,7 @@ namespace AltoLib
         static readonly string[] Keywords = {
             "altoframework", "altolib", "altoshader", "scene", "material",
             "editor", "resource", "prefab", "shader", "script",
-            "texture", "mesh", "animation", "animator",
+            "texture", "mesh", "animation", "animator", "sprite",
         };
 
         [MenuItem(MenuPath)]
@@ -85,7 +85,7 @@ namespace AltoLib
 
         static Color GetColorForDarkSkin(int id)
         {
-            switch (id % 13)
+            switch (id % 14)
             {
                 case  0: return new Color(8.4f, 8.4f, 0.0f, 0.45f);
                 case  1: return new Color(4.0f, 8.9f, 1.8f, 0.40f);
@@ -100,13 +100,14 @@ namespace AltoLib
                 case 10: return new Color(2.0f, 2.0f, 9.6f, 0.65f);
                 case 11: return new Color(3.0f, 8.4f, 4.8f, 0.55f);
                 case 12: return new Color(9.6f, 0.0f, 3.0f, 0.50f);
+                case 13: return new Color(1.8f, 4.9f, 7.4f, 0.40f);
             }
             return new Color(0, 0, 0, 0);
         }
 
         static Color GetColorForLightSkin(int id)
         {
-            switch (id % 13)
+            switch (id % 14)
             {
                 case  0: return new Color(1.4f, 1.4f, 0.0f, 0.15f);
                 case  1: return new Color(1.4f, 1.4f, 0.0f, 0.11f);
@@ -121,6 +122,7 @@ namespace AltoLib
                 case 10: return new Color(0.2f, 0.2f, 1.6f, 0.15f);
                 case 11: return new Color(0.6f, 1.4f, 0.8f, 0.15f);
                 case 12: return new Color(1.6f, 0.0f, 0.5f, 0.15f);
+                case 13: return new Color(1.6f, 0.0f, 0.0f, 0.11f);
             }
             return new Color(0, 0, 0, 0);
         }

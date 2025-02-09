@@ -39,12 +39,6 @@ namespace AltoLib
     {
         const string MenuPath = "Alto/Editor/Show Mesh Polygons Count";
 
-        [MenuItem(MenuPath)]
-        static void ToggleEnabled()
-        {
-            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
-        }
-
         public override void OnInspectorGUI()
         {
             if (!Menu.GetChecked(MenuPath))
