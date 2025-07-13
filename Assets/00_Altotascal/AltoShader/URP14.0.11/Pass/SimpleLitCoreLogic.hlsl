@@ -1,5 +1,5 @@
-#ifndef ALTO_14_SIMPLE_LIT_CORE_LOGIC
-#define ALTO_14_SIMPLE_LIT_CORE_LOGIC
+#ifndef ALTO_17_SIMPLE_LIT_CORE_LOGIC
+#define ALTO_17_SIMPLE_LIT_CORE_LOGIC
 
 //==============================================================================
 // Lighting Functions (Copied from Lighting.hlsl)
@@ -15,8 +15,9 @@ half3 Alto_LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half
 {
     float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
     half NdotH = half(saturate(dot(normal, halfVec)));
-    half modifier = pow(NdotH, smoothness);
-    half3 specularReflection = specular.rgb * modifier;
+    half modifier = pow(float(NdotH), float(smoothness)); // Half produces banding, need full precision
+    // NOTE: In order to fix internal compiler error on mobile platforms, this needs to be float3
+    float3 specularReflection = specular.rgb * modifier;
     return lightColor * specularReflection;
 }
 
@@ -116,10 +117,10 @@ half4 Alto_UniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceD
     #if defined(_ADDITIONAL_LIGHTS)
     uint pixelLightCount = GetAdditionalLightsCount();
 
-    #if USE_FORWARD_PLUS
-    for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
+    #if USE_CLUSTER_LIGHT_LOOP
+    [loop] for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
     {
-        FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
+        CLUSTER_LIGHT_LOOP_SUBTRACTIVE_LIGHT_CHECK
 
         Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
 #ifdef _LIGHT_LAYERS
