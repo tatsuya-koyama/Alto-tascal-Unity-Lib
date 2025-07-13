@@ -80,7 +80,7 @@ Shader "Altotascal/URP 17.1.0/Alto Shader"
         [ToggleOff] _RimBurnOn("Rim Burn", Float) = 0.0
         [HDR] _RimColor("Rim Color", Color) = (1, 1, 1, 1)
         _RimPower("Rim Power", Range(0.5, 8.0)) = 3.0
-        _RimSurfaceFade("Rim Surface Fade", Float) = 1.0
+        _RimSurfaceFade("Rim Surface Fade", Float) = 0.0
         _RimSurfacePower("Rim Surface Power", Float) = 1.0
         [ToggleOff] _CubicRimOn("Use Cubic Color as Rim", Float) = 0.0
         [ToggleOff] _ColoredShadowOn("Colored Shadow", Float) = 0.0

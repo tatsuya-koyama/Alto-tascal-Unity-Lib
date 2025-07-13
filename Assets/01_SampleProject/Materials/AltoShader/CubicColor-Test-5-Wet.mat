@@ -45,8 +45,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _RimBurnOn: 0
     - _RimPower: 3
     - _Smoothness: 0.6
     m_Colors:
     - _SpecColor: {r: 4, g: 4, b: 4, a: 0.6}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

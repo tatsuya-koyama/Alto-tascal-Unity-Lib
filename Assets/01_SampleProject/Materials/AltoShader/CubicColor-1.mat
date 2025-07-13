@@ -83,9 +83,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _BillboardOn: 0
     - _Blend: 0
+    - _BlendModePreserveSpecular: 1
     - _Brightness: 1
     - _BumpScale: 1
     - _ColoredShadePower: 0.5
@@ -105,6 +108,7 @@ Material:
     - _DitherCull: 5
     - _DitherMinAlpha: 0
     - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
     - _FogDistance1: 30
     - _FogDistance2: 20
@@ -141,6 +145,8 @@ Material:
     - _RimBurnOn: 0
     - _RimLightingOn: 1
     - _RimPower: 4
+    - _RimSurfaceFade: 0
+    - _RimSurfacePower: 1
     - _RotateSpeedX: 0
     - _RotateSpeedY: 0
     - _RotateSpeedZ: 0
@@ -152,11 +158,20 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
+    - _Sp_BScale: 1
+    - _Sp_GScale: 1
+    - _Sp_Hue: 0
+    - _Sp_PostOffset: 0
+    - _Sp_PreOffset: 0
+    - _Sp_RScale: 1
+    - _Sp_Saturate: 0
+    - _Sp_ValueScale: 1
     - _SpaceSurfaceScale: 1
     - _SpecSource: 0
     - _SpecularHighlights: 1
     - _SpecularSurfaceOn: 0
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _Surface: 0
     - _ToonShadeSmoothness: 0.03
     - _ToonShadeStep1: 0.33
@@ -170,6 +185,7 @@ Material:
     - _WorldSpaceGradient: 1
     - _WorldSpaceNormal: 1
     - _WorldSpaceSurfaceOn: 0
+    - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
     - _BackColor1: {r: 0.9528302, g: 0.6067551, b: 0.88136816, a: 1}
@@ -200,11 +216,13 @@ Material:
     - _RightColor2: {r: 0.51767004, g: 0.8207547, b: 0.112273075, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0.65528244, g: 0.38803846, b: 0.754717, a: 1}
+    - _Sp_TilingParams: {r: 0, g: 0, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularSurfaceParams: {r: 0, g: 0, b: 0, a: 0}
     - _TopColor1: {r: 1, g: 0.935965, b: 0.6179246, a: 1}
     - _TopColor2: {r: 0.9254902, g: 0.50689673, b: 0.3450981, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &493496740580723944
 MonoBehaviour:
   m_ObjectHideFlags: 11

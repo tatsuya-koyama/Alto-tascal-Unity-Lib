@@ -148,7 +148,7 @@ Material:
     - _RimBurnOn: 0
     - _RimLightingOn: 1
     - _RimPower: 2
-    - _RimSurfaceFade: 1
+    - _RimSurfaceFade: 0
     - _RimSurfacePower: 1
     - _RotateSpeedX: 0
     - _RotateSpeedY: 0
