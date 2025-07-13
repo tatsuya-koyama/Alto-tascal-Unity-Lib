@@ -38,6 +38,7 @@ Material:
     - _MultiplyCubicDiffuseOn: 1
     - _RimBurnOn: 0
     - _RimPower: 8
+    - _RimSurfaceFade: 1
     - _Smoothness: 0.45
     m_Colors:
     - _BackColor1: {r: 1, g: 1, b: 1, a: 1}
@@ -56,3 +57,4 @@ Material:
     - _TopColor1: {r: 0.67641187, g: 1, b: 0, a: 1}
     - _TopColor2: {r: 0.95732033, g: 1, b: 0.5896226, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

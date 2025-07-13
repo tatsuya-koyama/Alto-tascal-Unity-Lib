@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_SHADER_14_SHADOW_CASTER_INCLUDED
-#define ALTO_SHADER_14_SHADOW_CASTER_INCLUDED
+﻿#ifndef ALTO_SHADER_17_SHADOW_CASTER_INCLUDED
+#define ALTO_SHADER_17_SHADOW_CASTER_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
@@ -7,6 +7,10 @@
 #endif
 #include "../Generic/AltoShaderUtil.hlsl"
 #include "AltoShader-SharedLogic.hlsl"
+
+#if defined(_ALPHATEST_ON) || defined(_NORMALMAP)
+    #define REQUIRES_UV_INTERPOLATOR
+#endif
 
 struct Attributes
 {
@@ -20,7 +24,10 @@ struct Attributes
 struct Varyings
 {
     float4 positionCS      : SV_POSITION;
-    float2 uv              : TEXCOORD1;
+
+    #if defined(REQUIRES_UV_INTERPOLATOR)
+        float2 uv          : TEXCOORD1;
+    #endif
 
     #ifdef _NORMALMAP
         half4 normalWS    : TEXCOORD2;    // xyz: normal, w: viewDir.x
@@ -77,17 +84,20 @@ Varyings DepthNormalsVertex(Attributes input)
 
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    //output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+    #if defined(REQUIRES_UV_INTERPOLATOR)
+        output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
+    #endif
+    // output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
     output.positionCS = movedPositionCS;
 
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
 
-    half3 viewDirWS = GetWorldSpaceNormalizeViewDir(vertexInput.positionWS);
     #if defined(_NORMALMAP)
+        half3 viewDirWS = GetWorldSpaceNormalizeViewDir(vertexInput.positionWS);
         output.normalWS = half4(normalInput.normalWS, viewDirWS.x);
         output.tangentWS = half4(normalInput.tangentWS, viewDirWS.y);
         output.bitangentWS = half4(normalInput.bitangentWS, viewDirWS.z);
@@ -106,13 +116,16 @@ void DepthNormalsFragment(
 #endif
 )
 {
+    UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
+    #if defined(_ALPHATEST_ON)
+        Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
+    #endif
 
-#ifdef LOD_FADE_CROSSFADE
-    LODFadeCrossFade(input.positionCS);
-#endif
+    #if defined(LOD_FADE_CROSSFADE)
+        LODFadeCrossFade(input.positionCS);
+    #endif
 
     #if defined(_GBUFFER_NORMALS_OCT)
         float3 normalWS = normalize(input.normalWS);
@@ -121,10 +134,8 @@ void DepthNormalsFragment(
         half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);      // values between [ 0,  1]
         outNormalWS = half4(packedNormalWS, 0.0);
     #else
-        float2 uv = input.uv;
-
         #if defined(_NORMALMAP)
-            half3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
+            half3 normalTS = SampleNormal(input.uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
             half3 normalWS = TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, input.bitangentWS.xyz, input.normalWS.xyz));
         #else
             half3 normalWS = input.normalWS;

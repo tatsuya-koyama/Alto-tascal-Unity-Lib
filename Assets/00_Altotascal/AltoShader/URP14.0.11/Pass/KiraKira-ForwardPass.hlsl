@@ -1,5 +1,5 @@
-#ifndef ALTO_10_KIRAKIRA_PASS_INCLUDED
-#define ALTO_10_KIRAKIRA_PASS_INCLUDED
+#ifndef ALTO_17_KIRAKIRA_PASS_INCLUDED
+#define ALTO_17_KIRAKIRA_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "SimpleLitCoreLogic.hlsl"
@@ -294,7 +294,7 @@ void LitPassFragmentSimple(
 
     InputData inputData;
     InitializeInputData(input, surfaceData.normalTS, inputData);
-    SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv, _BaseMap);
+    SETUP_DEBUG_TEXTURE_DATA(inputData, UNDO_TRANSFORM_TEX(input.uv, _BaseMap));
 
 #ifdef _DBUFFER
     ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);

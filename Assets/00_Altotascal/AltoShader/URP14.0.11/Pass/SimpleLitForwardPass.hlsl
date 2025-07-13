@@ -6,7 +6,6 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 #include "SimpleLitCoreLogic.hlsl"
-#include "../Generic/AltoShaderUtil.hlsl"
 
 struct Attributes
 {

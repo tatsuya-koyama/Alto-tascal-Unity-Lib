@@ -1,5 +1,5 @@
-﻿#ifndef ALTO_14_STYLIZED_WATER_PASS_INCLUDED
-#define ALTO_14_STYLIZED_WATER_PASS_INCLUDED
+﻿#ifndef ALTO_17_STYLIZED_WATER_PASS_INCLUDED
+#define ALTO_17_STYLIZED_WATER_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
@@ -356,7 +356,7 @@ void LitPassFragmentSimple(
 
     InputData inputData;
     InitializeInputData(input, surfaceData.normalTS, inputData);
-    SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv, _BaseMap);
+    SETUP_DEBUG_TEXTURE_DATA(inputData, UNDO_TRANSFORM_TEX(input.uv, _BaseMap));
 
 #ifdef _DBUFFER
     ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
