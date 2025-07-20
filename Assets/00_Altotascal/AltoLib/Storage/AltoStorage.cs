@@ -1,10 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace AltoLib
@@ -21,14 +18,15 @@ namespace AltoLib
 
         protected List<IAltoStorageData> _dataList;
 
-        const int IvSeedLength = 22;
-
         protected abstract string CryptoKey();
 
         /// <summary>
         /// Returns all data members list.
         /// </summary>
         protected abstract List<IAltoStorageData> InitDataList();
+
+        protected IStorageIO _storageIO;
+        protected virtual IStorageIO StorageIO => _storageIO ??= new StorageIO_LocalFile();
 
         protected virtual string DataPath()
         {
@@ -102,74 +100,15 @@ namespace AltoLib
             data.isWriting = true;
             data.SavePreProcess();
             data.OnBeforeSave();
+
             #if UNITY_EDITOR
-            await WriteDebugFileAsync(data);
+            await StorageIO.WriteDebugFileAsync(data, DataPath(), SlotPrefix());
             #endif
-            bool succeeded = await WriteFileAsync(data, useDirtyCache);
+            bool succeeded = await StorageIO.WriteFileAsync(data, CryptoKey(), DataPath(), SlotPrefix());
+
+            if (succeeded) { data.ClearDirty(useDirtyCache); }
             data.isWriting = false;
             return succeeded;
-        }
-
-        async UniTask<bool> WriteFileAsync(IAltoStorageData data, bool useDirtyCache = false)
-        {
-            try
-            {
-                string json = JsonUtility.ToJson(data);
-                byte[] dataBytes = Encoding.UTF8.GetBytes(json);
-
-                string ivSeed = IdUtil.GetGuidAs22Chars();
-                dataBytes = AltoCrypto.Encrypt(dataBytes, CryptoKey(), ivSeed);
-                byte[] ivSeedBytes = Encoding.UTF8.GetBytes(ivSeed);
-
-                string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileName() }";
-                string tmpPath = path + ".tmp";
-                using (var fileStream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    await fileStream.WriteAsync(ivSeedBytes, 0, ivSeedBytes.Length);
-                    await fileStream.WriteAsync(dataBytes, 0, dataBytes.Length);
-                    fileStream.Flush(flushToDisk: true);
-                }
-
-                if (File.Exists(path)) { File.Delete(path); }
-                File.Move(tmpPath, path);
-                data.ClearDirty(useDirtyCache);
-                return true;
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.LogException(e);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// デバッグ用に Plain Text の json ファイルを保存
-        /// </summary>
-        async UniTask<bool> WriteDebugFileAsync(IAltoStorageData data)
-        {
-            try
-            {
-                string json = JsonUtility.ToJson(data, true);
-                byte[] dataBytes = Encoding.UTF8.GetBytes(json);
-
-                string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileNameForDebug() }";
-                string tmpPath = path + ".tmp";
-                Log($"Write debug file : {path}");
-                using (var fileStream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    await fileStream.WriteAsync(dataBytes, 0, dataBytes.Length);
-                    fileStream.Flush(flushToDisk: true);
-                }
-
-                if (File.Exists(path)) { File.Delete(path); }
-                File.Move(tmpPath, path);
-                return true;
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.LogException(e);
-                return false;
-            }
         }
 
         //----------------------------------------------------------------------
@@ -197,48 +136,10 @@ namespace AltoLib
 
         public async UniTask<bool> LoadAsync(IAltoStorageData data)
         {
-            bool succeeded = await ReadFileAsync(data);
+            bool succeeded = await StorageIO.ReadFileAsync(data, CryptoKey(), DataPath(), SlotPrefix());
+            if (succeeded) { MigrateIfNeeded(data); }
             data.OnAfterLoad();
             return succeeded;
-        }
-
-        async UniTask<bool> ReadFileAsync(IAltoStorageData data)
-        {
-            string path = $"{ DataPath() }/{ SlotPrefix() }{ data.SaveFileName() }";
-            Log($"Read file : {path}");
-            if (!File.Exists(path))
-            {
-                Log($"File not exists, so set initial data : { data.GetType() }");
-                data.OnCreateNewData();
-                return false;
-            }
-
-            try
-            {
-                byte[] dataBytes;
-                byte[] ivSeedBytes = new byte[IvSeedLength];
-                using (var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read))
-                {
-                    dataBytes = new byte[fileStream.Length - IvSeedLength];
-                    await fileStream.ReadAsync(ivSeedBytes, 0, IvSeedLength);
-                    await fileStream.ReadAsync(dataBytes, 0, dataBytes.Length);
-                }
-
-                string ivSeed = Encoding.UTF8.GetString(ivSeedBytes);
-                dataBytes = AltoCrypto.Decrypt(dataBytes, CryptoKey(), ivSeed);
-
-                string json = Encoding.UTF8.GetString(dataBytes);
-                data.OnDeserialize(json);
-                data.ClearDirty();
-
-                MigrateIfNeeded(data);
-                return true;
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.LogException(e);
-                return false;
-            }
         }
 
         void MigrateIfNeeded(IAltoStorageData data)
@@ -261,17 +162,17 @@ namespace AltoLib
         }
 
         //----------------------------------------------------------------------
-        // private
+        // Console Log
         //----------------------------------------------------------------------
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         protected void Log(string message)
         {
             if (!logVerbose) { return; }
             UnityEngine.Debug.Log($"<color=#61d521>[AltoStorage]</color> {message}");
         }
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         protected void LogError(string message)
         {
             UnityEngine.Debug.LogError($"<color=#61d521>[AltoStorage]</color> [Error] {message}");

@@ -43,25 +43,25 @@ namespace AltoFramework.Production
 
         public async UniTask GoToNextScene(ISceneContext nextSceneContext, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
-            AltoLog.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
+            Alto.Log.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
             await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), false, fadeOutTime, fadeInTime);
         }
 
         public async UniTask GoToNextScene(string nextSceneName, float fadeOutTime = 0.3f, float fadeInTime = 0.3f)
         {
-            AltoLog.FW("[SceneDirector] * No scene context is given.");
+            Alto.Log.FW("[SceneDirector] * No scene context is given.");
             await LoadSceneWithFade(null, nextSceneName, false, fadeOutTime, fadeInTime);
         }
 
         public async UniTask GoToNextSceneWithCustomTransition(ISceneContext nextSceneContext)
         {
-            AltoLog.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
+            Alto.Log.FW($"[SceneDirector] Load scene with scene context : <b>{nextSceneContext}</b>");
             await LoadSceneWithFade(nextSceneContext, nextSceneContext.SceneName(), true);
         }
 
         public async UniTask GoToNextSceneWithCustomTransition(string nextSceneName)
         {
-            AltoLog.FW("[SceneDirector] * No scene context is given.");
+            Alto.Log.FW("[SceneDirector] * No scene context is given.");
             await LoadSceneWithFade(null, nextSceneName, true);
         }
 
@@ -84,7 +84,7 @@ namespace AltoFramework.Production
         {
             if (isInTransition)
             {
-                AltoLog.FW_Warn($"[SceneDirector] Now in transition - {nextSceneName} is dismissed.");
+                Alto.Log.FW_Warn($"[SceneDirector] Now in transition - {nextSceneName} is dismissed.");
                 return;
             }
             isInTransition = true;
@@ -110,7 +110,7 @@ namespace AltoFramework.Production
             await LoadAndUnloadResources(nextSceneContext);
 
             //----- 次のシーンの読み込み
-            AltoLog.FW("[SceneDirector] - Init <b>Before</b> Load Scene");
+            Alto.Log.FW("[SceneDirector] - Init <b>Before</b> Load Scene");
             if (nextSceneContext != null)
             {
                 await nextSceneContext.InitBeforeLoadScene();
@@ -119,7 +119,7 @@ namespace AltoFramework.Production
             await SceneManager.LoadSceneAsync(nextSceneName);
             DisableLocalAudioListener();
 
-            AltoLog.FW("[SceneDirector] - Init <b>After</b> Load Scene");
+            Alto.Log.FW("[SceneDirector] - Init <b>After</b> Load Scene");
             if (currentSceneContext != null)
             {
                 await currentSceneContext.InitAfterLoadScene();

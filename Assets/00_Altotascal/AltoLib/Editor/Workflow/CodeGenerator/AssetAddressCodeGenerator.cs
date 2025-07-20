@@ -34,7 +34,7 @@ namespace AltoLib
                     bool isNew = addresseSet.Add(entry.address);
                     if (!isNew)
                     {
-                        AltoLog.FW_Warn($"Duplicated address found : { entry.address }");
+                        Alto.Log.FW_Warn($"Duplicated address found : { entry.address }");
                     }
                 }
             }

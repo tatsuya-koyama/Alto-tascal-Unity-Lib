@@ -67,7 +67,7 @@ namespace AltoLib
 
         static AssetInfoList LoadPrefs()
         {
-            Debug.Log("Loading Favorites Prefs...");
+            // Debug.Log("Loading Favorites Prefs...");
             string prefsKey = PrefsKey();
             if (!EditorPrefs.HasKey(prefsKey)) { return new AssetInfoList(); }
 

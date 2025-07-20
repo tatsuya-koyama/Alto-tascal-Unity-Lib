@@ -38,7 +38,7 @@ namespace AltoLib
             var objs = Selection.gameObjects.OrderBy(go => go.transform.GetSiblingIndex()).ToList();
             if (objs.Count <= 2)
             {
-                AltoLog.Error("3 つ以上のオブジェクトを選択してください");
+                Alto.Log.Error("3 つ以上のオブジェクトを選択してください");
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace AltoLib
             var obj = Selection.activeGameObject;
             if (obj == null)
             {
-                AltoLog.Error("オブジェクトを選択してください");
+                Alto.Log.Error("オブジェクトを選択してください");
                 return;
             }
 

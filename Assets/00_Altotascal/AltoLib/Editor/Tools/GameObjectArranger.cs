@@ -104,12 +104,12 @@ namespace AltoLib
         {
             if (_prefab == null)
             {
-                AltoLog.Warn("Please select generate target object.");
+                Alto.Log.Warn("Please select generate target object.");
                 return;
             }
             if (_parent == _prefab)
             {
-                AltoLog.Warn("Parent object and Target object should be different.");
+                Alto.Log.Warn("Parent object and Target object should be different.");
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace AltoLib
                 }
             }
 
-            AltoLog.Info($"Generate { genInfo.Count } objects ...");
+            Alto.Log.Info($"Generate { genInfo.Count } objects ...");
             PreprocessGenerateInfo(genInfo);
             DoGenerate(genInfo);
         }

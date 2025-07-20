@@ -89,7 +89,7 @@ namespace AltoFramework.Production
             var obj = _scriptableObjs.Get(assetAddress);
             if (!(obj is T))
             {
-                AltoLog.FW_Error($"[ResourceStore] ScriptableObject cast error : <{assetAddress}>");
+                Alto.Log.FW_Error($"[ResourceStore] ScriptableObject cast error : <{assetAddress}>");
                 return null;
             }
             return (T)obj;
@@ -140,7 +140,7 @@ namespace AltoFramework.Production
         {
             if (_isLoading)
             {
-                AltoLog.FW("[ResourceStore] Loading is already running.");
+                Alto.Log.FW("[ResourceStore] Loading is already running.");
                 return;
             }
             _isLoading = true;
@@ -177,7 +177,7 @@ namespace AltoFramework.Production
             var resource = await asyncOpHandle.Task;
             if (asyncOpHandle.Status != AsyncOperationStatus.Succeeded)
             {
-                AltoLog.FW_Error($"[ResourceStore] Load Error : <b>{assetAddress}</b>");
+                Alto.Log.FW_Error($"[ResourceStore] Load Error : <b>{assetAddress}</b>");
                 return;
             }
             _registry.MarkLoaded(assetAddress, resource, asyncOpHandle);
@@ -205,7 +205,7 @@ namespace AltoFramework.Production
                     break;
 
                 default:
-                    AltoLog.FW_Warn($"[ResourceStore] Unsupported asset type : {assetAddress} - {resource.GetType()}");
+                    Alto.Log.FW_Warn($"[ResourceStore] Unsupported asset type : {assetAddress} - {resource.GetType()}");
                     break;
             }
         }
@@ -265,7 +265,7 @@ namespace AltoFramework.Production
             }
             else
             {
-                AltoLog.FW_Warn($"[ResourceStore] Unsupported asset type : {entry.address} - {entry.type}");
+                Alto.Log.FW_Warn($"[ResourceStore] Unsupported asset type : {entry.address} - {entry.type}");
             }
         }
     }

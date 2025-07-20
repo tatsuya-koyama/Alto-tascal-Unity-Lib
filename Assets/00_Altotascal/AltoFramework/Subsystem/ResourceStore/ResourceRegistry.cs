@@ -118,7 +118,7 @@ namespace AltoFramework
             ResourceEntry entry;
             if (!_entries.TryGetValue(assetAddress, out entry))
             {
-                AltoLog.FW_Error($"[ResourceRegistry] Entry not found : {assetAddress}");
+                Alto.Log.FW_Error($"[ResourceRegistry] Entry not found : {assetAddress}");
                 return null;
             }
             return entry;
@@ -180,7 +180,7 @@ namespace AltoFramework
         {
             if (!_entries.ContainsKey(assetAddress))
             {
-                AltoLog.FW_Warn($"[ResourceRegistry] Key not found : {assetAddress}");
+                Alto.Log.FW_Warn($"[ResourceRegistry] Key not found : {assetAddress}");
                 return false;
             }
             return true;

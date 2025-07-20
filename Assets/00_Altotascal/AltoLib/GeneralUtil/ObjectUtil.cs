@@ -17,12 +17,12 @@ namespace AltoLib
 
             if (fromFields.Count == 0)
             {
-                AltoLog.Error($"[ObjectUtil] FieldInfo of from-object is null.");
+                Alto.Log.Error($"[ObjectUtil] FieldInfo of from-object is null.");
                 return false;
             }
             if (toFields.Count == 0)
             {
-                AltoLog.Error($"[ObjectUtil] FieldInfo of to-object is null.");
+                Alto.Log.Error($"[ObjectUtil] FieldInfo of to-object is null.");
                 return false;
             }
 
@@ -34,7 +34,7 @@ namespace AltoLib
                 });
                 if (fromField == null)
                 {
-                    AltoLog.Error($"[ObjectUtil] Field not found : {toField.Name}");
+                    Alto.Log.Error($"[ObjectUtil] Field not found : {toField.Name}");
                     return false;
                 }
 
@@ -54,12 +54,12 @@ namespace AltoLib
 
             if (fromProps.Count == 0)
             {
-                AltoLog.Error($"[ObjectUtil] PropertyInfo of from-object is null.");
+                Alto.Log.Error($"[ObjectUtil] PropertyInfo of from-object is null.");
                 return false;
             }
             if (toProps.Count == 0)
             {
-                AltoLog.Error($"[ObjectUtil] PropertyInfo of to-object is null.");
+                Alto.Log.Error($"[ObjectUtil] PropertyInfo of to-object is null.");
                 return false;
             }
 
@@ -71,7 +71,7 @@ namespace AltoLib
                 });
                 if (fromProp == null)
                 {
-                    AltoLog.Error($"[ObjectUtil] Property not found : {toProp.Name}");
+                    Alto.Log.Error($"[ObjectUtil] Property not found : {toProp.Name}");
                     return false;
                 }
 

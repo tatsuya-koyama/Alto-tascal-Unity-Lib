@@ -74,7 +74,7 @@ namespace AltoFramework.Editor
 
         bool IsReady()
         {
-            return (EditorApplication.isPlaying && Alto.context != null);
+            return (EditorApplication.isPlaying && Alto.Context != null);
         }
 
         void AssignId(List<AltoResourceTreeViewItem> items)
@@ -87,36 +87,36 @@ namespace AltoFramework.Editor
 
         void DoCollectGameObjects(List<AltoResourceTreeViewItem> items)
         {
-            var entries = Alto.resource.registry.GetEntries().Where(x => {
+            var entries = Alto.Resource.registry.GetEntries().Where(x => {
                 return x.type == typeof(GameObject);
             });
             foreach (var entry in entries)
             {
-                var resource = Alto.resource.GetGameObj(entry.address);
+                var resource = Alto.Resource.GetGameObj(entry.address);
                 items.Add(MakeItem(entry, "Prefab", resource));
             }
         }
 
         void DoCollectScriptableObjects(List<AltoResourceTreeViewItem> items)
         {
-            var entries = Alto.resource.registry.GetEntries().Where(x => {
+            var entries = Alto.Resource.registry.GetEntries().Where(x => {
                 return x.type.IsSubclassOf(typeof(ScriptableObject));
             });
             foreach (var entry in entries)
             {
-                var resource = Alto.resource.GetObj<ScriptableObject>(entry.address);
+                var resource = Alto.Resource.GetObj<ScriptableObject>(entry.address);
                 items.Add(MakeItem(entry, "Scriptable Object", resource));
             }
         }
 
         void DoCollectSpriteAtlases(List<AltoResourceTreeViewItem> items)
         {
-            var entries = Alto.resource.registry.GetEntries().Where(x => {
+            var entries = Alto.Resource.registry.GetEntries().Where(x => {
                 return x.type == typeof(SpriteAtlas);
             });
             foreach (var entry in entries)
             {
-                var resource = Alto.resource.GetSpriteAtlas(entry.address);
+                var resource = Alto.Resource.GetSpriteAtlas(entry.address);
                 long memorySize = GetSpriteAtlasTextureMemory(resource);
                 items.Add(MakeItem(entry, "Sprite Atlas", resource, memorySize));
             }
@@ -124,12 +124,12 @@ namespace AltoFramework.Editor
 
         void DoCollectAudioClips(List<AltoResourceTreeViewItem> items)
         {
-            var entries = Alto.resource.registry.GetEntries().Where(x => {
+            var entries = Alto.Resource.registry.GetEntries().Where(x => {
                 return x.type == typeof(AudioClip);
             });
             foreach (var entry in entries)
             {
-                var resource = Alto.resource.GetAudio(entry.address);
+                var resource = Alto.Resource.GetAudio(entry.address);
                 items.Add(MakeItem(entry, "Audio Clip", resource));
             }
         }

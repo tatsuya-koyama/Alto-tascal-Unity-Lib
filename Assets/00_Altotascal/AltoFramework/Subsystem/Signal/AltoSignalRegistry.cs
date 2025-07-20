@@ -17,11 +17,13 @@ namespace AltoFramework
             IAltoSignal signal;
             if (_signals.TryGetValue(signalType, out signal))
             {
+                signal.OnGet();
                 return (T)signal;
             }
 
             signal = (IAltoSignal)Activator.CreateInstance(signalType);
             _signals.Add(signalType, signal);
+            signal.OnGet();
             return (T)signal;
         }
 

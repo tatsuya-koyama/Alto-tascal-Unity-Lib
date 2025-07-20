@@ -9,47 +9,76 @@ namespace AltoFramework
     /// </summary>
     public class Alto
     {
-        private static IGlobalContext _context = null;
+        static IGlobalContext _context = null;
 
-        public static IGlobalContext context
+        public static IGlobalContext Context
         {
             get
             {
                 if (_context == null)
                 {
-                    AltoLog.FW("Initialize Alto Context automatically...");
+                    Alto.Log.FW("Initialize Alto Context automatically...");
                     _context = new Production.GlobalContext();
                     _context.Init();
                 }
                 return _context;
             }
-            set { _context = value; }
         }
 
-        public static bool hasGlobalContext => (_context != null);
+        public static bool HasGlobalContext => (_context != null);
+
+        public static void InitContext(IGlobalContext context, IBootConfig bootConfig)
+        {
+            _context = context;
+            context.Init(bootConfig);
+        }
+
+        //----------------------------------------------------------------------
+        // Custom Console Logger
+        //
+        // * UnityEngine.Debug.Log() を拡張したロガー。
+        //   ログは Conditional 属性でリリースビルドからコードレベルで除外したいが、
+        //   interface と Conditional 属性が併用できないため、
+        //   これに関しては Context を介さず個別にインスタンスを保持。
+        //   ※ このロガーはフレームワークレイヤーからも呼ばれる
+        //----------------------------------------------------------------------
+
+        static CustomLogger _logger = null;
+
+        public static CustomLogger Log
+        {
+            get
+            {
+                return _logger ??= new();
+            }
+            set
+            {
+                _logger = value;
+            }
+        }
 
         //----------------------------------------------------------------------
         // Shortcut methods / properties
         //----------------------------------------------------------------------
 
-        public static ISceneDirector scene
+        public static ISceneDirector Scene
         {
-            get { return context.sceneDirector; }
+            get { return Context.sceneDirector; }
         }
 
-        public static ISceneContext sceneContext
+        public static ISceneContext SceneContext
         {
-            get { return context.sceneDirector?.currentSceneContext; }
+            get { return Context.sceneDirector?.currentSceneContext; }
         }
 
-        public static bool hasSceneContext => (sceneContext != null);
+        public static bool HasSceneContext => (SceneContext != null);
 
         /// <summary>
         ///   Returns wrapped frame delta time.
         /// </summary>
         public static float dt
         {
-            get { return context.timeKeeper.dt; }
+            get { return Context.timeKeeper.dt; }
         }
 
         /// <summary>
@@ -57,27 +86,27 @@ namespace AltoFramework
         /// </summary>
         public static float t
         {
-            get { return context.timeKeeper.t; }
+            get { return Context.timeKeeper.t; }
         }
 
-        public static ITimeKeeper time
+        public static ITimeKeeper Time
         {
-            get { return context.timeKeeper; }
+            get { return Context.timeKeeper; }
         }
 
-        public static IResourceStore resource
+        public static IResourceStore Resource
         {
-            get { return context.resourceStore; }
+            get { return Context.resourceStore; }
         }
 
-        public static IAudioPlayer bgm
+        public static IAudioPlayer Bgm
         {
-            get { return context.bgmPlayer; }
+            get { return Context.bgmPlayer; }
         }
 
-        public static IAudioPlayer se
+        public static IAudioPlayer Se
         {
-            get { return context.sePlayer; }
+            get { return Context.sePlayer; }
         }
 
         /// <summary>
@@ -97,12 +126,12 @@ namespace AltoFramework
         /// </code></example>
         public static T Signal<T>() where T : IAltoSignal, new()
         {
-            return context.signalHub.sceneScopeSignalRegistry.GetOrCreate<T>();
+            return Context.signalHub.sceneScopeSignalRegistry.GetOrCreate<T>();
         }
 
         public static T GlobalSignal<T>() where T : IAltoSignal, new()
         {
-            return context.signalHub.globalScopeSignalRegistry.GetOrCreate<T>();
+            return Context.signalHub.globalScopeSignalRegistry.GetOrCreate<T>();
         }
 
         /// <summary>
@@ -123,12 +152,12 @@ namespace AltoFramework
         /// </code></example>
         public static IAltoTween Tween(object obj = null)
         {
-            return context.tweenerHub.sceneScopeTweener.NewTween(obj);
+            return Context.tweenerHub.sceneScopeTweener.NewTween(obj);
         }
 
-        public static IAltoTweener tweener
+        public static IAltoTweener Tweener
         {
-            get { return context.tweenerHub.sceneScopeTweener; }
+            get { return Context.tweenerHub.sceneScopeTweener; }
         }
 
         /// <summary>
@@ -149,12 +178,12 @@ namespace AltoFramework
             GameObject original, int reserveNum
         ) where T : PoolableBehaviour
         {
-            return context.objectPoolHub.sceneScopeObjectPoolRegistry.CreatePool<T>(original, reserveNum);
+            return Context.objectPoolHub.sceneScopeObjectPoolRegistry.CreatePool<T>(original, reserveNum);
         }
 
         public static AltoObjectPool<T> ObjectPool<T>() where T : PoolableBehaviour
         {
-            return context.objectPoolHub.sceneScopeObjectPoolRegistry.GetPool<T>();
+            return Context.objectPoolHub.sceneScopeObjectPoolRegistry.GetPool<T>();
         }
 
         //----------------------------------------------------------------------
@@ -171,13 +200,13 @@ namespace AltoFramework
         /// </code><example>
         public static UniTask Async(UniTask task)
         {
-            var ct = sceneContext.CancelTokenSource.Token;
+            var ct = SceneContext.CancelTokenSource.Token;
             return task.AttachExternalCancellation(ct);
         }
 
         public static UniTask Wait(float seconds)
         {
-            return Async(time.Wait(seconds));
+            return Async(Time.Wait(seconds));
         }
     }
 }

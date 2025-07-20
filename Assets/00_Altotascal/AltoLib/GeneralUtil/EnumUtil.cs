@@ -28,7 +28,7 @@ namespace AltoLib
             }
             catch (Exception ex)
             {
-                AltoLog.Error($"[EnumUtil] Parse error : {str}");
+                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
                 throw ex;
             }
         }
@@ -42,7 +42,7 @@ namespace AltoLib
             bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
             if (!parsed)
             {
-                AltoLog.Error($"[EnumUtil] Parse error : {str}");
+                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
             }
             return result;
         }
@@ -56,7 +56,7 @@ namespace AltoLib
             bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
             if (!parsed && verbose)
             {
-                AltoLog.Error($"[EnumUtil] Parse error : {str}");
+                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
             }
             return parsed;
         }
@@ -64,7 +64,7 @@ namespace AltoLib
         /// <summary>
         /// 未定義の場合に defaultValue をセットする TryParse().
         /// 空文字列 / null の場合も defaultValue にする
-        /// </summary>        
+        /// </summary>
         public static bool TryParse<T>(string str, out T result, T defaultValue, bool verbose = true) where T : struct
         {
             if (String.IsNullOrEmpty(str))
@@ -76,7 +76,7 @@ namespace AltoLib
             if (!parsed)
             {
                 result = defaultValue;
-                if (verbose) { AltoLog.Error($"[EnumUtil] Parse error : {str}"); }
+                if (verbose) { Alto.Log.Error($"[EnumUtil] Parse error : {str}"); }
             }
             return parsed;
         }

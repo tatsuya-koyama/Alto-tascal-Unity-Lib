@@ -12,7 +12,7 @@ namespace AltoFramework
         {
             if (_pool == null)
             {
-                AltoLog.FW_Warn("[PoolableBehaviour] Pool is not set.");
+                Alto.Log.FW_Warn("[PoolableBehaviour] Pool is not set.");
                 Destroy(gameObject);
                 return;
             }

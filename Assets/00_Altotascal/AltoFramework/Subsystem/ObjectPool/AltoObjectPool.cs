@@ -48,8 +48,8 @@ namespace AltoFramework
             else
             {
                 obj = Create();
-                AltoLog.Info($"[AltoObjectPool] Pool ({typeof(T)}) is empty"
-                    + $" (now total is <color=#{AltoLog.COLOR_WARN}>{ this.reservedNum }</color>)");
+                Alto.Log.Info($"[AltoObjectPool] Pool ({typeof(T)}) is empty"
+                    + $" (now total is <color=#{CustomLogger.COLOR_WARN}>{ this.reservedNum }</color>)");
             }
 
             obj.gameObject.SetActive(true);
@@ -107,12 +107,12 @@ namespace AltoFramework
         // For debug
         //----------------------------------------------------------------------
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         void CheckMultipleReturn(T obj)
         {
             if (_pool.Contains(obj))
             {
-                AltoLog.FW_Warn($"[AltoObjectPool] Multiple return detected : {typeof(T)}");
+                Alto.Log.FW_Warn($"[AltoObjectPool] Multiple return detected : {typeof(T)}");
             }
         }
     }

@@ -45,7 +45,7 @@ namespace AltoLib
             return $"{ base.ToString() } - { JsonUtility.ToJson(this) }";
         }
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         void Log(string message)
         {
             if (!logVerbose) { return; }

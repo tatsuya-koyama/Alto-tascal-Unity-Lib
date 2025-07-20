@@ -1,10 +1,25 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AltoFramework
 {
     public interface IAltoSignal
     {
+        void OnGet();
         void Clear();
+    }
+
+    /// <summary>
+    /// Emit() 内で Emit() されたときの無限ループ検出用
+    /// </summary>
+    internal class AltoSignalGuard
+    {
+        public const int MaxEmitInFrame = 999;
+
+        public static void Abort(object context)
+        {
+            throw new Exception($"[{context.GetType().FullName}] Signal's Emit seems to be stuck in infinite loop");
+        }
     }
 
     /// <summary>
@@ -12,17 +27,34 @@ namespace AltoFramework
     /// </summary>
     public abstract class AltoSignal : IAltoSignal
     {
-        private Action _callbacks;
-        private Action _oneShotCallbacks;
+        Action _callbacks;
+        Action _oneShotCallbacks;
+        Action _lastCallback;
+        int _emitCount = 0;
 
-        public void Connect(Action action)
+        public void OnGet()
         {
-            _callbacks += action;
+            _lastCallback = null;
         }
 
-        public void ConnectOnce(Action action)
+        public void Clear()
+        {
+            _callbacks = null;
+            _oneShotCallbacks = null;
+        }
+
+        public AltoSignal Connect(Action action)
+        {
+            _callbacks += action;
+            _lastCallback = action;
+            return this;
+        }
+
+        public AltoSignal ConnectOnce(Action action)
         {
             _oneShotCallbacks += action;
+            _lastCallback = action;
+            return this;
         }
 
         public void Disconnect(Action action)
@@ -33,15 +65,22 @@ namespace AltoFramework
 
         public void Emit()
         {
+            ++_emitCount;
+            if (_emitCount > AltoSignalGuard.MaxEmitInFrame)
+            {
+                AltoSignalGuard.Abort(this);
+                return;
+            }
+
             _callbacks?.Invoke();
             _oneShotCallbacks?.Invoke();
             _oneShotCallbacks = null;
+            _emitCount = 0;
         }
 
-        public void Clear()
+        public void LifeLink(Component component)
         {
-            _callbacks = null;
-            _oneShotCallbacks = null;
+            AltoSignalLifeLinkHelper.LifeLink(component, this, _lastCallback);
         }
     }
 
@@ -50,17 +89,34 @@ namespace AltoFramework
     /// </summary>
     public abstract class AltoSignal<T> : IAltoSignal
     {
-        private Action<T> _callbacks;
-        private Action<T> _oneShotCallbacks;
+        Action<T> _callbacks;
+        Action<T> _oneShotCallbacks;
+        Action<T> _lastCallback;
+        int _emitCount = 0;
 
-        public void Connect(Action<T> action)
+        public void OnGet()
         {
-            _callbacks += action;
+            _lastCallback = null;
         }
 
-        public void ConnectOnce(Action<T> action)
+        public void Clear()
+        {
+            _callbacks = null;
+            _oneShotCallbacks = null;
+        }
+
+        public AltoSignal<T> Connect(Action<T> action)
+        {
+            _callbacks += action;
+            _lastCallback = action;
+            return this;
+        }
+
+        public AltoSignal<T> ConnectOnce(Action<T> action)
         {
             _oneShotCallbacks += action;
+            _lastCallback = action;
+            return this;
         }
 
         public void Disconnect(Action<T> action)
@@ -71,15 +127,22 @@ namespace AltoFramework
 
         public void Emit(T arg)
         {
+            ++_emitCount;
+            if (_emitCount > AltoSignalGuard.MaxEmitInFrame)
+            {
+                AltoSignalGuard.Abort(this);
+                return;
+            }
+
             _callbacks?.Invoke(arg);
             _oneShotCallbacks?.Invoke(arg);
             _oneShotCallbacks = null;
+            _emitCount = 0;
         }
 
-        public void Clear()
+        public void LifeLink(Component component)
         {
-            _callbacks = null;
-            _oneShotCallbacks = null;
+            AltoSignalLifeLinkHelper.LifeLink(component, this, _lastCallback);
         }
     }
 
@@ -88,17 +151,34 @@ namespace AltoFramework
     /// </summary>
     public abstract class AltoSignal<T1, T2> : IAltoSignal
     {
-        private Action<T1, T2> _callbacks;
-        private Action<T1, T2> _oneShotCallbacks;
+        Action<T1, T2> _callbacks;
+        Action<T1, T2> _oneShotCallbacks;
+        Action<T1, T2> _lastCallback;
+        int _emitCount = 0;
 
-        public void Connect(Action<T1, T2> action)
+        public void OnGet()
         {
-            _callbacks += action;
+            _lastCallback = null;
         }
 
-        public void ConnectOnce(Action<T1, T2> action)
+        public void Clear()
+        {
+            _callbacks = null;
+            _oneShotCallbacks = null;
+        }
+
+        public AltoSignal<T1, T2> Connect(Action<T1, T2> action)
+        {
+            _callbacks += action;
+            _lastCallback = action;
+            return this;
+        }
+
+        public AltoSignal<T1, T2> ConnectOnce(Action<T1, T2> action)
         {
             _oneShotCallbacks += action;
+            _lastCallback = action;
+            return this;
         }
 
         public void Disconnect(Action<T1, T2> action)
@@ -109,15 +189,22 @@ namespace AltoFramework
 
         public void Emit(T1 arg1, T2 arg2)
         {
+            ++_emitCount;
+            if (_emitCount > AltoSignalGuard.MaxEmitInFrame)
+            {
+                AltoSignalGuard.Abort(this);
+                return;
+            }
+
             _callbacks?.Invoke(arg1, arg2);
             _oneShotCallbacks?.Invoke(arg1, arg2);
             _oneShotCallbacks = null;
+            _emitCount = 0;
         }
 
-        public void Clear()
+        public void LifeLink(Component component)
         {
-            _callbacks = null;
-            _oneShotCallbacks = null;
+            AltoSignalLifeLinkHelper.LifeLink(component, this, _lastCallback);
         }
     }
 }

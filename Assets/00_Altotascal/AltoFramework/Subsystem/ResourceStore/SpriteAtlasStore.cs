@@ -20,7 +20,7 @@ namespace AltoFramework
             Sprite sprite;
             if (!_sprites.TryGetValue(spriteName, out sprite))
             {
-                AltoLog.FW_Error($"[SpriteAtlasStore] Sprite <b>{spriteName}</b> not found.");
+                Alto.Log.FW_Error($"[SpriteAtlasStore] Sprite <b>{spriteName}</b> not found.");
                 return null;
             }
             return sprite;

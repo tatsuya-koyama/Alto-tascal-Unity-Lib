@@ -9,8 +9,7 @@ namespace AltoFramework.Tests
         [SetUp]
         public void SetUp()
         {
-            Alto.context = new AltoFramework.Testing.GlobalContextMock();
-            Alto.context.Init();
+            Alto.InitContext(new AltoFramework.Testing.GlobalContextMock(), null);
         }
 
         class Signal_A : AltoSignal {}

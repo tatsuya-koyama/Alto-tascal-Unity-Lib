@@ -76,7 +76,7 @@ namespace AltoFramework
         public async UniTask Async(bool autoCancelOnSceneChange = true)
         {
             // ToDo : このクラスから Alto は参照したくなかった
-            if (autoCancelOnSceneChange && Alto.hasSceneContext)
+            if (autoCancelOnSceneChange && Alto.HasSceneContext)
             {
                 await Alto.Async(
                     UniTask.WaitUntil(() => IsCompleted())

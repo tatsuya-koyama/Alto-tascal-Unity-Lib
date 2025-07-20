@@ -66,26 +66,26 @@ namespace AltoLib
             Func<string, Type> dataTypeGetter
         )
         {
-            AltoLog.Info($"Master data csv update detected : { csvPath }");
+            Alto.Log.Info($"Master data csv update detected : { csvPath }");
 
             string destDataPath = $"{ dataPath }{ dataName }.asset";
             var data = AssetDatabase.LoadMainAssetAtPath(destDataPath);
             if (data == null)
             {
-                AltoLog.Error($"Master data ScriptableObject not exist : { destDataPath }");
+                Alto.Log.Error($"Master data ScriptableObject not exist : { destDataPath }");
                 return;
             }
 
             var type = dataTypeGetter(dataName);
             if (type == null)
             {
-                AltoLog.Error($"Type reflection failed : { dataName }");
+                Alto.Log.Error($"Type reflection failed : { dataName }");
                 return;
             }
             MethodInfo method = type.GetMethod("Import");
             if (method == null)
             {
-                AltoLog.Error($"Method reflection failed");
+                Alto.Log.Error($"Method reflection failed");
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace AltoLib
 
             EditorUtility.SetDirty(data);
             AssetDatabase.SaveAssets();
-            AltoLog.Success($"Master data import succeeded : { dataName }");
+            Alto.Log.Success($"Master data import succeeded : { dataName }");
         }
 
         static List<string> LoadCsvFile(string csvPath)

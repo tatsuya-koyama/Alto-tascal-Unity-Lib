@@ -44,12 +44,12 @@ namespace AltoFramework
         // For debug
         //----------------------------------------------------------------------
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         void CheckMultipleCreate(Type behaviourType)
         {
             if (_pools.ContainsKey(behaviourType))
             {
-                AltoLog.FW_Warn($"[AltoObjectPoolRegistry] Multiple creation detected : {behaviourType}");
+                Alto.Log.FW_Warn($"[AltoObjectPoolRegistry] Multiple creation detected : {behaviourType}");
             }
         }
     }

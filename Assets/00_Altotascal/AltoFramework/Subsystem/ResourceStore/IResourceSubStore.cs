@@ -22,7 +22,7 @@ namespace AltoFramework
         {
             if (!_resources.ContainsKey(assetAddress))
             {
-                AltoLog.FW_Error($"[{GetType().Name}] Resource not found : <b>{assetAddress}</b>");
+                Alto.Log.FW_Error($"[{GetType().Name}] Resource not found : <b>{assetAddress}</b>");
                 return null;
             }
             return _resources[assetAddress];
@@ -39,19 +39,13 @@ namespace AltoFramework
 
         public virtual void OnLoad(string assetAddress, T resource)
         {
-            AltoLog.FW(
-                $"[{GetType().Name}] OnLoad : <b>{assetAddress}</b> - {resource.GetType()}",
-                null, "3bc29a"
-            );
+            Alto.Log.FW($"[{GetType().Name}] OnLoad : <b>{assetAddress}</b> - {resource.GetType()}");
             Add(assetAddress, resource);
         }
 
         public virtual void OnUnload(string assetAddress)
         {
-            AltoLog.FW(
-                $"[{GetType().Name}] *** OnUnload : <b>{assetAddress}</b>",
-                null, "4463c9"
-            );
+            Alto.Log.FW($"[{GetType().Name}] *** OnUnload : <b>{assetAddress}</b>");
             Remove(assetAddress);
         }
 

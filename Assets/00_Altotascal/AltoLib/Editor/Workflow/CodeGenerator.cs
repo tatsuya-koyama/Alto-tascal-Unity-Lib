@@ -150,7 +150,7 @@ namespace AltoLib
             }
 
             string outPath = $"{ outputDirPath }/{ outputFileName }";
-            AltoLog.FW($"Generate Code : { outPath }");
+            Alto.Log.FW($"Generate Code : { outPath }");
             using (var fileStream = File.Open(outPath, FileMode.Create, FileAccess.Write))
             {
                 using (var streamWriter = new StreamWriter(fileStream))
@@ -162,7 +162,7 @@ namespace AltoLib
             }
 
             AssetDatabase.Refresh();
-            AltoLog.Success("Generate Code Completed.");
+            Alto.Log.Success("Generate Code Completed.");
         }
     }
 }

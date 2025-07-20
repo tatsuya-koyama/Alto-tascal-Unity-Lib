@@ -191,14 +191,14 @@ namespace AltoLib
         // private
         //----------------------------------------------------------------------
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         void Log(string message)
         {
             if (!logVerbose) { return; }
             UnityEngine.Debug.Log($"<color=#9086e9>[AltoFSM]{_logIndent} </color>{message}");
         }
 
-        [Conditional("ALTO_DEBUG")]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         void LogError(string message)
         {
             UnityEngine.Debug.LogError($"<color=#9086e9>[AltoFSM]{_logIndent} </color> [Error] {message}");
