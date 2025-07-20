@@ -3,6 +3,7 @@
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/DebugMipmapStreamingMacros.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
 // Custom props
@@ -51,11 +52,13 @@ half _DitherCull;
 
 // Original props
     float4 _BaseMap_ST;
+    float4 _BaseMap_TexelSize;
     half4 _BaseColor;
     half4 _SpecColor;
     half4 _EmissionColor;
     half _Cutoff;
     half _Surface;
+    UNITY_TEXTURE_STREAMING_DEBUG_VARS;
 CBUFFER_END
 
 #ifdef UNITY_DOTS_INSTANCING_ENABLED

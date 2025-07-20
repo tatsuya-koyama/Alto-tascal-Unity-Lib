@@ -53,6 +53,10 @@ struct Varyings
     float2  dynamicLightmapUV : TEXCOORD8; // Dynamic lightmap UVs
 #endif
 
+#ifdef USE_APV_PROBE_OCCLUSION
+    float4 probeOcclusion : TEXCOORD9;
+#endif
+
     float4 positionCS                  : SV_POSITION;
     float4 screenPos   : TEXCOORD8;
     float4 cameraValue : COLOR0;  // x: distance to camera
@@ -65,6 +69,9 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     inputData = (InputData)0;
 
     inputData.positionWS = input.positionWS;
+#if defined(DEBUG_DISPLAY)
+    inputData.positionCS = input.positionCS;
+#endif
 
     #ifdef _NORMALMAP
         half3 viewDirWS = half3(input.normalWS.w, input.tangentWS.w, input.bitangentWS.w);
@@ -96,14 +103,7 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
         inputData.vertexLighting = half3(0, 0, 0);
     #endif
 
-#if defined(DYNAMICLIGHTMAP_ON)
-    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.dynamicLightmapUV, input.vertexSH, inputData.normalWS);
-#else
-    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.vertexSH, inputData.normalWS);
-#endif
-
     inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
-    inputData.shadowMask = SAMPLE_SHADOWMASK(input.staticLightmapUV);
 
     #if defined(DEBUG_DISPLAY)
     #if defined(DYNAMICLIGHTMAP_ON)
@@ -113,6 +113,9 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     inputData.staticLightmapUV = input.staticLightmapUV;
     #else
     inputData.vertexSH = input.vertexSH;
+    #endif
+    #if defined(USE_APV_PROBE_OCCLUSION)
+    inputData.probeOcclusion = input.probeOcclusion;
     #endif
     #endif
 }
@@ -333,6 +336,25 @@ Varyings LitPassVertexSimple(Attributes input)
 // Fragment function
 //==============================================================================
 
+void InitializeBakedGIData(Varyings input, inout InputData inputData)
+{
+#if defined(DYNAMICLIGHTMAP_ON)
+    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.dynamicLightmapUV, input.vertexSH, inputData.normalWS);
+    inputData.shadowMask = SAMPLE_SHADOWMASK(input.staticLightmapUV);
+#elif !defined(LIGHTMAP_ON) && (defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2))
+    inputData.bakedGI = SAMPLE_GI(input.vertexSH,
+        GetAbsolutePositionWS(inputData.positionWS),
+        inputData.normalWS,
+        inputData.viewDirectionWS,
+        input.positionCS.xy,
+        input.probeOcclusion,
+        inputData.shadowMask);
+#else
+    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.vertexSH, inputData.normalWS);
+    inputData.shadowMask = SAMPLE_SHADOWMASK(input.staticLightmapUV);
+#endif
+}
+
 void LitPassFragmentSimple(
     Varyings input
     , out half4 outColor : SV_Target0
@@ -358,9 +380,11 @@ void LitPassFragmentSimple(
     InitializeInputData(input, surfaceData.normalTS, inputData);
     SETUP_DEBUG_TEXTURE_DATA(inputData, UNDO_TRANSFORM_TEX(input.uv, _BaseMap));
 
-#ifdef _DBUFFER
+#if defined(_DBUFFER)
     ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
 #endif
+
+    InitializeBakedGIData(input, inputData);
 
     //_____ AltoShader Custom _____
     UNITY_BRANCH

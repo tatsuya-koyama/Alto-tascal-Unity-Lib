@@ -2,6 +2,9 @@
 #define ALTO_SHADER_17_FORWARD_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#if defined(LOD_FADE_CROSSFADE)
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
 #include "../Generic/AltoShaderUtil.hlsl"
 #include "AltoShader-SharedLogic.hlsl"
 
