@@ -309,7 +309,26 @@ half4 Alto_UniversalFragmentBlinnPhong(
 
     uint meshRenderingLayers = GetMeshRenderingLayer();
     half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+
+    //_____ AltoShader Custom _____
+    // AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    AmbientOcclusionFactor originalAoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    AmbientOcclusionFactor aoFactor;
+
+    UNITY_BRANCH
+    if (_ColoredShadowOn > 0)
+    {
+        // SSAO の色をただの黒ではなくコントロールしたいので、従来の処理には AO が無い状態の aoFactor を渡す
+        aoFactor.directAmbientOcclusion   = half(1.0);
+        aoFactor.indirectAmbientOcclusion = half(1.0);
+    }
+    else
+    {
+        aoFactor.directAmbientOcclusion   = originalAoFactor.directAmbientOcclusion;
+        aoFactor.indirectAmbientOcclusion = originalAoFactor.indirectAmbientOcclusion;
+    }
+    //^^^^^ AltoShader Custom ^^^^^
+
     Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
 
     MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);
@@ -362,7 +381,7 @@ half4 Alto_UniversalFragmentBlinnPhong(
     half3 finalColor = Alto_CalculateFinalColor(lightingData, surfaceData.alpha).rgb;
 
     // 0 is shadow, 1 is lighted
-    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation;
+    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation * originalAoFactor.indirectAmbientOcclusion;
 
     UNITY_BRANCH
     if (_ColoredShadePower > 0)
@@ -374,8 +393,8 @@ half4 Alto_UniversalFragmentBlinnPhong(
     UNITY_BRANCH
     if (_ColoredShadowOn > 0)
     {
-        half shadowLevel = (1 - mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-        finalColor = lerp(finalColor, _ShadowColor * lightLevel, (1 - lightLevel) * _ShadowPower);
+        half shadowLevel = (1 - lightLevel);
+        finalColor = lerp(finalColor, _ShadowColor * shadowLevel, shadowLevel * _ShadowPower);
     }
 
     half specularValue = SampleSpecularValue(input, inputData);

@@ -1,0 +1,252 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ColoredShadow-Test-2
+  m_Shader: {fileID: 4800000, guid: 7d266d30b0cef4cb59b24f7ec0f3902b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _BILLBOARDON_OFF
+  - _CUBICRIMON_OFF
+  - _HEIGHTFOGON_OFF
+  - _HSVSHIFTON_OFF
+  - _MIXCUBICCOLORON_OFF
+  - _MULTIPLEFOGON_OFF
+  - _MULTIPLYCUBICDIFFUSEON_OFF
+  - _RIMBURNON_OFF
+  - _SPECULARSURFACEON_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DitherPattern:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoisePattern:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _BillboardOn: 0
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 1
+    - _Brightness: 1
+    - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _ColoredShadePower: 0
+    - _ColoredShadowOn: 1
+    - _CubicColorPower: 0
+    - _CubicRimOn: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DissolveAreaSize: 0
+    - _DissolveDistance: 1
+    - _DissolveEdgeSharpness: 1
+    - _DissolveNoise: 1
+    - _DissolveRoughness: 1
+    - _DitherAlpha: 1
+    - _DitherCameraDistanceFrom: 0
+    - _DitherCameraDistanceTo: 0
+    - _DitherCull: 5
+    - _DitherMinAlpha: 0
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _EnvironmentReflections: 1
+    - _FogDistance1: 30
+    - _FogDistance2: 20
+    - _GlossMapScale: 0
+    - _Glossiness: 0
+    - _GlossinessSource: 0
+    - _GlossyReflections: 0
+    - _GradHeight_B: 0
+    - _GradHeight_D: 0
+    - _GradHeight_F: 0
+    - _GradHeight_L: 0
+    - _GradHeight_R: 0
+    - _GradHeight_T: 0
+    - _GradRotate_B: 0
+    - _GradRotate_D: 0
+    - _GradRotate_F: 0
+    - _GradRotate_L: 0
+    - _GradRotate_R: 0
+    - _GradRotate_T: 0
+    - _HSVShiftOn: 0
+    - _HeightDitherHeight: 0
+    - _HeightDitherYFrom: 0
+    - _HeightFogHeight: 1
+    - _HeightFogOn: 0
+    - _HeightFogYFrom: 0
+    - _Hue: 0
+    - _Metallic: 0
+    - _MixCubicColorOn: 0
+    - _MultipleFogOn: 0
+    - _MultiplyCubicDiffuseOn: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.005
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _RimBurnOn: 0
+    - _RimLightingOn: 1
+    - _RimPower: 2.72
+    - _RimSurfaceFade: 0
+    - _RimSurfacePower: 1
+    - _RotateSpeedX: 0
+    - _RotateSpeedY: 0
+    - _RotateSpeedZ: 0
+    - _Saturation: 1
+    - _ShadeContrast: 0.5
+    - _ShadowPower: 1
+    - _Shininess: 0
+    - _Smoothness: 0.5
+    - _SmoothnessSource: 0
+    - _SmoothnessTextureChannel: 0
+    - _Sp_BScale: 1
+    - _Sp_GScale: 1
+    - _Sp_Hue: 0
+    - _Sp_PostOffset: 0
+    - _Sp_PreOffset: 0
+    - _Sp_RScale: 1
+    - _Sp_Saturate: 0
+    - _Sp_ValueScale: 1
+    - _SpecSource: 0
+    - _SpecularHighlights: 1
+    - _SpecularSurfaceOn: 0
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _WindBigWave: 1
+    - _WindRotateSpeed: 1
+    - _WindSpeed: 1
+    - _WindStrength: 0
+    - _WorkflowMode: 1
+    - _WorldSpaceGradient: 1
+    - _WorldSpaceNormal: 1
+    - _WorldSpaceSurfaceOn: 0
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BackColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _BackColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 1, g: 0.8066038, b: 0.8285728, a: 1}
+    - _BottomColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _BottomColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.8066038, b: 0.8285728, a: 1}
+    - _DissolveEdgeAddColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveEdgeSubColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveOrigin: {r: 0, g: 0, b: 0, a: 0}
+    - _DissolveSlow: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FogColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _FogColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _FrontColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _FrontColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _GradOrigin_B: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_D: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_F: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_L: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_R: {r: 0, g: 0, b: 0, a: 0}
+    - _GradOrigin_T: {r: 0, g: 0, b: 0, a: 0}
+    - _HeightFogColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LeftColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _LeftColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _RightColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _RightColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _ShadowColor: {r: 0.8301887, g: 0, b: 0.11092805, a: 1}
+    - _Sp_TilingParams: {r: 0, g: 0, b: 1, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _TopColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _TopColor2: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &5103805499986048271
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10
