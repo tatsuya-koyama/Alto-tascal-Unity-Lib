@@ -1,0 +1,64 @@
+#if UNITY_EDITOR
+using UnityEngine;
+using UnityEditor;
+
+namespace AltoLib
+{
+    [InitializeOnLoad]
+    public class HierarchyDepthColor
+    {
+        const string MenuPath = "Alto/Show Depth Color in Hierarchy";
+        const int OffsetX = -3;
+        const int LineWidth = 3;
+
+        [MenuItem(MenuPath)]
+        static void ToggleEnabled()
+        {
+            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+        }
+
+        static HierarchyDepthColor()
+        {
+            EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
+        }
+
+        static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+        {
+            if (!Menu.GetChecked(MenuPath)) { return; }
+
+            GameObject obj = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+            if (obj == null) { return; }
+
+            int depth = GetDepth(obj.transform);
+            Rect rect = new(
+              selectionRect.x + OffsetX,
+              selectionRect.y,
+              LineWidth,
+              selectionRect.height
+            );
+            Color color = Color.HSVToRGB(GetHue(depth), 0.8f, 0.8f);
+            EditorGUI.DrawRect(rect, color);
+        }
+
+        static int GetDepth(Transform transform)
+        {
+          int depth = 0;
+          while (transform.parent != null)
+          {
+            ++depth;
+            transform = transform.parent;
+
+            // Safety
+            if (depth >= 99) { return depth; }
+          }
+          return depth;
+        }
+
+        static float GetHue(int depth)
+        {
+          float hue = (0.7f - depth * 0.1f) % 1.0f;
+          return hue - Mathf.Floor(hue);
+        }
+    }
+}
+#endif
