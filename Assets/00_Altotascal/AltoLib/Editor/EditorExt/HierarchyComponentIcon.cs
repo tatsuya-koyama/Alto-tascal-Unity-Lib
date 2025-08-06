@@ -1,10 +1,12 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
+using UnityEngine.Rendering;
 using TMPro;
+using UnityEngine.EventSystems;
 
 namespace AltoLib
 {
@@ -19,10 +21,13 @@ namespace AltoLib
             typeof(Animator),
             typeof(Camera),
             typeof(Light),
+            typeof(Volume),
+            typeof(EventSystem),
             typeof(Canvas),
             typeof(Image),
             typeof(Text),
             typeof(TextMeshProUGUI),
+            typeof(SkinnedMeshRenderer),
             typeof(Collider),
             typeof(Rigidbody),
             typeof(ParticleSystem),
