@@ -7,7 +7,8 @@ namespace AltoLib
 {
     public static class ColoredProjectView3
     {
-        const string MenuPath = "Alto/Editor/ColoredProjectView (Kind)";
+        const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView (Kind)";
+
         static readonly string[] Keywords = {
             "altoframework", "altolib", "altoshader", "scene", "material",
             "editor", "resource", "prefab", "shader", "script",

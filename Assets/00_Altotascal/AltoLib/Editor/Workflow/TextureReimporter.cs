@@ -61,7 +61,7 @@ namespace AltoLib
         /// テクスチャの Max Size は既存の設定をそのまま引き継ぎ、圧縮フォーマットのみを指定、
         /// 変更があったものについてアセットをインポートし直す。
         /// </summary>
-        [MenuItem("Alto/Convert Texture Format to ASTC or ETC2")]
+        [MenuItem(AltoMenuPath.Workflow + "Convert Texture Format to ASTC or ETC2")]
         static void UpdateTextureCompressionSetting()
         {
             string[] guids = AssetDatabase.FindAssets("t:texture2D", TargetFolders);

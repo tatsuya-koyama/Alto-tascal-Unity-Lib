@@ -13,7 +13,7 @@ namespace AltoLib
     [InitializeOnLoad]
     public class HierarchyComponentIcon
     {
-        const string MenuPath = "Alto/Show Component Icons in Hierarchy";
+        const string MenuPath = AltoMenuPath.EditorExt + "Show Component Icons in Hierarchy";
         const int IconSize = 16;
 
         static readonly Type[] _targetTypes =

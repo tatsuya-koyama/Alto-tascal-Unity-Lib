@@ -5,7 +5,7 @@ namespace AltoLib
 {
     public class FinderHelper
     {
-        [MenuItem("Alto/Open Data Path in Finder")]
+        [MenuItem(AltoMenuPath.DevCommands + "Open Data Path in Finder")]
         public static void OpenPersistentDataPath()
         {
             if (Application.platform == RuntimePlatform.OSXEditor)

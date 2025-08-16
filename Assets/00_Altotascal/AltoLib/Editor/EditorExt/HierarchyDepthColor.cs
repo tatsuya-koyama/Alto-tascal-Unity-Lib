@@ -7,7 +7,7 @@ namespace AltoLib
     [InitializeOnLoad]
     public class HierarchyDepthColor
     {
-        const string MenuPath = "Alto/Show Depth Color in Hierarchy";
+        const string MenuPath = AltoMenuPath.EditorExt + "Show Depth Color in Hierarchy";
         const int OffsetX = -3;
         const int LineWidth = 3;
 

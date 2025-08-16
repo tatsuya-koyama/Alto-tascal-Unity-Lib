@@ -10,7 +10,7 @@ namespace AltoLib
     [CustomEditor(typeof(MeshFilter))]
     public class MeshPolygonsDisplay : Editor
     {
-        const string MenuPath = "Alto/Editor/Show Mesh Polygons Count";
+        const string MenuPath = AltoMenuPath.EditorExt + "Show Mesh Polygons Count";
 
         [MenuItem(MenuPath)]
         static void ToggleEnabled()

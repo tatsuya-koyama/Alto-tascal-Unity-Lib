@@ -6,7 +6,7 @@ namespace AltoLib
 {
     public class ToggleCompileLock
     {
-        const string MenuPath = "Alto/Unity の自動コンパイル OFF";
+        const string MenuPath = AltoMenuPath.DevCommands + "Unity の自動コンパイル OFF";
 
         [MenuItem(MenuPath)]
         static void ToggleLock()

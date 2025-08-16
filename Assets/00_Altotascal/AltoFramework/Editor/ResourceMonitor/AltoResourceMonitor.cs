@@ -14,7 +14,7 @@ namespace AltoFramework.Editor
         [SerializeField] TreeViewState _treeViewState;
         AltoResourceTreeView _treeView;
 
-        [MenuItem("Alto/Alto Resource Monitor")]
+        [MenuItem("Alto/00. Alto Framework/Alto Resource Monitor")]
         static void ShowWindow()
         {
             var window = EditorWindow.GetWindow<AltoResourceMonitor>("Alto-Resource");

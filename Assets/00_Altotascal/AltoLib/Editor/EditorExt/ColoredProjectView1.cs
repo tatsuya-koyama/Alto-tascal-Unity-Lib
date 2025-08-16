@@ -6,7 +6,7 @@ namespace AltoLib
 {
     public static class ColoredProjectView
     {
-        const string MenuPath = "Alto/Editor/ColoredProjectView (Depth Level)";
+        const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView (Depth Level)";
 
         [MenuItem(MenuPath)]
         private static void ToggleEnabled()

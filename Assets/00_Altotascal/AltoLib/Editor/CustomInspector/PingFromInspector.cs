@@ -10,7 +10,7 @@ namespace AltoLib
     [InitializeOnLoad]
     public static class PingFromInspector
     {
-        const string MenuPath = "Alto/Editor/Ping Button From Inspector";
+        const string MenuPath = AltoMenuPath.EditorExt + "Ping Button From Inspector";
 
         [MenuItem(MenuPath)]
         static void ToggleEnabled()
