@@ -1,0 +1,16 @@
+{
+    "name": "AltoLib.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3f5376294049349759a419aa0036b129"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

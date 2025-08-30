@@ -1,7 +1,8 @@
-﻿using AltoFramework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
+using Object = System.Object;
 
 namespace AltoLib
 {
@@ -17,12 +18,12 @@ namespace AltoLib
 
             if (fromFields.Count == 0)
             {
-                Alto.Log.Error($"[ObjectUtil] FieldInfo of from-object is null.");
+                Debug.LogError($"[ObjectUtil] FieldInfo of from-object is null.");
                 return false;
             }
             if (toFields.Count == 0)
             {
-                Alto.Log.Error($"[ObjectUtil] FieldInfo of to-object is null.");
+                Debug.LogError($"[ObjectUtil] FieldInfo of to-object is null.");
                 return false;
             }
 
@@ -34,7 +35,7 @@ namespace AltoLib
                 });
                 if (fromField == null)
                 {
-                    Alto.Log.Error($"[ObjectUtil] Field not found : {toField.Name}");
+                    Debug.LogError($"[ObjectUtil] Field not found : {toField.Name}");
                     return false;
                 }
 
@@ -54,12 +55,12 @@ namespace AltoLib
 
             if (fromProps.Count == 0)
             {
-                Alto.Log.Error($"[ObjectUtil] PropertyInfo of from-object is null.");
+                Debug.LogError($"[ObjectUtil] PropertyInfo of from-object is null.");
                 return false;
             }
             if (toProps.Count == 0)
             {
-                Alto.Log.Error($"[ObjectUtil] PropertyInfo of to-object is null.");
+                Debug.LogError($"[ObjectUtil] PropertyInfo of to-object is null.");
                 return false;
             }
 
@@ -71,7 +72,7 @@ namespace AltoLib
                 });
                 if (fromProp == null)
                 {
-                    Alto.Log.Error($"[ObjectUtil] Property not found : {toProp.Name}");
+                    Debug.LogError($"[ObjectUtil] Property not found : {toProp.Name}");
                     return false;
                 }
 

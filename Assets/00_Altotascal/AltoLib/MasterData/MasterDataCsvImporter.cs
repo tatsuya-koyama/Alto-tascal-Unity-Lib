@@ -1,11 +1,11 @@
 ﻿#if UNITY_EDITOR
-using AltoFramework;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using UnityEngine;
 
 namespace AltoLib
 {
@@ -66,26 +66,26 @@ namespace AltoLib
             Func<string, Type> dataTypeGetter
         )
         {
-            Alto.Log.Info($"Master data csv update detected : { csvPath }");
+            Debug.Log($"<color=#eeee33>Master data csv update detected :</color> { csvPath }");
 
             string destDataPath = $"{ dataPath }{ dataName }.asset";
             var data = AssetDatabase.LoadMainAssetAtPath(destDataPath);
             if (data == null)
             {
-                Alto.Log.Error($"Master data ScriptableObject not exist : { destDataPath }");
+                Debug.LogError($"Master data ScriptableObject not exist : { destDataPath }");
                 return;
             }
 
             var type = dataTypeGetter(dataName);
             if (type == null)
             {
-                Alto.Log.Error($"Type reflection failed : { dataName }");
+                Debug.LogError($"Type reflection failed : { dataName }");
                 return;
             }
             MethodInfo method = type.GetMethod("Import");
             if (method == null)
             {
-                Alto.Log.Error($"Method reflection failed");
+                Debug.LogError($"Method reflection failed");
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace AltoLib
 
             EditorUtility.SetDirty(data);
             AssetDatabase.SaveAssets();
-            Alto.Log.Success($"Master data import succeeded : { dataName }");
+            Debug.Log($"<color=#33ee00>Master data import succeeded :</color> { dataName }");
         }
 
         static List<string> LoadCsvFile(string csvPath)

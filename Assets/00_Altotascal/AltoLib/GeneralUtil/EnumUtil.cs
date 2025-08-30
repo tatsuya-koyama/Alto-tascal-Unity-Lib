@@ -1,5 +1,5 @@
-﻿using AltoFramework;
-using System;
+﻿using System;
+using UnityEngine;
 
 namespace AltoLib
 {
@@ -28,7 +28,7 @@ namespace AltoLib
             }
             catch (Exception ex)
             {
-                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
+                Debug.LogError($"[EnumUtil] Parse error : {str}");
                 throw ex;
             }
         }
@@ -42,7 +42,7 @@ namespace AltoLib
             bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
             if (!parsed)
             {
-                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
+                Debug.LogError($"[EnumUtil] Parse error : {str}");
             }
             return result;
         }
@@ -56,7 +56,7 @@ namespace AltoLib
             bool parsed = Enum.TryParse(str, out result) && Enum.IsDefined(typeof(T), result);
             if (!parsed && verbose)
             {
-                Alto.Log.Error($"[EnumUtil] Parse error : {str}");
+                Debug.LogError($"[EnumUtil] Parse error : {str}");
             }
             return parsed;
         }
@@ -76,7 +76,7 @@ namespace AltoLib
             if (!parsed)
             {
                 result = defaultValue;
-                if (verbose) { Alto.Log.Error($"[EnumUtil] Parse error : {str}"); }
+                if (verbose) { Debug.LogError($"[EnumUtil] Parse error : {str}"); }
             }
             return parsed;
         }

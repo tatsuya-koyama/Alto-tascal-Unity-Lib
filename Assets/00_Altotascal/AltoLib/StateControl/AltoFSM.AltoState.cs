@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
+[assembly: InternalsVisibleTo("AltoLib.Tests")]
 namespace AltoLib
 {
     public partial class AltoFSM<TContext>
