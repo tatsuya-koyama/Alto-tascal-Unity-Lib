@@ -19,7 +19,7 @@ namespace AltoLib
 
         void OnGUI()
         {
-            if (GUILayout.Button("選択 obj の上位 2 つ\nを基準に等間隔に整列", GUILayout.MinHeight(40)))
+            if (GUILayout.Button("選択 obj の先頭 2 つ\nを基準に等間隔に整列", GUILayout.MinHeight(40)))
             {
                 ArrangeByFirstTwo();
             }
