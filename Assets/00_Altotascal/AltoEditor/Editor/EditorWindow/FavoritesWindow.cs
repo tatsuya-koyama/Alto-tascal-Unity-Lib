@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace AltoEditor
 {
-    public class FavoritesWindow : EditorWindow
+    public class FavoritesWindow : AltoEditorWindow
     {
         [MenuItem(AltoMenuPath.EditorWindow + "Favorites Window")]
         static void ShowWindow()
@@ -45,7 +45,7 @@ namespace AltoEditor
         }
 
         [SerializeField] static AssetInfoList _assetsCache = null;
-        static AssetInfoList _assets
+        AssetInfoList _assets
         {
             get { return _assetsCache ??= LoadPrefs(); }
         }
@@ -59,32 +59,14 @@ namespace AltoEditor
         // Save and Load
         //----------------------------------------------------------------------
 
-        static string PrefsKey()
+        void SavePrefs()
         {
-            return $"{Application.productName}-Alto-Favs";
+            SaveSettings(_assetsCache);
         }
 
-        static void SavePrefs()
+        AssetInfoList LoadPrefs()
         {
-            string prefsJson = JsonUtility.ToJson(_assets);
-            EditorPrefs.SetString(PrefsKey(), prefsJson);
-        }
-
-        static AssetInfoList LoadPrefs()
-        {
-            // Debug.Log("Loading Favorites Prefs...");
-            string prefsKey = PrefsKey();
-            if (!EditorPrefs.HasKey(prefsKey)) { return new AssetInfoList(); }
-
-            string prefsJson = EditorPrefs.GetString(prefsKey);
-            var assets = JsonUtility.FromJson<AssetInfoList>(prefsJson);
-            if (assets == null)
-            {
-                Debug.LogError("Favorites Prefs Load Error");
-                return new AssetInfoList();
-            }
-
-            return assets;
+            return LoadSettings<AssetInfoList>() ?? new();
         }
 
         //----------------------------------------------------------------------
@@ -95,8 +77,7 @@ namespace AltoEditor
         {
             GUILayout.BeginHorizontal();
             {
-                var content = new GUIContent("★ Fav", "Bookmark selected asset");
-                if (GUILayout.Button(content, GUILayout.Width(100), GUILayout.Height(40)))
+                if (Button("★ Fav", 100f, 40f, "Bookmark selecting asset", LightYellow))
                 {
                     BookmarkAsset();
                 }
@@ -142,7 +123,7 @@ namespace AltoEditor
                         var funcInfo = sortFuncs[i * 2 + j];
                         string buttonLabel = funcInfo.Item1;
                         Action sortFunc    = funcInfo.Item2;
-                        if (GUILayout.Button(buttonLabel, GUILayout.MaxWidth(100)))
+                        if (Button(buttonLabel, 100f, 20f, color: LightGray))
                         {
                             sortFunc();
                             SavePrefs();

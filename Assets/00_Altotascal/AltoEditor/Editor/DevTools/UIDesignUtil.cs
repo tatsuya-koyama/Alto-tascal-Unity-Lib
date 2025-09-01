@@ -79,17 +79,17 @@ namespace AltoEditor
             using (new GUILayout.HorizontalScope())
             {
                 GUILayout.Space(53f);
-                if (ButtonW("▲")) { Nudge(Vector2.up); }
+                if (Button("▲")) { Nudge(Vector2.up); }
             }
             using (new GUILayout.HorizontalScope())
             {
-                if (ButtonW("◀")) { Nudge(Vector2.left); }
-                if (ButtonW("▶")) { Nudge(Vector2.right); }
+                if (Button("◀")) { Nudge(Vector2.left); }
+                if (Button("▶")) { Nudge(Vector2.right); }
             }
             using (new GUILayout.HorizontalScope())
             {
                 GUILayout.Space(53f);
-                if (ButtonW("▼")) { Nudge(Vector2.down); }
+                if (Button("▼")) { Nudge(Vector2.down); }
             }
 
             BR();
@@ -99,38 +99,38 @@ namespace AltoEditor
 
         void DrawArrangementTool()
         {
-            Header("配置ツール", DarkOrange);
-            _showDebugGuide = GUILayout.Toggle(_showDebugGuide, "選択範囲のガイドを表示");
+            Header("Arrange Tools : 配置ツール", DarkOrange);
+            _showDebugGuide = GUILayout.Toggle(_showDebugGuide, "Show Selection Area Guide");
 
             var info = MakeSelectionInfo();
             BR();
-            Header("位置揃え", DarkAqua, FontStyle.Normal);
+            Header("Alignment : 位置揃え", DarkAqua, FontStyle.Normal);
             using (new GUILayout.HorizontalScope())
             {
-                if (ButtonW("◀ 左揃え",    80f, 30f)) { Align(AlignType.Left,    info); }
-                if (ButtonW("水平中央揃え", 80f, 30f)) { Align(AlignType.CenterX, info); }
-                if (ButtonW("右揃え ▶",    80f, 30f)) { Align(AlignType.Right,   info); }
+                if (Button("◀◀\n◀　",     80f, 35f, "左揃え"      )) { Align(AlignType.Left,    info); }
+                if (Button("◆◆◆\n　◆　", 80f, 35f, "水平中央揃え")) { Align(AlignType.CenterX, info); }
+                if (Button("▶▶\n　▶",     80f, 35f, "右揃え"      )) { Align(AlignType.Right,   info); }
             }
             using (new GUILayout.HorizontalScope())
             {
-                if (ButtonW("▲ 上揃え",    80f, 30f)) { Align(AlignType.Top,     info); }
-                if (ButtonW("垂直中央揃え", 80f, 30f)) { Align(AlignType.CenterY, info); }
-                if (ButtonW("下揃え ▼",    80f, 30f)) { Align(AlignType.Bottom,  info); }
+                if (Button("▲▲\n▲　", 80f, 35f, "上揃え"      )) { Align(AlignType.Top,     info); }
+                if (Button("−◆−◉−", 80f, 35f, "垂直中央揃え")) { Align(AlignType.CenterY, info); }
+                if (Button("　▼\n▼▼", 80f, 35f, "下揃え"      )) { Align(AlignType.Bottom,  info); }
             }
 
             BR();
-            Header("等間隔に配置", DarkAqua, FontStyle.Normal);
-            if (ButtonW("◀▶ 水平方向に等間隔", 200f, 30f))
+            Header("Distribute : 等間隔に配置", DarkAqua, FontStyle.Normal);
+            if (Button("◀▶ 水平方向に等間隔", 200f, 30f))
             {
                 DistributeEvenly(DistributeType.Horizontal, info);
             }
-            if (ButtonW("▲▼ 垂直方向に等間隔", 200f, 30f))
+            if (Button("▲▼ 垂直方向に等間隔", 200f, 30f))
             {
                 DistributeEvenly(DistributeType.Vertical, info);
             }
 
             BR();
-            if (ButtonW("選択 obj の先頭 2 つ\nを基準に等間隔に整列", 200f, 40f))
+            if (Button("選択 obj の先頭 2 つ\nを基準に等間隔に整列", 200f, 40f))
             {
                 ArrangeByFirstTwo();
             }
