@@ -20,6 +20,7 @@ namespace AltoEditor
         {
             typeof(Animator),
             typeof(Camera),
+            typeof(AudioListener),
             typeof(Light),
             typeof(Volume),
             typeof(EventSystem),
@@ -27,6 +28,7 @@ namespace AltoEditor
             typeof(Image),
             typeof(Text),
             typeof(TextMeshProUGUI),
+            typeof(Button),
             typeof(SkinnedMeshRenderer),
             typeof(Collider),
             typeof(Rigidbody),

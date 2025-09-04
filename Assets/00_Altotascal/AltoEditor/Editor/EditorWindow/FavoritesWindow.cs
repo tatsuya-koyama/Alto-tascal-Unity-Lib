@@ -18,8 +18,7 @@ namespace AltoEditor
         }
 
         Vector2 _scrollView;
-        AssetInfo _lastOpenedAsset;
-        AssetInfo _prevOpenedAsset;
+        bool _highlightRecent;
 
         const string DefaultColor = "292929";
 
@@ -36,6 +35,8 @@ namespace AltoEditor
             public string type;
             public string color;
             public long time;  // last opened unixtime [sec]
+
+            [NonSerialized] public int newestRank;
         }
 
         [System.Serializable]
@@ -75,27 +76,33 @@ namespace AltoEditor
 
         void OnGUI()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                if (Button("★ Fav", 100f, 40f, "Bookmark selecting asset", LightYellow))
+                if (Button("★ Fav", 100f, 40f, "Bookmark selecting asset"))
                 {
                     BookmarkAsset();
                 }
                 DrawSortButtons();
             }
-            GUILayout.EndHorizontal();
+
+            AssignNewestRank(_assets.infoList);
 
             _scrollView = GUILayout.BeginScrollView(_scrollView);
             {
                 bool isCanceled;
                 foreach (var info in _assets.infoList)
                 {
-                    GUILayout.BeginHorizontal();
+                    using (new GUILayout.HorizontalScope())
                     {
                         isCanceled = DrawAssetRow(info);
                     }
-                    GUILayout.EndHorizontal();
                     if (isCanceled) { break; }
+                }
+
+                using (new GUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    _highlightRecent = GUILayout.Toggle(_highlightRecent, "Highlight recent");
                 }
             }
             GUILayout.EndScrollView();
@@ -193,18 +200,7 @@ namespace AltoEditor
             var originalFontStyle = style.fontStyle;
             var originalTextColor = style.normal.textColor;
             style.alignment = TextAnchor.MiddleLeft;
-
-            // Change color of recently opened item
-            if (info == _lastOpenedAsset)
-            {
-                style.fontStyle = FontStyle.Bold;
-                style.normal.textColor = new Color(1f, 1f, 0f);
-            }
-            if (info == _prevOpenedAsset)
-            {
-                style.fontStyle = FontStyle.Bold;
-                style.normal.textColor = new Color(1f, 0.75f, 0.5f);
-            }
+            SetRowStyle(info, style);
 
             float width = position.width - 90f;
             if (GUILayout.Button(content, style, GUILayout.MaxWidth(width), GUILayout.Height(18)))
@@ -215,6 +211,41 @@ namespace AltoEditor
             style.alignment        = originalAlignment;
             style.fontStyle        = originalFontStyle;
             style.normal.textColor = originalTextColor;
+        }
+
+        //----------------------------------------------------------------------
+        // Highlight newer rows
+        //----------------------------------------------------------------------
+
+        void AssignNewestRank(List<AssetInfo> infoList)
+        {
+            var ordered = infoList.OrderByDescending(_ => _.time);
+            int rank = 1;
+            foreach (var info in ordered)
+            {
+                if (info.time == 0) { continue; }
+                info.newestRank = rank;
+                ++rank;
+            }
+        }
+
+        void SetRowStyle(AssetInfo info, GUIStyle style)
+        {
+            if (!_highlightRecent) { return; }
+
+            int rank = info.newestRank;
+            if (rank == 1)
+            {
+                style.fontStyle = FontStyle.Bold;
+                style.normal.textColor = new Color(1f, 1f, 0f);
+            }
+            if (2 <= rank && rank <= 5)
+            {
+                style.fontStyle = FontStyle.Bold;
+                float b1 = 0.85f + (5 - rank) * 0.05f;
+                float b2 = 0.70f + (5 - rank) * 0.10f;
+                style.normal.textColor = new Color(b1, b2 * 0.85f, 0.5f);
+            }
         }
 
         //----------------------------------------------------------------------
@@ -256,13 +287,6 @@ namespace AltoEditor
 
         void OpenAsset(AssetInfo info)
         {
-            // Mark recently opened non-folder assets
-            if (info.type != "UnityEditor.DefaultAsset")
-            {
-                _prevOpenedAsset = _lastOpenedAsset;
-                _lastOpenedAsset = info;
-            }
-
             // Record last opened time
             info.time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             SavePrefs();

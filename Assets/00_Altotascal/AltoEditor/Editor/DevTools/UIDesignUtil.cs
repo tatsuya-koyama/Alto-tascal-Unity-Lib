@@ -113,9 +113,9 @@ namespace AltoEditor
             }
             using (new GUILayout.HorizontalScope())
             {
-                if (Button("▲▲\n▲　", 80f, 35f, "上揃え"      )) { Align(AlignType.Top,     info); }
-                if (Button("−◆−◉−", 80f, 35f, "垂直中央揃え")) { Align(AlignType.CenterY, info); }
-                if (Button("　▼\n▼▼", 80f, 35f, "下揃え"      )) { Align(AlignType.Bottom,  info); }
+                if (Button("▲▲\n　▲\n", 80f, 50f, "上揃え"      )) { Align(AlignType.Top,     info); }
+                if (Button("−◆−◉−",   80f, 50f, "垂直中央揃え")) { Align(AlignType.CenterY, info); }
+                if (Button("\n　▼\n▼▼", 80f, 50f, "下揃え"      )) { Align(AlignType.Bottom,  info); }
             }
 
             BR();
