@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AltoEditor
 {
-    public static class ColoredProjectView
+    public static class ColoredProjectView1
     {
         const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView (Depth Level)";
 

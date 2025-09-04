@@ -107,24 +107,24 @@ namespace AltoEditor
             Header("Alignment : 位置揃え", DarkAqua, FontStyle.Normal);
             using (new GUILayout.HorizontalScope())
             {
-                if (Button("◀◀\n◀　",     80f, 35f, "左揃え"      )) { Align(AlignType.Left,    info); }
+                if (Button("｜◀◀\n｜◀　", 80f, 35f, "左揃え"      )) { Align(AlignType.Left,    info); }
                 if (Button("◆◆◆\n　◆　", 80f, 35f, "水平中央揃え")) { Align(AlignType.CenterX, info); }
-                if (Button("▶▶\n　▶",     80f, 35f, "右揃え"      )) { Align(AlignType.Right,   info); }
+                if (Button("▶▶｜\n　▶｜", 80f, 35f, "右揃え"      )) { Align(AlignType.Right,   info); }
             }
             using (new GUILayout.HorizontalScope())
             {
-                if (Button("▲▲\n　▲\n", 80f, 50f, "上揃え"      )) { Align(AlignType.Top,     info); }
-                if (Button("−◆−◉−",   80f, 50f, "垂直中央揃え")) { Align(AlignType.CenterY, info); }
-                if (Button("\n　▼\n▼▼", 80f, 50f, "下揃え"      )) { Align(AlignType.Bottom,  info); }
+                if (Button("−−−−\n▲▲\n　▲", 80f, 50f, "上揃え"      )) { Align(AlignType.Top,     info); }
+                if (Button("−◆−◉−",           80f, 50f, "垂直中央揃え")) { Align(AlignType.CenterY, info); }
+                if (Button("　▼\n▼▼\n−−−−", 80f, 50f, "下揃え"      )) { Align(AlignType.Bottom,  info); }
             }
 
             BR();
             Header("Distribute : 等間隔に配置", DarkAqua, FontStyle.Normal);
-            if (Button("◀▶ 水平方向に等間隔", 200f, 30f))
+            if (Button("◀…▶ 水平方向に等間隔", 200f, 30f))
             {
                 DistributeEvenly(DistributeType.Horizontal, info);
             }
-            if (Button("▲▼ 垂直方向に等間隔", 200f, 30f))
+            if (Button("▲ ⋮ ▼ 垂直方向に等間隔", 200f, 30f))
             {
                 DistributeEvenly(DistributeType.Vertical, info);
             }

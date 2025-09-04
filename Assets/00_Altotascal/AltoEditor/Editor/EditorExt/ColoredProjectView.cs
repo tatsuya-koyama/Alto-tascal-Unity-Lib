@@ -9,9 +9,9 @@ using ColorSettings = AltoEditor.ColoredProjectViewConfig.ColorSettings;
 
 namespace AltoEditor
 {
-    public static class ColoredProjectView4
+    public static class ColoredProjectView
     {
-        const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView (Test)";
+        const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView";
 
         public static bool NeedToReloadSettings = false;
 

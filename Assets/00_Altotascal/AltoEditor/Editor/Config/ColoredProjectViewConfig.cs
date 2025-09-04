@@ -137,7 +137,7 @@ namespace AltoEditor
                 {
                     if (Button("Apply", 80f, color: LightGreen))
                     {
-                        ColoredProjectView4.NeedToReloadSettings = true;
+                        ColoredProjectView.NeedToReloadSettings = true;
                     }
                     if (Button("Reset to Default", 160f))
                     {
