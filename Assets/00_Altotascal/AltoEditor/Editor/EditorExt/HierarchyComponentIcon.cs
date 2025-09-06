@@ -14,6 +14,7 @@ namespace AltoEditor
     public class HierarchyComponentIcon
     {
         const string MenuPath = AltoMenuPath.EditorExt + "Show Component Icons in Hierarchy";
+        static string PrefsKey => "AltoEditor-HierarchyComponentIcon";
         const int IconSize = 16;
 
         static readonly Type[] _targetTypes =
@@ -38,11 +39,22 @@ namespace AltoEditor
         [MenuItem(MenuPath)]
         static void ToggleEnabled()
         {
-            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+            bool isChecked = !Menu.GetChecked(MenuPath);
+            Menu.SetChecked(MenuPath, isChecked);
+            EditorSettingsUtil.SaveBool(PrefsKey, isChecked);
+        }
+
+        [MenuItem(MenuPath, true)]
+        static bool Remember()
+        {
+            bool isChecked = EditorSettingsUtil.LoadBool(PrefsKey, false);
+            Menu.SetChecked(MenuPath, isChecked);
+            return true;
         }
 
         static HierarchyComponentIcon()
         {
+            EditorApplication.delayCall += () => Remember();
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
         }
 

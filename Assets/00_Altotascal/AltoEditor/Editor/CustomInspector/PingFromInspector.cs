@@ -11,15 +11,27 @@ namespace AltoEditor
     public static class PingFromInspector
     {
         const string MenuPath = AltoMenuPath.EditorExt + "Ping Button From Inspector";
+        static string PrefsKey => "AltoEditor-PingFromInspector";
 
         [MenuItem(MenuPath)]
         static void ToggleEnabled()
         {
-            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+            bool isChecked = !Menu.GetChecked(MenuPath);
+            Menu.SetChecked(MenuPath, isChecked);
+            EditorSettingsUtil.SaveBool(PrefsKey, isChecked);
+        }
+
+        [MenuItem(MenuPath, true)]
+        static bool Remember()
+        {
+            bool isChecked = EditorSettingsUtil.LoadBool(PrefsKey, false);
+            Menu.SetChecked(MenuPath, isChecked);
+            return true;
         }
 
         static PingFromInspector()
         {
+            EditorApplication.delayCall += () => Remember();
             Editor.finishedDefaultHeaderGUI += editor =>
             {
                 if (!Menu.GetChecked(MenuPath)) { return; }

@@ -8,17 +8,29 @@ namespace AltoEditor
     public class HierarchyDepthColor
     {
         const string MenuPath = AltoMenuPath.EditorExt + "Show Depth Color in Hierarchy";
+        static string PrefsKey => "AltoEditor-HierarchyDepthColor";
         const int OffsetX = -3;
         const int LineWidth = 3;
 
         [MenuItem(MenuPath)]
         static void ToggleEnabled()
         {
-            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+            bool isChecked = !Menu.GetChecked(MenuPath);
+            Menu.SetChecked(MenuPath, isChecked);
+            EditorSettingsUtil.SaveBool(PrefsKey, isChecked);
+        }
+
+        [MenuItem(MenuPath, true)]
+        static bool Remember()
+        {
+            bool isChecked = EditorSettingsUtil.LoadBool(PrefsKey, false);
+            Menu.SetChecked(MenuPath, isChecked);
+            return true;
         }
 
         static HierarchyDepthColor()
         {
+            EditorApplication.delayCall += () => Remember();
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
         }
 

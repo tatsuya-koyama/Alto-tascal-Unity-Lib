@@ -12,20 +12,34 @@ namespace AltoEditor
     public static class ColoredProjectView
     {
         const string MenuPath = AltoMenuPath.EditorExt + "ColoredProjectView";
+        static string PrefsKey => "AltoEditor-ColoredProjectView";
 
         public static bool NeedToReloadSettings = false;
 
         [MenuItem(MenuPath)]
         static void ToggleEnabled()
         {
-            Menu.SetChecked(MenuPath, !Menu.GetChecked(MenuPath));
+            bool isChecked = !Menu.GetChecked(MenuPath);
+            Menu.SetChecked(MenuPath, isChecked);
+            EditorSettingsUtil.SaveBool(PrefsKey, isChecked);
         }
 
+        [MenuItem(MenuPath, true)]
+        static bool Remember()
+        {
+            bool isChecked = EditorSettingsUtil.LoadBool(PrefsKey, false);
+            Menu.SetChecked(MenuPath, isChecked);
+            return true;
+        }
 
         [InitializeOnLoadMethod]
         static void SetEvent()
         {
-            SetUpSettings();
+            EditorApplication.delayCall += () =>
+            {
+              SetUpSettings();
+              Remember();
+            };
             EditorApplication.projectWindowItemOnGUI += OnGUI;
             EditorSceneManager.sceneOpened += OnSceneOpened;
         }
