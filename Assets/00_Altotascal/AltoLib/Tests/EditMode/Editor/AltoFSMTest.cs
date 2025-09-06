@@ -15,32 +15,32 @@ namespace AltoLib.Tests
 
         class StandState : AltoFSM<TestController>.AltoState
         {
-            protected override void Enter()  { context.sequence += "_in1"; }
-            protected override void Exit()   { context.sequence += "_out1"; }
-            protected override void Update() { context.sequence += "_up1"; }
+            public override void Enter()  { context.sequence += "_in1"; }
+            public override void Exit()   { context.sequence += "_out1"; }
+            public override void Update() { context.sequence += "_up1"; }
         }
 
         class WalkState : AltoFSM<TestController>.AltoState
         {
-            protected override void Enter()  { context.sequence += "_in2"; }
-            protected override void Exit()   { context.sequence += "_out2"; }
-            protected override void Update() { context.sequence += "_up2"; }
+            public override void Enter()  { context.sequence += "_in2"; }
+            public override void Exit()   { context.sequence += "_out2"; }
+            public override void Update() { context.sequence += "_up2"; }
         }
 
         class RunState : AltoFSM<TestController>.AltoState
         {
-            protected override void Enter()  { context.sequence += "_in3"; }
-            protected override void Exit()   { context.sequence += "_out3"; }
-            protected override void Update() { context.sequence += "_up3"; }
+            public override void Enter()  { context.sequence += "_in3"; }
+            public override void Exit()   { context.sequence += "_out3"; }
+            public override void Update() { context.sequence += "_up3"; }
         }
 
         class TalkState : AltoFSM<TestController>.AltoState
         {
-            protected override void Enter()  { context.sequence += "_in4"; }
-            protected override void Exit()   { context.sequence += "_out4"; }
-            protected override void Update() { context.sequence += "_up4"; }
+            public override void Enter()  { context.sequence += "_in4"; }
+            public override void Exit()   { context.sequence += "_out4"; }
+            public override void Update() { context.sequence += "_up4"; }
 
-            protected override bool Guard(ValueType eventId)
+            public override bool Guard(ValueType eventId)
             {
                 return context.guardFromTalk;
             }
@@ -48,9 +48,9 @@ namespace AltoLib.Tests
 
         class FlashState : AltoFSM<TestController>.AltoState
         {
-            protected override void Enter()  { context.sequence += "_in5"; SendEvent(StateEvent.GoNext); }
-            protected override void Exit()   { context.sequence += "_out5"; }
-            protected override void Update() { context.sequence += "_up5"; }
+            public override void Enter()  { context.sequence += "_in5"; SendEvent(StateEvent.GoNext); }
+            public override void Exit()   { context.sequence += "_out5"; }
+            public override void Update() { context.sequence += "_up5"; }
         }
 
         public enum StateEvent

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-[assembly: InternalsVisibleTo("AltoLib.Tests")]
 namespace AltoLib
 {
     public partial class AltoFSM<TContext>
@@ -16,27 +14,27 @@ namespace AltoLib
             /// <summary>
             /// 初期化処理。FSM に初めて AddTransition() したタイミングで呼ばれる
             /// </summary>
-            protected internal virtual void Init() {}
+            public virtual void Init() {}
 
             /// <summary>
             /// State に入るときに呼ばれる
             /// </summary>
-            protected internal virtual void Enter() {}
+            public virtual void Enter() {}
 
             /// <summary>
             /// State から出るときに呼ばれる
             /// </summary>
-            protected internal virtual void Exit() {}
+            public virtual void Exit() {}
 
             /// <summary>
             /// AltoFSM の Update() を呼ぶと呼ばれる
             /// </summary>
-            protected internal virtual void Update() {}
+            public virtual void Update() {}
 
             /// <summary>
             /// true を返すとイベントによる遷移をキャンセルする
             /// </summary>
-            protected internal virtual bool Guard(ValueType eventId) { return false; }
+            public virtual bool Guard(ValueType eventId) { return false; }
 
             /// <summary>
             /// 自身で遷移イベントを送出する
@@ -54,14 +52,14 @@ namespace AltoLib
                 fsm.parentFsm?.SendEvent(_eventId);
             }
 
-            protected internal TContext context;
+            public TContext context;
 
             // onEnter / onExit で直前・直後の State 情報が知りたかったら以下を見る。
             // Enter() / Exit() の引数にとっていないのは引数の型が長くなりがちで実装時に面倒なため
-            protected internal AltoState onEnterPrevState;
-            protected internal AltoState onExitNextState;
+            public AltoState onEnterPrevState;
+            public AltoState onExitNextState;
 
-            protected internal IAltoFSM fsm;
+            public IAltoFSM fsm;
 
             //------------------------------------------------------------------
             // internal
