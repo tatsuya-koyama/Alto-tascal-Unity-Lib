@@ -41,13 +41,6 @@ namespace AltoEditor
               Remember();
             };
             EditorApplication.projectWindowItemOnGUI += OnGUI;
-            EditorSceneManager.sceneOpened += OnSceneOpened;
-        }
-
-        static void OnSceneOpened(Scene scene, OpenSceneMode mode)
-        {
-            // Scene 切り替えで Texture が破棄されてしまうようなので作り直す
-            SetUpSettings();
         }
 
         //----------------------------------------------------------------------
@@ -88,6 +81,13 @@ namespace AltoEditor
             _textureCache.Clear();
         }
 
+        static bool ShouldReloadSettings()
+        {
+          if (NeedToReloadSettings) { return true; }
+          if (_textureCache.Values.Any(_ => _ == null)) { return true; }
+          return false;
+        }
+
         //----------------------------------------------------------------------
         // Draw GUI
         //----------------------------------------------------------------------
@@ -96,7 +96,7 @@ namespace AltoEditor
         {
             if (!Menu.GetChecked(MenuPath)) { return; }
 
-            if (NeedToReloadSettings) { SetUpSettings(); }
+            if (ShouldReloadSettings()) { SetUpSettings(); }
             if (_settings == null) { return; }
 
             var texture = GetColorTexture(guid);
