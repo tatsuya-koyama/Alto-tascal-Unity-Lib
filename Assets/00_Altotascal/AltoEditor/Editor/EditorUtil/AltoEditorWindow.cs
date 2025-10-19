@@ -17,13 +17,16 @@ namespace AltoEditor
         protected Color LightGreen  => new(0.5f, 1.0f, 0.5f);
         protected Color LightBlue   => new(0.65f, 0.85f, 1.0f);
         protected Color LightYellow => new(1.0f, 1.0f, 0.5f);
+        protected Color DarkGray    => new(0.35f, 0.35f, 0.35f);
         protected Color DarkYellow  => new(0.75f, 0.75f, 0.2f);
         protected Color DarkOrange  => new(0.75f, 0.55f, 0.25f);
         protected Color DarkAqua    => new(0.3f, 0.65f, 0.75f);
+        protected Color DarkGreen   => new(0.1f, 0.65f, 0.1f);
+        protected Color DarkLGreen  => new(0.53f, 0.69f, 0.26f);
 
         protected Color _defaultLabelColor = Color.white;
         protected Color _defaultValueColor = Color.white;
-        protected float _defaultButtonMinWidth  = 60f;
+        protected float _defaultButtonMaxWidth  = 60f;
         protected float _defaultButtonMinHeight = 30f;
         protected float _defaultSpacing = 10f;
 
@@ -60,6 +63,48 @@ namespace AltoEditor
         }
 
         //----------------------------------------------------------------------------
+        // Button Helper
+        //----------------------------------------------------------------------------
+
+        protected float _prevButtonMaxWidth;
+
+        protected void ChangeDefaultButtonMaxWidth(float width)
+        {
+          _prevButtonMaxWidth = _defaultButtonMaxWidth;
+          _defaultButtonMaxWidth = width;
+        }
+
+        protected void RevertDefaultButtonMaxWidth()
+        {
+          _defaultButtonMaxWidth = _prevButtonMaxWidth;
+        }
+
+        protected bool Button(
+            string label, float maxWidth = 0f, float minHeight = 0f,
+            string tooltip = "",
+            Color? color = null
+        )
+        {
+            Color originalColor = GUI.color;
+            Color specifiedColor = color ?? Color.white;
+            if (color != null)
+            {
+                GUI.color = specifiedColor;
+            }
+
+            if (maxWidth  == 0f) { maxWidth  = _defaultButtonMaxWidth; }
+            if (minHeight == 0f) { minHeight = _defaultButtonMinHeight; }
+            var content = new GUIContent(label, tooltip);
+            bool pressed = GUILayout.Button(content, GUILayout.MaxWidth(maxWidth), GUILayout.MinHeight(minHeight));
+
+            if (color != null)
+            {
+                GUI.color = originalColor;
+            }
+            return pressed;
+        }
+
+        //----------------------------------------------------------------------------
         // Rendering Helper
         //----------------------------------------------------------------------------
 
@@ -83,13 +128,15 @@ namespace AltoEditor
             string label, string value,
             Color? _labelColor = null,
             Color? _valueColor = null,
-            float width = 150f
+            float labelWidth = 150f,
+            float? valueWidth = null,
+            bool withoutScope = false
         )
         {
             Color labelColor = _labelColor ?? _defaultLabelColor;
             Color valueColor = _valueColor ?? _defaultValueColor;
 
-            using (new GUILayout.HorizontalScope())
+            if (!withoutScope) { GUILayout.BeginHorizontal(); }
             {
                 var labelStyle = new GUIStyle(GUI.skin.label)
                 {
@@ -104,35 +151,16 @@ namespace AltoEditor
                 };
                 valueStyle.normal.textColor = valueColor;
 
-                GUILayout.Label(label, labelStyle, GUILayout.Width(width));
+                GUILayout.Label(label, labelStyle, GUILayout.Width(labelWidth));
                 GUILayout.Label("", GUILayout.Width(1f));
-                GUILayout.Label(value, valueStyle);
-            }
-        }
 
-        protected bool Button(
-            string label, float minWidth = 0f, float minHeight = 0f,
-            string tooltip = "",
-            Color? color = null
-        )
-        {
-            Color originalColor = GUI.color;
-            Color specifiedColor = color ?? Color.white;
-            if (color != null)
-            {
-                GUI.color = specifiedColor;
+                if (valueWidth != null) {
+                  GUILayout.Label(value, valueStyle, GUILayout.Width(valueWidth ?? 0f));
+                } else {
+                  GUILayout.Label(value, valueStyle);
+                }
             }
-
-            if (minWidth  == 0f) { minWidth  = _defaultButtonMinWidth; }
-            if (minHeight == 0f) { minHeight = _defaultButtonMinHeight; }
-            var content = new GUIContent(label, tooltip);
-            bool pressed = GUILayout.Button(content, GUILayout.MaxWidth(minWidth), GUILayout.MinHeight(minHeight));
-
-            if (color != null)
-            {
-                GUI.color = originalColor;
-            }
-            return pressed;
+            if (!withoutScope) { GUILayout.EndHorizontal(); }
         }
 
         protected void BR()
@@ -151,6 +179,36 @@ namespace AltoEditor
         {
             if (space == 0f) { space = _defaultSpacing; }
             GUILayout.Space(space);
+        }
+
+        protected void Gauge(
+          float ratio, string label = "", float height = 16f,
+          Color? _fgColor = null, Color? _bgColor = null
+        )
+        {
+            var fgColor = _fgColor ?? DarkLGreen;
+            var bgColor = _bgColor ?? DarkGray;
+
+            // 背景
+            Rect rect = GUILayoutUtility.GetRect(16, height, "TextField");
+            EditorGUI.DrawRect(rect, bgColor);
+
+            // ゲージ部分
+            Rect fill = new(
+                rect.x + 1f,
+                rect.y + 1f,
+                rect.width * Mathf.Clamp01(ratio) - 2f,
+                rect.height - 2f
+            );
+            EditorGUI.DrawRect(fill, fgColor);
+
+            // テキスト
+            GUIStyle style = new(EditorStyles.boldLabel)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = Color.white }
+            };
+            EditorGUI.LabelField(rect, label, style);
         }
     }
 }

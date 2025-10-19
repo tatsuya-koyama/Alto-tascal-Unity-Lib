@@ -75,7 +75,7 @@ namespace AltoEditor
         {
             Header("Nudge : UI 要素の位置微調整", DarkOrange);
 
-            this._defaultButtonMinWidth = 100f;
+            this._defaultButtonMaxWidth = 100f;
             using (new GUILayout.HorizontalScope())
             {
                 GUILayout.Space(53f);
