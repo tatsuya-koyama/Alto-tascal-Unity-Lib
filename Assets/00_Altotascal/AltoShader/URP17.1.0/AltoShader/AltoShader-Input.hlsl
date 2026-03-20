@@ -129,7 +129,10 @@ half  _Sp_PostOffset;
 half  _Sp_Hue;
 half  _Sp_Saturate;
 
+half _SSRReflectivity;
+
 half4 _SpecGlossMap_TexelSize;
+
 CBUFFER_END
 
 #ifdef UNITY_DOTS_INSTANCING_ENABLED

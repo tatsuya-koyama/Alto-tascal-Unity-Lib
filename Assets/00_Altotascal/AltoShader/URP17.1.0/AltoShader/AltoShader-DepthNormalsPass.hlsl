@@ -5,7 +5,7 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-#include "../Generic/AltoShaderUtil.hlsl"
+#include "../../Generic/AltoShaderUtil.hlsl"
 #include "AltoShader-SharedLogic.hlsl"
 
 #if defined(_ALPHATEST_ON) || defined(_NORMALMAP)
@@ -132,7 +132,7 @@ void DepthNormalsFragment(
         float2 octNormalWS = PackNormalOctQuadEncode(normalWS);           // values between [-1, +1], must use fp32 on some platforms
         float2 remappedOctNormalWS = saturate(octNormalWS * 0.5 + 0.5);   // values between [ 0,  1]
         half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);      // values between [ 0,  1]
-        outNormalWS = half4(packedNormalWS, 0.0);
+        outNormalWS = half4(packedNormalWS, _SSRReflectivity);
     #else
         #if defined(_NORMALMAP)
             half3 normalTS = SampleNormal(input.uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
@@ -142,7 +142,7 @@ void DepthNormalsFragment(
         #endif
 
         normalWS = NormalizeNormalPerPixel(normalWS);
-        outNormalWS = half4(normalWS, 0.0);
+        outNormalWS = half4(normalWS, _SSRReflectivity);
     #endif
 
     #ifdef _WRITE_RENDERING_LAYERS

@@ -6,7 +6,7 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-#include "../Generic/AltoShaderUtil.hlsl"
+#include "../../Generic/AltoShaderUtil.hlsl"
 #include "AltoShader-SharedLogic.hlsl"
 
 // Shadow Casting Light geometric parameters. These variables are used when applying the shadow Normal Bias and are set by UnityEngine.Rendering.Universal.ShadowUtils.SetupShadowCasterConstantBuffer in com.unity.render-pipelines.universal/Runtime/ShadowUtils.cs

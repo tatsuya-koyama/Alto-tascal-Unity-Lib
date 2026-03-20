@@ -152,8 +152,8 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/KiraKira-Input.hlsl"
-            #include "Pass/KiraKira-ForwardPass.hlsl"
+            #include "KiraKira-Input.hlsl"
+            #include "KiraKira-ForwardPass.hlsl"
             ENDHLSL
         }
 
@@ -194,7 +194,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -252,7 +252,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -287,7 +287,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -325,7 +325,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -349,7 +349,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _EMISSION
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -370,7 +370,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
@@ -442,7 +442,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma fragment LitPassFragmentSimple
             #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitForwardPass.hlsl"
             ENDHLSL
         }
@@ -487,7 +487,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -524,7 +524,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -563,7 +563,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -587,7 +587,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
             #pragma shader_feature EDITOR_VISUALIZATION
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -608,7 +608,7 @@ Shader "Altotascal/URP 17.1.0/KiraKira Shader"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            #include "Pass/KiraKira-Input.hlsl"
+            #include "KiraKira-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }

@@ -2,8 +2,8 @@
 #define ALTO_17_KIRAKIRA_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-#include "SimpleLitCoreLogic.hlsl"
-#include "../Generic/AltoShaderUtil.hlsl"
+#include "../SimpleLitClone/SimpleLit-CoreLogic.hlsl"
+#include "../../Generic/AltoShaderUtil.hlsl"
 
 //------------------------------------------------------------------------------
 // Lighting Effect

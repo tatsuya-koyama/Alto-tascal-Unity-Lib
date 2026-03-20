@@ -1,52 +1,9 @@
-﻿// Shader targeted for low end devices. Single Pass Forward Rendering.
-Shader "Altotascal/URP 17.1.0/Stylized Water"
+// Shader targeted for low end devices. Single Pass Forward Rendering.
+Shader "Altotascal/URP 17.1.0/Simple Lit"
 {
     // Keep properties of StandardSpecular shader for upgrade reasons.
     Properties
     {
-        // Custom props
-        _WaterColorDepth("Water Color Depth", Float) = 1.0
-        [ToggleOff] _DepthDebug("Depth Texture Debug", Float) = 0.0
-        _FoamColor("Foam Color", Color) = (1, 1, 1, 1)
-        _FoamSharpness("Foam Sharpness", Float) = 1.0
-        _FoamFactor("Foam Factor", Float) = 1.0
-        _UnderwaterColor("Underwater Color", Color) = (0, 0.5, 1, 0)
-        [ToggleOff] _MultiplyUnderwaterColor("Multiply Underwater Color", Float) = 0.0
-        _WaterDistortion("Water Distortion", Float) = 1.0
-
-        [ToggleOff] _RimLightingOn("Rim Lighting", Float) = 0.0
-        _RimColor("Rim Color", Color) = (1, 1, 1, 1)
-        _RimPower("Rim Power", Range(0.5, 8.0)) = 3.0
-
-        _WaveCycle("Wave Cycle", Float) = 1.0
-        _WaveSpeed("Wave Speed", Float) = 1.0
-        _WavePower("Wave Power", Float) = 1.0
-        _NormalShiftX("Normal map shift speed X", Float) = 0.0
-        _NormalShiftY("Normal map shift speed Y", Float) = 0.0
-        _RiseAndFall("Rise and Fall", Float) = 0.0
-        _SurfaceSpecular("Surface Specular", Float) = 1.0
-        _SurfaceNoise("Surface Noise", Float) = 1.0
-        _SurfaceParams("Surface Diversity Params", Vector) = (1, 1, 1, 1)
-
-        [ToggleOff] _EdgeFadeOutOn("Edge Fade Out", Float) = 0.0
-        _EdgeFadeOutOrigin("Edge Fade Out Origin", Vector) = (0, 0, 0, 0)
-        _EdgeFadeOutDistance("Edge Fade Out Distance", Float) = 10
-        _EdgeSharpness("Edge Sharpness", Float) = 0.8
-
-        _DissolveAreaSize("Dissolve Area Size", Float) = 0.0
-        _DissolveOrigin("Dissolve Origin Pos", Vector) = (0, 0, 0, 0)
-        _DissolveSlow("Dissolve Slow Factor", Vector) = (1, 1, 1, 1)
-        _DissolveDistance("Dissolve Distance", Float) = 1.0
-        _DissolveRoughness("Dissolve Roughness", Float) = 1.0
-        _DissolveNoise("Dissolve Noise", Float) = 1.0
-        _DissolveEdgeSharpness("Dissolve Edge Sharpness", Float) = 1.0
-        _DissolveEdgeAddColor("Dissolve Edge Add Color", Color) = (1, 1, 1, 1)
-        _DissolveEdgeSubColor("Dissolve Edge Subtract Color", Color) = (1, 1, 1, 1)
-
-        _DitherPattern("Dithering Pattern", 2D) = "white" {}
-        _DitherCull("Dither Culling", Float) = 5.0
-
-        // Basic props
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}
         [MainColor]   _BaseColor("Base Color", Color) = (1, 1, 1, 1)
 
@@ -183,8 +140,8 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
-            #include "Pass/StylizedWater-ForwardPass.hlsl"
+            #include "SimpleLit-Input.hlsl"
+            #include "SimpleLit-ForwardPass.hlsl"
             ENDHLSL
         }
 
@@ -230,7 +187,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -307,7 +264,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -350,7 +307,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -397,7 +354,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -431,7 +388,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
@@ -462,12 +419,53 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
 
             // -------------------------------------
             // Includes
-            #include "Pass/StylizedWater-Input.hlsl"
+            #include "SimpleLit-Input.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "MotionVectors"
+            Tags { "LightMode" = "MotionVectors" }
+            ColorMask RG
+
+            HLSLPROGRAM
+            #pragma shader_feature_local _ALPHATEST_ON
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
+            #pragma shader_feature_local_vertex _ADD_PRECOMPUTED_VELOCITY
+
+            #include "SimpleLit-Input.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "XRMotionVectors"
+            Tags { "LightMode" = "XRMotionVectors" }
+            ColorMask RGBA
+
+            // Stencil write for obj motion pixels
+            Stencil
+            {
+                WriteMask 1
+                Ref 1
+                Comp Always
+                Pass Replace
+            }
+
+            HLSLPROGRAM
+            #pragma shader_feature_local _ALPHATEST_ON
+            #pragma multi_compile _ LOD_FADE_CROSSFADE
+            #pragma shader_feature_local_vertex _ADD_PRECOMPUTED_VELOCITY
+            #define APPLICATION_SPACE_WARP_MOTION 1
+            #include "SimpleLit-Input.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
             ENDHLSL
         }
     }
 
     Fallback  "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "AltoLib.ShaderGUI.StylizedWaterGUI"
+    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.SimpleLitShader"
 }

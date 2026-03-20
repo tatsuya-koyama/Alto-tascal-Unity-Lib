@@ -1,7 +1,7 @@
 ﻿#ifndef ALTO_SHADER_17_SHARED_LOGIC
 #define ALTO_SHADER_17_SHARED_LOGIC
 
-#include "../Generic/AltoShaderUtil.hlsl"
+#include "../../Generic/AltoShaderUtil.hlsl"
 
 //------------------------------------------------------------------------------
 // Wind animation

@@ -5,8 +5,8 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-#include "SimpleLitCoreLogic.hlsl"
-#include "../Generic/AltoShaderUtil.hlsl"
+#include "../SimpleLitClone/SimpleLit-CoreLogic.hlsl"
+#include "../../Generic/AltoShaderUtil.hlsl"
 
 //==============================================================================
 // Vertex and Fragment inputs
