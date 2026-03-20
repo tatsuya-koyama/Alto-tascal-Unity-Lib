@@ -36,7 +36,7 @@ namespace AltoLib
     ///     - AspectFitter_InEntireScreen
     ///         - （外側に画面を覆い隠す帯を配置）
     /// </summary>
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
     public class FlexibleAspectRatioFitter : UIBehaviour, ILayoutSelfController
     {
