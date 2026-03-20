@@ -18,11 +18,13 @@ namespace AltoFramework
         public int reservedNum { get; private set; } = 0;
 
         GameObject _original;
+        Transform _parentTransform;
         Stack<T> _pool = new Stack<T>();
 
-        public AltoObjectPool(GameObject original, int reserveNum = 64)
+        public AltoObjectPool(GameObject original, Transform parentTransform, int reserveNum = 64)
         {
             _original = original;
+            _parentTransform = parentTransform;
             Reserve(reserveNum);
         }
 
@@ -95,7 +97,7 @@ namespace AltoFramework
 
         T Create()
         {
-            var newObj = GameObject.Instantiate<GameObject>(_original);
+            var newObj = GameObject.Instantiate<GameObject>(_original, _parentTransform);
             var obj = newObj.GetComponent<T>();
             obj.OnCreate();
             obj.SetPool(this);

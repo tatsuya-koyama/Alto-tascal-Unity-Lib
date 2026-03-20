@@ -54,6 +54,16 @@ namespace AltoFramework.Testing
         {
         }
 
+        public UniTask FadeIn(float fadeTime = 0.3f, Color? color = null)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        public UniTask FadeOut(float fadeTime = 0.3f, Color? color = null)
+        {
+            return UniTask.CompletedTask;
+        }
+
         //----------------------------------------------------------------------
         // private
         //----------------------------------------------------------------------

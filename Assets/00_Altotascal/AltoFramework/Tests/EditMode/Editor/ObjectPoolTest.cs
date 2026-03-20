@@ -14,7 +14,7 @@ namespace AltoFramework.Tests
             var originalGameObj = new GameObject();
             originalGameObj.AddComponent<MyBehaviour>();
 
-            var objPool = new AltoObjectPool<MyBehaviour>(originalGameObj, 3);
+            var objPool = new AltoObjectPool<MyBehaviour>(originalGameObj, null, 3);
             Assert.That(objPool.RemainCount, Is.EqualTo(3));
 
             MyBehaviour obj1 = objPool.Get();
@@ -37,7 +37,7 @@ namespace AltoFramework.Tests
             var originalGameObj = new GameObject();
             originalGameObj.AddComponent<MyBehaviour>();
 
-            var objPool = new AltoObjectPool<MyBehaviour>(originalGameObj, 3);
+            var objPool = new AltoObjectPool<MyBehaviour>(originalGameObj, null, 3);
             Assert.That(objPool.RemainCount, Is.EqualTo(3));
 
             MyBehaviour obj1 = objPool.Get();

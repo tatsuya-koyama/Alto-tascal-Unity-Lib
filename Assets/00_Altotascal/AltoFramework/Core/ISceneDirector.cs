@@ -22,5 +22,7 @@ namespace AltoFramework
         UniTask GoToNextSceneWithCustomTransition(string nextSceneName);
 
         void SetFadeColor(Color color);
+        UniTask FadeIn(float fadeTime = 0.3f, Color? color = null);
+        UniTask FadeOut(float fadeTime = 0.3f, Color? color = null);
     }
 }

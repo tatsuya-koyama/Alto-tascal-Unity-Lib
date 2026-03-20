@@ -9,13 +9,19 @@ namespace AltoFramework
     public class AltoObjectPoolRegistry
     {
         Dictionary<Type, IAltoObjectPool> _pools = new Dictionary<Type, IAltoObjectPool>();
+        Transform _parentTransform;
 
-        public AltoObjectPool<T> CreatePool<T>(GameObject original, int reserveNum) where T : PoolableBehaviour
+        public AltoObjectPoolRegistry(Transform parentTransform)
+        {
+            _parentTransform = parentTransform;
+        }
+
+        public AltoObjectPool<T> CreatePool<T>(GameObject original,int reserveNum) where T : PoolableBehaviour
         {
             Type behaviourType = typeof(T);
             CheckMultipleCreate(behaviourType);
 
-            var objectPool = new AltoObjectPool<T>(original, reserveNum);
+            var objectPool = new AltoObjectPool<T>(original, _parentTransform, reserveNum);
             _pools.Add(behaviourType, objectPool);
             return objectPool;
         }

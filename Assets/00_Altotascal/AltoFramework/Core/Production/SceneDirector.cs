@@ -70,6 +70,22 @@ namespace AltoFramework.Production
             _screenFader.SetColor(color);
         }
 
+        public async UniTask FadeIn(float fadeTime = 0.3f, Color? color = null)
+        {
+            var oldColor = _screenFader.CurrentColor;
+            if (color != null) { _screenFader.SetColor((Color)color); }
+            await _screenFader.FadeIn(fadeTime);
+            if (color != null) { _screenFader.SetColor(oldColor); }
+        }
+
+        public async UniTask FadeOut(float fadeTime = 0.3f, Color? color = null)
+        {
+            var oldColor = _screenFader.CurrentColor;
+            if (color != null) { _screenFader.SetColor((Color)color); }
+            await _screenFader.FadeOut(fadeTime);
+            if (color != null) { _screenFader.SetColor(oldColor); }
+        }
+
         //----------------------------------------------------------------------
         // private
         //----------------------------------------------------------------------

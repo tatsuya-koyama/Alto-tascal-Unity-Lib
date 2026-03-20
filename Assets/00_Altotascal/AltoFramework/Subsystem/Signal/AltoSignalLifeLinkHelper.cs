@@ -22,6 +22,7 @@ namespace AltoFramework
 
         public static void LifeLink(Component component, AltoSignal signal, Action action)
         {
+            if (component == null) { return; }
             if (action == null) { LogError(); return; }
 
             var trigger = GetOrCreateTrigger(component);
@@ -33,6 +34,7 @@ namespace AltoFramework
 
         public static void LifeLink<T>(Component component, AltoSignal<T> signal, Action<T> action)
         {
+            if (component == null) { return; }
             if (action == null) { LogError(); return; }
 
             var trigger = GetOrCreateTrigger(component);
@@ -44,6 +46,7 @@ namespace AltoFramework
 
         public static void LifeLink<T1, T2>(Component component, AltoSignal<T1, T2> signal, Action<T1, T2> action)
         {
+            if (component == null) { return; }
             if (action == null) { LogError(); return; }
 
             var trigger = GetOrCreateTrigger(component);

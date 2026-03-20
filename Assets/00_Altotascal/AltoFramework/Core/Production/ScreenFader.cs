@@ -12,6 +12,9 @@ namespace AltoFramework.Production
         GameObject _canvasObj;
         Image      _panelImage;
 
+        Color _color = Color.black;
+        public Color CurrentColor => _color;
+
         public void Init()
         {
             _canvasObj = MakeUIPanel();
@@ -33,6 +36,7 @@ namespace AltoFramework.Production
 
         public async UniTask FadeIn(float fadeTime = 0.3f)
         {
+            _canvasObj.SetActive(true);
             var passedTime = 0.0f;
             while (passedTime < fadeTime)
             {
@@ -46,7 +50,7 @@ namespace AltoFramework.Production
 
         public void SetColor(Color color)
         {
-            _panelImage.color = color;
+            _color = color;
         }
 
         //----------------------------------------------------------------------
@@ -55,8 +59,8 @@ namespace AltoFramework.Production
 
         void SetPanelAlpha(float alpha)
         {
-            var c = _panelImage.color;
-            _panelImage.color = new Color(c.r, c.g, c.b, alpha);
+            var c = _color;
+            _panelImage.color = new Color(c.r, c.g, c.b, c.a * alpha);
         }
 
         GameObject MakeUIPanel()
@@ -76,7 +80,7 @@ namespace AltoFramework.Production
             rect.anchorMax = new Vector2(1, 1);
 
             Image image = panel.AddComponent<Image>();
-            image.color = Color.black;
+            image.color = _color;
             _panelImage = image;
             panel.transform.SetParent(canvasObj.transform, false);
             return canvasObj;

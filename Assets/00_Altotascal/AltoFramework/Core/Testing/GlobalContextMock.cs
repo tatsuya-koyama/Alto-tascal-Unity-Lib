@@ -49,7 +49,7 @@ namespace AltoFramework.Testing
 
             tweenerHub = new TweenerHub(sceneDirector, timeKeeper);
 
-            objectPoolHub = new ObjectPoolHub(sceneDirector);
+            objectPoolHub = new ObjectPoolHub(sceneDirector, null);
 
             bootConfig.OnGameBoot();
         }
