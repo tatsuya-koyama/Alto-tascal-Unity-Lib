@@ -6,7 +6,14 @@ namespace AltoEditor
 {
     public class CustomColorPicker : AltoEditorWindow
     {
-        public static void ShowWindow(Rect buttonRect, Action<Color> onSelected)
+        public class ColorInfo
+        {
+            public Color color;
+            public int index;
+        }
+        public const int DefaultColorIndex = 999;
+
+        public static void ShowWindow(Rect buttonRect, Action<ColorInfo> onSelected)
         {
             var window = CreateInstance<CustomColorPicker>();
             window.titleContent = new GUIContent("Color Picker");
@@ -14,16 +21,11 @@ namespace AltoEditor
             window.ShowAsDropDown(buttonRect, new Vector2(150f, 170f));
         }
 
-        public Action<Color> onSelected;
+        public Action<ColorInfo> onSelected;
 
         void OnGUI()
         {
             Header("Color Swatch", LightGray);
-
-            using (new GUILayout.HorizontalScope())
-            {
-                ColoredButton(new Color(0.16f, 0.16f, 0.16f), 60f);
-            }
 
             using (new GUILayout.HorizontalScope())
             {
@@ -46,38 +48,51 @@ namespace AltoEditor
             {
                 for (int i = 1; i <= 5; ++i)
                 {
-                    float b = 0.2f * i;
-                    ColoredButton(new Color(b, b, b));
+                    float b = 0.1f + (0.9f / 5) * i;
+                    Color color = new(b, b, b);
+                    ColorInfo info = new() { color = color, index = 100 + i };
+                    ColoredButton(info);
                 }
+            }
+            using (new GUILayout.HorizontalScope())
+            {
+                Color color = new(0.16f, 0.16f, 0.16f);
+                ColorInfo info = new() { color = color, index = DefaultColorIndex };
+                ColoredButton(info, 60f);
             }
         }
 
-        Color GetColor(int index)
+        ColorInfo GetColor(int index)
         {
             float hue = GetHue(index);
             Color color = Color.HSVToRGB(hue, 1.0f, 1.0f);
 
             float luminance = (color.r * 0.299f) + (color.g * 0.587f) + (color.b * 0.114f);
-            return Color.HSVToRGB(hue, 0.6f + luminance * 0.4f, 1.0f - luminance * 0.13f);
+            Color finalColor = Color.HSVToRGB(hue, 0.6f + luminance * 0.4f, 1.0f - luminance * 0.13f);
+            return new()
+            {
+                color = finalColor,
+                index = index,
+            };
         }
 
         float GetHue(int index)
         {
-          float hue = (0.67f - index * 0.05f) % 1.0f;
+          float hue = (0.89f + index * 0.05f) % 1.0f;
           return hue - Mathf.Floor(hue);
         }
 
-        void ColoredButton(Color color, float width = 20f)
+        void ColoredButton(ColorInfo colorInfo, float width = 20f)
         {
             Rect buttonRect = GUILayoutUtility.GetRect(
                 new GUIContent(""), GUI.skin.button, GUILayout.Width(width)
             );
             if (GUI.Button(buttonRect, "", EditorStyles.boldLabel))
             {
-                onSelected?.Invoke(color);
+                onSelected?.Invoke(colorInfo);
                 Close();
             }
-            EditorGUI.DrawRect(buttonRect, color);
+            EditorGUI.DrawRect(buttonRect, colorInfo.color);
         }
     }
 }

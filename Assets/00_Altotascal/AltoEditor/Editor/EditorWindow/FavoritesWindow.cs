@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using Object = UnityEngine.Object;
+using ColorInfo = AltoEditor.CustomColorPicker.ColorInfo;
 
 namespace AltoEditor
 {
@@ -34,6 +35,7 @@ namespace AltoEditor
             public string name;
             public string type;
             public string color;
+            public int colorIndex = CustomColorPicker.DefaultColorIndex;
             public long time;  // last opened unixtime [sec]
 
             [NonSerialized] public int newestRank;
@@ -185,10 +187,11 @@ namespace AltoEditor
             EditorGUI.DrawRect(buttonRect, color);
         }
 
-        void OnSelectColor(AssetInfo info, Color color)
+        void OnSelectColor(AssetInfo info, ColorInfo colorInfo)
         {
             var targetInfo = GetAssetInfo(info.guid);
-            targetInfo.color = ColorUtility.ToHtmlStringRGB(color);
+            targetInfo.color = ColorUtility.ToHtmlStringRGB(colorInfo.color);
+            targetInfo.colorIndex = colorInfo.index;
             SavePrefs();
         }
 
@@ -345,7 +348,7 @@ namespace AltoEditor
         void SortByColor()
         {
             _assets.infoList.Sort((a, b) => {
-                int cmp1 = a.color.CompareTo(b.color);
+                int cmp1 = a.colorIndex - b.colorIndex;
                 if (cmp1 != 0) { return cmp1; }
                 int cmp2 = a.type.CompareTo(b.type);
                 if (cmp2 != 0) { return cmp2; }
@@ -356,7 +359,7 @@ namespace AltoEditor
         void SortByColorDesc()
         {
             _assets.infoList.Sort((a, b) => {
-                int cmp1 = b.color.CompareTo(a.color);
+                int cmp1 = b.colorIndex - a.colorIndex;
                 if (cmp1 != 0) { return cmp1; }
                 int cmp2 = a.type.CompareTo(b.type);
                 if (cmp2 != 0) { return cmp2; }
