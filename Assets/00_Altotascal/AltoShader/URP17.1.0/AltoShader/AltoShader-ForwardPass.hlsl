@@ -5,19 +5,19 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
+#include "../_SharedLogic/URPBridge-Lighting.hlsl"
 #include "../../Generic/AltoShaderUtil.hlsl"
-#include "AltoShader-SharedLogic.hlsl"
+#include "../_SharedLogic/CustomEffect-Basic.hlsl"
+#include "../_SharedLogic/CustomEffect-CubicColor.hlsl"
+#include "../_SharedLogic/CustomEffect-Dithering.hlsl"
+#include "../_SharedLogic/CustomEffect-Dissolve.hlsl"
+#include "../_SharedLogic/CustomEffect-Fog.hlsl"
+#include "../_SharedLogic/CustomEffect-Specular.hlsl"
+#include "../_SharedLogic/CustomEffect-Wind.hlsl"
 
 //==============================================================================
 // Constants, and Vertex / Fragment inputs
 //==============================================================================
-
-static const half3 VecTop    = half3( 0,  1,  0);
-static const half3 VecBottom = half3( 0, -1,  0);
-static const half3 VecRight  = half3( 1,  0,  0);
-static const half3 VecFront  = half3( 0,  0, -1);
-static const half3 VecLeft   = half3(-1,  0,  0);
-static const half3 VecBack   = half3( 0,  0,  1);
 
 struct Attributes
 {
@@ -125,157 +125,6 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
     inputData.probeOcclusion = input.probeOcclusion;
     #endif
     #endif
-}
-
-//==============================================================================
-// Lighting Functions (Copied from Lighting.hlsl)
-//==============================================================================
-
-half Alto_LightIntensity(half3 lightDir, half3 normal)
-{
-    half NdotL = dot(normal, lightDir);
-
-    // Like a Half-Lambert
-    half offset = 1 - abs(_ShadeContrast);
-    return saturate(NdotL * _ShadeContrast + offset);
-}
-
-half3 Alto_LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
-{
-    return lightColor * Alto_LightIntensity(lightDir, normal);
-}
-
-half3 Alto_LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half4 specular, half smoothness)
-{
-    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
-    half NdotH = half(saturate(dot(normal, halfVec)));
-    half modifier = pow(NdotH, smoothness);
-    half3 specularReflection = specular.rgb * modifier;
-    return lightColor * specularReflection;
-}
-
-half3 Alto_CalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
-{
-    half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-    half3 lightDiffuseColor = Alto_LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
-
-    half3 lightSpecularColor = half3(0,0,0);
-    #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    half smoothness = exp2(10 * surfaceData.smoothness + 1);
-
-    lightSpecularColor += Alto_LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, half4(surfaceData.specular, 1), smoothness);
-    #endif
-
-#if _ALPHAPREMULTIPLY_ON
-    return lightDiffuseColor * surfaceData.albedo * surfaceData.alpha + lightSpecularColor;
-#else
-    return lightDiffuseColor * surfaceData.albedo + lightSpecularColor;
-#endif
-}
-
-half3 Alto_CalculateLightingColor(LightingData lightingData, half3 albedo)
-{
-    half3 lightingColor = 0;
-
-    if (IsOnlyAOLightingFeatureEnabled())
-    {
-        return lightingData.giColor; // Contains white + AO
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_GLOBAL_ILLUMINATION))
-    {
-        lightingColor += lightingData.giColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_MAIN_LIGHT))
-    {
-        lightingColor += lightingData.mainLightColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_ADDITIONAL_LIGHTS))
-    {
-        lightingColor += lightingData.additionalLightsColor;
-    }
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_VERTEX_LIGHTING))
-    {
-        lightingColor += lightingData.vertexLightingColor;
-    }
-
-    lightingColor *= albedo;
-
-    if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_EMISSION))
-    {
-        lightingColor += lightingData.emissionColor;
-    }
-
-    return lightingColor;
-}
-
-half4 Alto_CalculateFinalColor(LightingData lightingData, half alpha)
-{
-    half3 finalColor = Alto_CalculateLightingColor(lightingData, 1);
-
-    return half4(finalColor, alpha);
-}
-
-half3 RimLight(InputData inputData, half3 rimColor)
-{
-    half rim = 1.0 - saturate(dot(normalize(inputData.viewDirectionWS), inputData.normalWS));
-    return rimColor * pow(rim, _RimPower);
-}
-
-//------------------------------------------------------------------------------
-// Specular Texture Surface
-//------------------------------------------------------------------------------
-
-half ExtractSpecularChannel(float2 uv)
-{
-    half4 sp = 1 - SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, uv);
-    return ((sp.r * _Sp_RScale)
-          + (sp.g * _Sp_GScale)
-          + (sp.b * _Sp_BScale)) / 3.0;
-}
-
-half SampleSpecularValue(Varyings input, InputData inputData)
-{
-    UNITY_BRANCH
-    if (_WorldSpaceSurfaceOn > 0)
-    {
-        half dirX = step(0.5, abs(dot(input.normalWS, VecRight)));
-        half dirY = step(0.5, abs(dot(input.normalWS, VecTop  )));
-        half dirZ = step(0.5, abs(dot(input.normalWS, VecBack )));
-
-        dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
-        dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
-
-        float2 screenPos = ((input.positionWS.yx * dirZ)
-                          + (input.positionWS.zy * dirX)
-                          + (input.positionWS.xz * dirY));
-        screenPos.xy -= _Sp_TilingParams.xy;
-        screenPos.xy /= _Sp_TilingParams.zw;
-        return ExtractSpecularChannel(screenPos);
-    }
-
-    UNITY_BRANCH
-    if (_SpecularSurfaceOn > 0)
-    {
-        return ExtractSpecularChannel(input.uv);
-    }
-
-    return 0;
-}
-
-half3 ApplySpecularSurface(half specularValue, half3 color)
-{
-    half b = max(specularValue + _Sp_PreOffset, 0) * _Sp_ValueScale;
-    half v = 1 + b + _Sp_PostOffset;
-    half3 hsv = half3(
-        v * _Sp_Hue,
-        1 + (specularValue * _Sp_Saturate),
-        v
-    );
-    return shiftColor(color, hsv);
 }
 
 //------------------------------------------------------------------------------
@@ -397,7 +246,7 @@ half4 Alto_UniversalFragmentBlinnPhong(
         finalColor = lerp(finalColor, _ShadowColor * shadowLevel, shadowLevel * _ShadowPower);
     }
 
-    half specularValue = SampleSpecularValue(input, inputData);
+    half specularValue = SampleSpecularValue(input.normalWS, input.positionWS, input.uv);
 
 #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
     UNITY_BRANCH
@@ -412,14 +261,14 @@ half4 Alto_UniversalFragmentBlinnPhong(
     UNITY_BRANCH
     if (_RimLightingOn > 0)
     {
-        half3 rim = RimLight(inputData, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
         finalColor += lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
     }
 
     UNITY_BRANCH
     if (_RimBurnOn > 0)
     {
-        half3 rim = RimLight(inputData, 1 - rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, 1 - rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
         finalColor -= lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
     }
 
@@ -431,166 +280,6 @@ half4 Alto_UniversalFragmentBlinnPhong(
     }
     return half4(finalColor, surfaceData.alpha);
     //^^^^^ AltoShader Custom ^^^^^
-}
-
-//------------------------------------------------------------------------------
-// Cubic (6-directional) Color
-//------------------------------------------------------------------------------
-
-half3 CubicColor(Attributes input, VertexNormalInputs normalInput, float3 posWorld)
-{
-    half3 N = lerp(input.normalOS, normalInput.normalWS, _WorldSpaceNormal);
-    half dirTop    = max(0, dot(N, VecTop));
-    half dirBottom = max(0, dot(N, VecBottom));
-    half dirRight  = max(0, dot(N, VecRight));
-    half dirFront  = max(0, dot(N, VecFront));
-    half dirLeft   = max(0, dot(N, VecLeft));
-    half dirBack   = max(0, dot(N, VecBack));
-
-    half3 pos = lerp(input.positionOS, posWorld, _WorldSpaceGradient);
-
-    float s, c;
-
-    // Top
-    sincos(_GradRotate_T, s, c);
-    half rot_T = (pos.x - _GradOrigin_T.x) * -s
-               + (pos.z - _GradOrigin_T.z) * c;
-    half grad_T = saturate(rot_T / -_GradHeight_T);
-    half3 color_T = lerp(_TopColor1, _TopColor2, grad_T);
-
-    // Right
-    sincos(_GradRotate_R, s, c);
-    half rot_R = (pos.z - _GradOrigin_R.z) * -s
-               + (pos.y - _GradOrigin_R.y) * c;
-    half grad_R = saturate(rot_R / -_GradHeight_R);
-    half3 color_R = lerp(_RightColor1, _RightColor2, grad_R);
-
-    // Front
-    sincos(_GradRotate_F, s, c);
-    half rot_F = (pos.x - _GradOrigin_F.x) * -s
-               + (pos.y - _GradOrigin_F.y) * c;
-    half grad_F = saturate(rot_F / -_GradHeight_F);
-    half3 color_F = lerp(_FrontColor1, _FrontColor2, grad_F);
-
-    // Left
-    sincos(_GradRotate_L, s, c);
-    half rot_L = (pos.z - _GradOrigin_L.z) * s
-               + (pos.y - _GradOrigin_L.y) * c;
-    half grad_L = saturate(rot_L / -_GradHeight_L);
-    half3 color_L = lerp(_LeftColor1, _LeftColor2, grad_L);
-
-    // Back
-    sincos(_GradRotate_B, s, c);
-    half rot_B = (pos.x - _GradOrigin_B.x) * s
-               + (pos.y - _GradOrigin_B.y) * c;
-    half grad_B = saturate(rot_B / -_GradHeight_B);
-    half3 color_B = lerp(_BackColor1, _BackColor2, grad_B);
-
-    // Bottom
-    sincos(_GradRotate_D, s, c);
-    half rot_D = -(pos.x - _GradOrigin_D.x) * s
-               + -(pos.z - _GradOrigin_D.z) * c;
-    half grad_D = saturate(rot_D / -_GradHeight_D);
-    half3 color_D = lerp(_BottomColor1, _BottomColor2, grad_D);
-
-    half3 color;
-    UNITY_BRANCH
-    if (_MixCubicColorOn > 0)
-    {
-        half3 white = half3(1, 1, 1);
-        color = lerp(color_T, white, 1 - dirTop) * lerp(color_D, white, 1 - dirBottom)
-              * lerp(color_R, white, 1 - dirRight) * lerp(color_L, white, 1 - dirLeft)
-              * lerp(color_F, white, 1 - dirFront) * lerp(color_B, white, 1 - dirBack);
-    }
-    else
-    {
-        color = (color_T * dirTop) + (color_D * dirBottom)
-              + (color_R * dirRight) + (color_L * dirLeft)
-              + (color_F * dirFront) + (color_B * dirBack);
-    }
-    return color;
-}
-
-//------------------------------------------------------------------------------
-// Multiple color fog
-//------------------------------------------------------------------------------
-
-half3 MixMultipleColorFog(half3 color, float cameraDistance)
-{
-    half d1 = _FogDistance1;
-    half d2 = _FogDistance2;
-    float fogIntensity_1 = saturate((cameraDistance - d1) / d1);
-    float fogIntensity_2 = saturate((cameraDistance - d1 - d2) / d2);
-    fogIntensity_1 = saturate(fogIntensity_1 - fogIntensity_2);
-    color = lerp(color, _FogColor1, fogIntensity_1 * _FogColor1.a);
-    color = lerp(color, _FogColor2, fogIntensity_2 * _FogColor2.a);
-    return color;
-}
-
-//------------------------------------------------------------------------------
-// Dissolve Clip Effect
-//------------------------------------------------------------------------------
-
-half3 DissolveEffect(Varyings input, half3 srcColor)
-{
-    clip(_DissolveDistance - 0.001);
-    float n = 0;
-
-    UNITY_BRANCH
-    if (_DissolveNoise > 0)
-    {
-        float3 noiseFactor = input.positionWS * 16 * _DissolveRoughness;
-        noiseFactor += _Time.y * 8;
-        n = noise(noiseFactor);
-    }
-
-    float3 posFromOrigin = input.positionWS - _DissolveOrigin;
-    posFromOrigin *= _DissolveSlow;
-    half distanceFromOrigin = distance(float3(0, 0, 0), posFromOrigin);
-    half clipDistance = _DissolveDistance + (n * 1.5 + smoothstep(0.3, 0.7, n)) * 0.5 * _DissolveNoise;
-    half clipDiff = clipDistance - distanceFromOrigin;
-    half isClipOff = step(_DissolveAreaSize + n, distanceFromOrigin);
-    clip(clipDiff + isClipOff * 9999);
-
-    half dissolveEdge = saturate(1 - clipDiff * _DissolveEdgeSharpness + n * _DissolveNoise) * (1 - isClipOff);
-    half3 color = srcColor;
-    color.rgb -= dissolveEdge * (1 - _DissolveEdgeSubColor);
-    color.rgb += dissolveEdge * _DissolveEdgeAddColor;
-    return color;
-}
-
-//------------------------------------------------------------------------------
-// Dithering alpha
-//------------------------------------------------------------------------------
-
-void Dithering(Varyings input)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-    clip(_DitherAlpha - dither);
-}
-
-void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-
-    float alpha = saturate((input.cubicColor.w - to) / (from - to));
-    alpha = max(minAlpha, alpha * alpha);
-    clip(alpha - dither);
-}
-
-void DitheringByHeight(Varyings input, half from, half to)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy * _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-
-    float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.5 - 0.25;
-    float alpha = saturate((input.positionWS.y - from + noise) / (to - from));
-    clip(alpha * alpha - dither);
 }
 
 //==============================================================================
@@ -726,7 +415,7 @@ Varyings LitPassVertexSimple(Attributes input)
     #endif
 
     //_____ AltoShader Custom _____
-    output.cubicColor.rgb = CubicColor(input, normalInput, output.positionWS);
+    output.cubicColor.rgb = CubicColor(input.normalOS, input.positionOS, normalInput.normalWS, output.positionWS);
     output.cubicColor.w = length(vertexInput.positionVS) * step(sign(vertexInput.positionVS.z), 0);
     //^^^^^ AltoShader Custom ^^^^^
 
@@ -768,24 +457,24 @@ void LitPassFragmentSimple(
 
     //_____ AltoShader Custom _____
     UNITY_BRANCH
-    if (_DitherAlpha < 1) { Dithering(input); }
+    if (_DitherAlpha < 1) { Dithering(input.positionCS); }
 
     UNITY_BRANCH
     if (_DitherCameraDistanceFrom > 0)
     {
-        DitheringByCameraDistance(input, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
+        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
     }
 
     UNITY_BRANCH
     if (_HeightDitherHeight > 0)
     {
-        DitheringByHeight(input, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
+        DitheringByHeight(input.positionCS, input.positionWS, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
     }
 
     UNITY_BRANCH
     if (_DitherCull > 0)
     {
-        DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
+        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
     }
     //^^^^^ AltoShader Custom ^^^^^
 
@@ -795,7 +484,7 @@ void LitPassFragmentSimple(
     UNITY_BRANCH
     if (_DissolveAreaSize > 0)
     {
-        color.rgb = DissolveEffect(input, color.rgb);
+        color.rgb = DissolveEffect(input.positionWS, color.rgb);
     }
     //^^^^^ AltoShader Custom ^^^^^
 

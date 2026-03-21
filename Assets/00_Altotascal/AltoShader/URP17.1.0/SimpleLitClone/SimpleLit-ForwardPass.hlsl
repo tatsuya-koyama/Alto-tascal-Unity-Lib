@@ -5,7 +5,8 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-#include "SimpleLit-CoreLogic.hlsl"
+#include "../_SharedLogic/URPBridge-Lighting.hlsl"
+#include "../_SharedLogic/URPBridge-ForwardPass.hlsl"
 
 struct Attributes
 {

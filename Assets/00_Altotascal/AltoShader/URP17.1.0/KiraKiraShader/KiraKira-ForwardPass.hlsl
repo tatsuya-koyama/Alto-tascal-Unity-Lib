@@ -2,8 +2,10 @@
 #define ALTO_17_KIRAKIRA_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-#include "../SimpleLitClone/SimpleLit-CoreLogic.hlsl"
+#include "../_SharedLogic/URPBridge-Lighting.hlsl"
+#include "../_SharedLogic/URPBridge-ForwardPass.hlsl"
 #include "../../Generic/AltoShaderUtil.hlsl"
+#include "../_SharedLogic/CustomEffect-Dithering.hlsl"
 
 //------------------------------------------------------------------------------
 // Lighting Effect
@@ -174,48 +176,18 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 }
 
 //------------------------------------------------------------------------------
-// Dithering alpha
+// Custom Dithering
 //------------------------------------------------------------------------------
 
-void Dithering(Varyings input)
+void DitheringWithNoise(float4 positionCS, half alpha)
 {
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-    clip(_DitherAlpha - dither);
-}
-
-void DitheringByCameraDistance(Varyings input, half from, half to, half minAlpha)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _ScreenParams.xy * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-
-    float alpha = saturate((input.cubicColor.w - to) / (from - to));
-    alpha = max(minAlpha, alpha * alpha);
-    clip(alpha - dither);
-}
-
-void DitheringWithNoise(Varyings input, half alpha)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy * _ScreenParams.xy;
+    float2 screenPos = positionCS.xy / _ScreenParams.xy * _ScreenParams.xy;
     float2 ditherCoord = screenPos * _DitherPattern_TexelSize.xy;
     float dither = tex2D(_DitherPattern, ditherCoord).r;
 
     float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.3;
     float a = saturate(alpha + noise);
     clip(a - dither + _IllusionClipOffset);
-}
-
-void DitheringByHeight(Varyings input, half from, half to)
-{
-    float2 screenPos = input.positionCS.xy / _ScreenParams.xy * _ScreenParams.xy;
-    float2 ditherCoord = screenPos * _DitherPattern_TexelSize.xy;
-    float dither = tex2D(_DitherPattern, ditherCoord).r;
-
-    float noise = tex2D(_NoisePattern, screenPos * _NoisePattern_TexelSize.xy).r * 0.5 - 0.25;
-    float alpha = saturate((input.positionWS.y - from + noise) / (to - from));
-    clip(alpha * alpha - dither);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -302,24 +274,24 @@ void LitPassFragmentSimple(
 
     //_____ AltoShader Custom _____
     UNITY_BRANCH
-    if (_DitherAlpha < 1) { Dithering(input); }
+    if (_DitherAlpha < 1) { Dithering(input.positionCS); }
 
     UNITY_BRANCH
     if (_DitherCameraDistanceFrom > 0)
     {
-        DitheringByCameraDistance(input, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
+        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
     }
 
     UNITY_BRANCH
     if (_HeightDitherHeight > 0)
     {
-        DitheringByHeight(input, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
+        DitheringByHeight(input.positionCS, input.positionWS, _HeightDitherYFrom, _HeightDitherYFrom + _HeightDitherHeight);
     }
 
     UNITY_BRANCH
     if (_DitherCull > 0)
     {
-        DitheringByCameraDistance(input, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
+        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
     }
 
     UNITY_BRANCH
@@ -370,7 +342,7 @@ void LitPassFragmentSimple(
     UNITY_BRANCH
     if (_IllusionOn > 0)
     {
-        DitheringWithNoise(input, originalAlpha);
+        DitheringWithNoise(input.positionCS, originalAlpha);
     }
     //^^^^^ AltoShader Custom ^^^^^
 

@@ -252,6 +252,7 @@ Shader "Altotascal/URP 17.1.0/Alto Shader"
             //--------------------------------------
             // Defines
             #define BUMP_SCALE_NOT_SUPPORTED 1
+            #define _SHADE_CONTRAST_FEATURE  // AltoShader Custom
 
             // -------------------------------------
             // Includes

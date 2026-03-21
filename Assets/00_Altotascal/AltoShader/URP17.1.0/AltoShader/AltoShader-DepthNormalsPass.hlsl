@@ -6,7 +6,7 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 #include "../../Generic/AltoShaderUtil.hlsl"
-#include "AltoShader-SharedLogic.hlsl"
+#include "../_SharedLogic/CustomEffect-Wind.hlsl"
 
 #if defined(_ALPHATEST_ON) || defined(_NORMALMAP)
     #define REQUIRES_UV_INTERPOLATOR
