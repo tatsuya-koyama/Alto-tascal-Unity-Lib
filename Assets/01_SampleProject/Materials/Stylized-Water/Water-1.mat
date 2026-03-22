@@ -93,6 +93,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -126,13 +127,16 @@ Material:
     - _GlossyReflections: 0
     - _Metallic: 0
     - _MultiplyUnderwaterColor: 0
+    - _NormalShiftX: 0
+    - _NormalShiftY: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RimLightingOn: 1
     - _RimPower: 3
-    - _RiseAndFall: 1.33
+    - _RiseAndFall: 0
+    - _SSRReflectivity: 0
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
@@ -150,6 +154,7 @@ Material:
     - _WavePower: 1
     - _WaveSpeed: 1
     - _WorkflowMode: 1
+    - _XRMotionVectorsPass: 1
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 0.514151, g: 0.94734186, b: 1, a: 0.5019608}
@@ -166,6 +171,7 @@ Material:
     - _SurfaceParams: {r: 2, g: 3, b: 0, a: 0}
     - _UnderwaterColor: {r: 0, g: 0.5, b: 1, a: 0.19215687}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &8545499308838136728
 MonoBehaviour:
   m_ObjectHideFlags: 11

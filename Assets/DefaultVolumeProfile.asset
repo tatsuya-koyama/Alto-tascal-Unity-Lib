@@ -40,6 +40,55 @@ MonoBehaviour:
   blueOutBlueIn:
     m_OverrideState: 1
     m_Value: 100
+--- !u!114 &-8970852870776685193
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b17c0a049fe648b08dbee3871289d01, type: 3}
+  m_Name: SSR_VolumeComponent
+  m_EditorClassIdentifier: 
+  active: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0
+  maxSteps:
+    m_OverrideState: 1
+    m_Value: 32
+  stepSize:
+    m_OverrideState: 1
+    m_Value: 0.1
+  maxDistance:
+    m_OverrideState: 1
+    m_Value: 50
+  thickness:
+    m_OverrideState: 1
+    m_Value: 0.5
+  binarySearchSteps:
+    m_OverrideState: 1
+    m_Value: 4
+  resolutionScale:
+    m_OverrideState: 1
+    m_Value: 0.5
+  edgeFade:
+    m_OverrideState: 1
+    m_Value: 0.1
+  distanceFade:
+    m_OverrideState: 1
+    m_Value: 0.5
+  surfaceFadeDistance:
+    m_OverrideState: 1
+    m_Value: 0
+  surfaceFadePower:
+    m_OverrideState: 1
+    m_Value: 2
+  smoothness:
+    m_OverrideState: 1
+    m_Value: 1.5
 --- !u!114 &-8891871772913674541
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -385,6 +434,7 @@ MonoBehaviour:
   - {fileID: 975412659798830044}
   - {fileID: 6805212871405332522}
   - {fileID: -4433413782557520341}
+  - {fileID: -8970852870776685193}
 --- !u!114 &24387620145840880
 MonoBehaviour:
   m_ObjectHideFlags: 3
