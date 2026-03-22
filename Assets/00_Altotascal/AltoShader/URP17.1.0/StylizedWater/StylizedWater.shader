@@ -46,6 +46,9 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
         _DitherPattern("Dithering Pattern", 2D) = "white" {}
         _DitherCull("Dither Culling", Float) = 5.0
 
+        // Screen Space Resolutions
+        _SSRReflectivity("SSR Reflectivity", Range(0, 1)) = 0
+
         // Basic props
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}
         [MainColor]   _BaseColor("Base Color", Color) = (1, 1, 1, 1)
@@ -398,7 +401,7 @@ Shader "Altotascal/URP 17.1.0/Stylized Water"
             // -------------------------------------
             // Includes
             #include "StylizedWater-Input.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
+            #include "StylizedWater-DepthNormalsPass.hlsl"
             ENDHLSL
         }
 

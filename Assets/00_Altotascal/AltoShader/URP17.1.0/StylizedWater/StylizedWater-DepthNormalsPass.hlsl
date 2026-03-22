@@ -1,12 +1,10 @@
-﻿#ifndef ALTO_SHADER_17_DEPTH_NORMALS_INCLUDED
-#define ALTO_SHADER_17_DEPTH_NORMALS_INCLUDED
+﻿#ifndef ALTO_17_STYLIZED_WATER_DEPTH_NORMALS_INCLUDED
+#define ALTO_17_STYLIZED_WATER_DEPTH_NORMALS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-#include "../../Generic/AltoShaderUtil.hlsl"
-#include "../_SharedLogic/CustomEffect-Wind.hlsl"
 
 #if defined(_ALPHATEST_ON) || defined(_NORMALMAP)
     #define REQUIRES_UV_INTERPOLATOR
@@ -42,46 +40,9 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-//_____ AltoShader Custom _____
-float3 WorldPosBlowingInWind(float3 positionWS, float3 positionOS)
-{
-    float thetaOffset = (unity_ObjectToWorld[0].w + unity_ObjectToWorld[2].w) * 2;
-    float theta = thetaOffset + (_Time.y * 2 * _WindSpeed)
-                + max(0, sin(_Time.y * 0.5 * _WindBigWave) * 4);
-    float wave = cos(theta);
-
-    float2 wind = float2(0, 0);
-    wind.x = wave * positionOS.y * 0.08 * _WindStrength;
-    float windAngle = (positionWS.x + positionWS.z) * 0.3
-                    + (_Time.y * _WindRotateSpeed);
-    wind = rotate(wind, windAngle);
-
-    // 影響度を頂点シェーダの動きの半分にしている
-    // 厳密に正しい見た目にはならないが、この方が草木の葉の部分などの影の落ち方に味が出る
-    positionWS.xz += wind.xy * 1;
-    positionWS.y += abs(sin(theta)) * positionOS.y * 0.01 * _WindStrength;
-    return positionWS;
-}
-//^^^^^ AltoShader Custom ^^^^^
 
 Varyings DepthNormalsVertex(Attributes input)
 {
-    //_____ AltoShader Custom _____
-    //----- Rotate vertex
-    AltoShared_RotatePos(input.positionOS);
-    //^^^^^ AltoShader Custom ^^^^^
-
-    //_____ AltoShader Custom _____
-    //----- Wind Animation
-    float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
-    UNITY_BRANCH
-    if (_WindStrength > 0)
-    {
-        positionWS = WorldPosBlowingInWind(positionWS, input.positionOS);
-    }
-    float4 movedPositionCS = TransformWorldToHClip(positionWS);
-    //^^^^^ AltoShader Custom ^^^^^
-
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
@@ -90,8 +51,7 @@ Varyings DepthNormalsVertex(Attributes input)
     #if defined(REQUIRES_UV_INTERPOLATOR)
         output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     #endif
-    // output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-    output.positionCS = movedPositionCS;
+    output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
 
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);

@@ -50,6 +50,8 @@ sampler2D _DitherPattern;
 half4 _DitherPattern_TexelSize;
 half _DitherCull;
 
+half _SSRReflectivity;
+
 // Original props
     float4 _BaseMap_ST;
     float4 _BaseMap_TexelSize;

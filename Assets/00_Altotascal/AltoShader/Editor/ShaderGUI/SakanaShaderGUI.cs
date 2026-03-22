@@ -1,24 +1,15 @@
-﻿using UnityEditor;
+﻿using AltoLib.ShaderGUI;
+using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace AltoLib.ShaderGUI
 {
-    public class AltoShaderGUI : CubicColorGUIBase
+    public class SakanaShaderGUI : CubicColorGUIBase
     {
         class CustomProperties : ICustomProperties
         {
             public MaterialProperty billboardOn;
-
-            public MaterialProperty dissolveAreaSize;
-            public MaterialProperty dissolveOrigin;
-            public MaterialProperty dissolveSlow;
-            public MaterialProperty dissolveDistance;
-            public MaterialProperty dissolveRoughness;
-            public MaterialProperty dissolveNoise;
-            public MaterialProperty dissolveEdgeSharpness;
-            public MaterialProperty dissolveEdgeAddColor;
-            public MaterialProperty dissolveEdgeSubColor;
 
             public MaterialProperty noisePattern;
             public MaterialProperty ditherPattern;
@@ -34,6 +25,10 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty windSpeed;
             public MaterialProperty windBigWave;
             public MaterialProperty windRotateSpeed;
+
+            public MaterialProperty uvWindStrength;
+            public MaterialProperty uvWindSpeed;
+            public MaterialProperty uvWindGaleStrength;
 
             public MaterialProperty rotateSpeedX;
             public MaterialProperty rotateSpeedY;
@@ -55,12 +50,6 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty hue;
             public MaterialProperty saturation;
             public MaterialProperty brightness;
-
-            public MaterialProperty multipleFogOn;
-            public MaterialProperty fogColor1;
-            public MaterialProperty fogColor2;
-            public MaterialProperty fogDistance1;
-            public MaterialProperty fogDistance2;
 
             public MaterialProperty heightFogOn;
             public MaterialProperty heightFogColor;
@@ -85,16 +74,6 @@ namespace AltoLib.ShaderGUI
             {
                 billboardOn              = BaseShaderGUI.FindProperty("_BillboardOn", properties);
 
-                dissolveAreaSize         = BaseShaderGUI.FindProperty("_DissolveAreaSize", properties);
-                dissolveOrigin           = BaseShaderGUI.FindProperty("_DissolveOrigin", properties);
-                dissolveSlow             = BaseShaderGUI.FindProperty("_DissolveSlow", properties);
-                dissolveDistance         = BaseShaderGUI.FindProperty("_DissolveDistance", properties);
-                dissolveRoughness        = BaseShaderGUI.FindProperty("_DissolveRoughness", properties);
-                dissolveNoise            = BaseShaderGUI.FindProperty("_DissolveNoise", properties);
-                dissolveEdgeSharpness    = BaseShaderGUI.FindProperty("_DissolveEdgeSharpness", properties);
-                dissolveEdgeAddColor     = BaseShaderGUI.FindProperty("_DissolveEdgeAddColor", properties);
-                dissolveEdgeSubColor     = BaseShaderGUI.FindProperty("_DissolveEdgeSubColor", properties);
-
                 noisePattern             = BaseShaderGUI.FindProperty("_NoisePattern", properties);
                 ditherPattern            = BaseShaderGUI.FindProperty("_DitherPattern", properties);
                 ditherAlpha              = BaseShaderGUI.FindProperty("_DitherAlpha", properties);
@@ -109,6 +88,10 @@ namespace AltoLib.ShaderGUI
                 windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
                 windBigWave              = BaseShaderGUI.FindProperty("_WindBigWave", properties);
                 windRotateSpeed          = BaseShaderGUI.FindProperty("_WindRotateSpeed", properties);
+
+                uvWindStrength           = BaseShaderGUI.FindProperty("_UvWindStrength", properties);
+                uvWindSpeed              = BaseShaderGUI.FindProperty("_UvWindSpeed", properties);
+                uvWindGaleStrength       = BaseShaderGUI.FindProperty("_UvWindGaleStrength", properties);
 
                 rotateSpeedX             = BaseShaderGUI.FindProperty("_RotateSpeedX", properties);
                 rotateSpeedY             = BaseShaderGUI.FindProperty("_RotateSpeedY", properties);
@@ -130,12 +113,6 @@ namespace AltoLib.ShaderGUI
                 hue                      = BaseShaderGUI.FindProperty("_Hue", properties);
                 saturation               = BaseShaderGUI.FindProperty("_Saturation", properties);
                 brightness               = BaseShaderGUI.FindProperty("_Brightness", properties);
-
-                multipleFogOn            = BaseShaderGUI.FindProperty("_MultipleFogOn", properties);
-                fogColor1                = BaseShaderGUI.FindProperty("_FogColor1", properties);
-                fogColor2                = BaseShaderGUI.FindProperty("_FogColor2", properties);
-                fogDistance1             = BaseShaderGUI.FindProperty("_FogDistance1", properties);
-                fogDistance2             = BaseShaderGUI.FindProperty("_FogDistance2", properties);
 
                 heightFogOn              = BaseShaderGUI.FindProperty("_HeightFogOn", properties);
                 heightFogColor           = BaseShaderGUI.FindProperty("_HeightFogColor", properties);
@@ -166,15 +143,14 @@ namespace AltoLib.ShaderGUI
         }
         CustomProperties _customProperties;
         ShaderGUIUtil _util;
-        bool _showDissolveProps   = true;
         bool _showDitherProps     = true;
         bool _showWindProps       = true;
+        bool _showUvWindProps    = true;
         bool _showRotateProps     = true;
         bool _showShadingProps    = true;
         bool _showRimProps        = true;
         bool _showShadowProps     = true;
         bool _showHsvProps        = true;
-        bool _showFogProps        = true;
         bool _showHeightFogProps  = true;
 
         public override void FindProperties(MaterialProperty[] properties)
@@ -190,6 +166,7 @@ namespace AltoLib.ShaderGUI
             DrawShadingProps();
             DrawDitherProps();
             DrawWindProps();
+            DrawUvWindProps();
             DrawRotateProps();
         }
 
@@ -198,9 +175,7 @@ namespace AltoLib.ShaderGUI
             DrawRimProps();
             DrawShadowProps();
             DrawHsvProps();
-            DrawFogProps();
             DrawHeightFogProps();
-            DrawDissolveProps();
         }
 
         void DrawDitherProps()
@@ -230,6 +205,16 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Wind Rotate Speed", "windRotateSpeed", 0f, 10f);
         }
 
+        void DrawUvWindProps()
+        {
+            _showUvWindProps = _util.Foldout(_showUvWindProps, "UV Wind Animation");
+            if (!_showWindProps) { return; }
+
+            _util.DrawSlider("UV Wind Strength", "uvWindStrength", 0f, 10f);
+            _util.DrawSlider("UV Wind Speed", "uvWindSpeed", 0f, 10f);
+            _util.DrawSlider("UV Wind Gale Strength", "uvWindGaleStrength", 0f, 10f);
+        }
+
         void DrawRotateProps()
         {
             _showRotateProps = _util.Foldout(_showRotateProps, "Rotate Animation");
@@ -238,22 +223,6 @@ namespace AltoLib.ShaderGUI
             _util.DrawSlider("Rotate Speed X", "rotateSpeedX", -20f, 20f);
             _util.DrawSlider("Rotate Speed Y", "rotateSpeedY", -20f, 20f);
             _util.DrawSlider("Rotate Speed Z", "rotateSpeedZ", -20f, 20f);
-        }
-
-        void DrawDissolveProps()
-        {
-            _showDissolveProps = _util.Foldout(_showDissolveProps, "Dissolve Clip Effect");
-            if (!_showDissolveProps) { return; }
-
-            _util.DrawSlider("Dissolve Area Size", "dissolveAreaSize", 0f, 100f);
-            _util.DrawVector3("Origin", "dissolveOrigin");
-            _util.DrawVector3("Slow Factor", "dissolveSlow");
-            _util.DrawSlider("Distance to Clip", "dissolveDistance", 0f, 100f);
-            _util.DrawSlider("Noise Level", "dissolveNoise", 0f, 10f);
-            _util.DrawSlider("Roughness", "dissolveRoughness", 0f, 10f);
-            _util.DrawSlider("Edge Sharpness", "dissolveEdgeSharpness", 0f, 10f);
-            materialEditor.ColorProperty(_customProperties.dissolveEdgeAddColor, "Edge Add Color");
-            materialEditor.ColorProperty(_customProperties.dissolveEdgeSubColor, "Edge Subtract Color");
         }
 
         void DrawShadingProps()
@@ -323,22 +292,6 @@ namespace AltoLib.ShaderGUI
                 _util.DrawSlider("Hue", "hue", 0f, 360f);
                 _util.DrawSlider("Saturation", "saturation", -8f, 8f);
                 _util.DrawSlider("Brightness (Value)", "brightness", -8f, 8f);
-            }
-            EditorGUI.EndDisabledGroup();
-        }
-
-        void DrawFogProps()
-        {
-            _showFogProps = _util.Foldout(_showFogProps, "Multiple Fog");
-            if (!_showFogProps) { return; }
-
-            bool fogOn = _util.DrawToggle("Multiple Fog", "multipleFogOn");
-            EditorGUI.BeginDisabledGroup(!fogOn);
-            {
-                materialEditor.ColorProperty(_customProperties.fogColor1, "Fog Color 1");
-                materialEditor.ColorProperty(_customProperties.fogColor2, "Fog Color 2");
-                _util.DrawSlider("Distance 1", "fogDistance1", 0f, 100f);
-                _util.DrawSlider("Distance 2", "fogDistance2", 0f, 100f);
             }
             EditorGUI.EndDisabledGroup();
         }

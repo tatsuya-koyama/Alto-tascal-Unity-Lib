@@ -49,6 +49,8 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty ditherPattern;
             public MaterialProperty ditherCull;
 
+            public MaterialProperty ssrReflectivity;
+
             public CustomProperties(MaterialProperty[] properties)
             {
                 waterColorDepth       = BaseShaderGUI.FindProperty("_WaterColorDepth", properties);
@@ -91,6 +93,8 @@ namespace AltoLib.ShaderGUI
 
                 ditherPattern         = BaseShaderGUI.FindProperty("_DitherPattern", properties);
                 ditherCull            = BaseShaderGUI.FindProperty("_DitherCull", properties);
+
+                ssrReflectivity       = BaseShaderGUI.FindProperty("_SSRReflectivity", properties);
             }
 
             //------------------------------------------------------------------
@@ -107,6 +111,7 @@ namespace AltoLib.ShaderGUI
         CustomProperties _customProperties;
 
         ShaderGUIUtil _util;
+        bool _showShadingProps     = true;
         bool _showWaterColorProps  = true;
         bool _showRimProps         = true;
         bool _showSurfaceProps     = true;
@@ -130,12 +135,21 @@ namespace AltoLib.ShaderGUI
 
         public void Alto_DrawAdditionalFoldouts()
         {
+            DrawShadingProps();
             DrawDitherProps();
             DrawWaterColorProps();
             DrawRimProps();
             DrawSurfaceProps();
             DrawEdgeFadeOutProps();
             DrawDissolveProps();
+        }
+
+        void DrawShadingProps()
+        {
+            _showShadingProps = _util.Foldout(_showShadingProps, "Basic Shading");
+            if (!_showShadingProps) { return; }
+
+            _util.DrawSlider("SSR Reflectivity", "ssrReflectivity", 0f, 1f);
         }
 
         void DrawDitherProps()
