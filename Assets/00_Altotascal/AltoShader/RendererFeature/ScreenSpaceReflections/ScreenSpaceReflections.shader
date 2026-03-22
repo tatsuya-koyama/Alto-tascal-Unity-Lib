@@ -82,7 +82,7 @@ Shader "Hidden/AltoShader/ScreenSpaceReflections"
         float3 worldPos = ComputeWorldSpacePosition(uv, rawDepth, UNITY_MATRIX_I_VP);
 
         // DepthNormals パスで作成された法線テクスチャからワールド法線と SSR マスクを取得
-        // * ノーマルの alpha チャンネルが 0 なら SSR の処理をスキップ
+        // * ノーマルの alpha チャンネルが 0 なら SSR の処理をスキップする仕様
         float4 normalsRaw = SAMPLE_TEXTURE2D_X(_CameraNormalsTexture, sampler_CameraNormalsTexture, uv);
         half ssrMask = normalsRaw.a;
         if (ssrMask < 0.001) { return half4(0, 0, 0, 0); }
@@ -107,7 +107,7 @@ Shader "Hidden/AltoShader/ScreenSpaceReflections"
         float travelDist = jitter;
 
         float2 hitUV = float2(0, 0);
-        bool   hit   = false;
+        bool hit = false;
 
         // レイマーチング
         [loop]
@@ -129,8 +129,7 @@ Shader "Hidden/AltoShader/ScreenSpaceReflections"
             float rayLinearDepth = LinearEyeDepthWorld(rayPos);
             float depthDiff = rayLinearDepth - sceneLinearDepth;
 
-            // Hit: ray went behind the surface but within thickness
-            // ヒット判定 : レイが対象の面を越えているが、厚み以内ならヒットとみなす
+            // ヒット判定 : レイが対象の面を越えていて、指定の厚み以内ならヒットとみなす
             if (depthDiff > 0.0 && depthDiff < (float)_SSR_Thickness)
             {
                 hitUV = sampleUV;
@@ -205,7 +204,7 @@ Shader "Hidden/AltoShader/ScreenSpaceReflections"
         float2 uv = input.texcoord;
         float2 d = _SSR_BlurTexelSize.xy * _SSR_BlurRadius;
 
-        // 3x3 Gaussian kernel [1 2 1 / 2 4 2 / 1 2 1] / 16
+        // 3x3 Gaussian kernel ... [1 2 1 / 2 4 2 / 1 2 1] / 16
         half4 c  = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv) * 4.0h;
         c += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv + float2( d.x,  0  )) * 2.0h;
         c += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv + float2(-d.x,  0  )) * 2.0h;
