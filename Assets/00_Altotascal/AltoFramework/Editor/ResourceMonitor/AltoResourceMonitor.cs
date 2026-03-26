@@ -11,7 +11,7 @@ namespace AltoFramework.Editor
     /// </summary>
     public class AltoResourceMonitor : EditorWindow
     {
-        [SerializeField] TreeViewState _treeViewState;
+        [SerializeField] TreeViewState<int> _treeViewState;
         AltoResourceTreeView _treeView;
 
         [MenuItem("Alto/00. Alto Framework/Alto Resource Monitor")]
@@ -25,7 +25,7 @@ namespace AltoFramework.Editor
         {
             if (_treeViewState == null)
             {
-                _treeViewState = new TreeViewState();
+                _treeViewState = new TreeViewState<int>();
             }
             _treeView = new AltoResourceTreeView(_treeViewState);
         }

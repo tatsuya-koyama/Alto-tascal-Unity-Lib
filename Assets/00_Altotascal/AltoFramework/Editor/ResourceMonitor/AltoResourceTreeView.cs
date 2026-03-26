@@ -10,7 +10,7 @@ namespace AltoFramework.Editor
     /// <summary>
     ///   TreeView の列に渡すデータ
     /// </summary>
-    public class AltoResourceTreeViewItem : TreeViewItem
+    public class AltoResourceTreeViewItem : TreeViewItem<int>
     {
         public string category;
         public string assetName;
@@ -22,11 +22,11 @@ namespace AltoFramework.Editor
 
         public AltoResourceTreeViewItem(int id) : base(id) {}
     }
-
+//
     /// <summary>
     ///   ロード中のリソース一覧をリスト表示するマルチカラム TreeView
     /// </summary>
-    public class AltoResourceTreeView : TreeView
+    public class AltoResourceTreeView : TreeView<int>
     {
         List<AltoResourceTreeViewItem> _items = new List<AltoResourceTreeViewItem>();
         AltoResourceCollector _collector = new AltoResourceCollector();
@@ -99,12 +99,12 @@ namespace AltoFramework.Editor
             new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Info"),       width = 15 },
         };
 
-        public AltoResourceTreeView(TreeViewState state)
+        public AltoResourceTreeView(TreeViewState<int> state)
             : this(state, new MultiColumnHeader(new MultiColumnHeaderState(headerColumns)))
         {
         }
 
-        AltoResourceTreeView(TreeViewState state, MultiColumnHeader header)
+        AltoResourceTreeView(TreeViewState<int> state, MultiColumnHeader header)
             : base(state, header)
         {
             rowHeight = 20;
@@ -116,17 +116,17 @@ namespace AltoFramework.Editor
             Reload();
         }
 
-        protected override TreeViewItem BuildRoot()
+        protected override TreeViewItem<int> BuildRoot()
         {
-            var root = new TreeViewItem {id = 0, depth = -1, displayName = "Root"};
+            var root = new TreeViewItem<int> {id = 0, depth = -1, displayName = "Root"};
             if (!EditorApplication.isPlaying)
             {
-                var emptyItem = new List<TreeViewItem>();
+                var emptyItem = new List<TreeViewItem<int>>();
                 SetupParentsAndChildrenFromDepths(root, emptyItem);
                 return root;
             }
 
-            root.children = _items.Cast<TreeViewItem>().ToList();
+            root.children = _items.Cast<TreeViewItem<int>>().ToList();
             return root;
         }
 
@@ -216,7 +216,7 @@ namespace AltoFramework.Editor
             }
 
             _items = orderedItems.ToList();
-            rootItem.children = _items.Cast<TreeViewItem>().ToList();
+            rootItem.children = _items.Cast<TreeViewItem<int>>().ToList();
             BuildRows(rootItem);
         }
 
