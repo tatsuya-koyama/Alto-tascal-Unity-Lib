@@ -33,12 +33,14 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _ColoredShadowOn: 1
     - _CubicColorPower: 0
     - _CubicRimOn: 1
     - _MultiplyCubicDiffuseOn: 1
     - _RimBurnOn: 0
     - _RimPower: 8
     - _RimSurfaceFade: 1
+    - _ShadowPower: 0.5
     - _Smoothness: 0.45
     m_Colors:
     - _BackColor1: {r: 1, g: 1, b: 1, a: 1}
@@ -52,7 +54,7 @@ Material:
     - _RightColor1: {r: 1, g: 1, b: 1, a: 1}
     - _RightColor2: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor: {r: 0.5943396, g: 0, b: 0, a: 0.6}
-    - _ShadowColor: {r: 0, g: 0.34461713, b: 0.764151, a: 1}
+    - _ShadowColor: {r: 0.10537558, g: 0.33029366, b: 0.6037736, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.45}
     - _TopColor1: {r: 0.67641187, g: 1, b: 0, a: 1}
     - _TopColor2: {r: 0.95732033, g: 1, b: 0.5896226, a: 1}

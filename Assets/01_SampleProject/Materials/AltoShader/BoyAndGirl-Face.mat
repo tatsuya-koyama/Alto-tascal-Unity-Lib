@@ -38,9 +38,11 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _AoIntensity: 0
     - _ShadeContrast: 0.5
     - _SpecularHighlights: 0
     - _SpecularSurfaceOn: 0
     m_Colors:
     - _SpecColor: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 0.5}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

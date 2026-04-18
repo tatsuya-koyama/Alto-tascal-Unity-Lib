@@ -36,7 +36,9 @@ Material:
     - _RotateSpeedX: 0.5
     - _RotateSpeedY: 0.43
     - _RotateSpeedZ: 0.35
+    - _ShadowPower: 0.5
     - _WindStrength: 1
     - _WorldSpaceNormal: 0
     m_Colors: []
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

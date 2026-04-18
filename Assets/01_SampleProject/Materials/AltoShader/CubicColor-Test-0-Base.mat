@@ -84,6 +84,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _AoIntensity: 1
     - _BillboardOn: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
@@ -214,7 +215,7 @@ Material:
     - _RightColor1: {r: 1, g: 0.9016713, b: 0.82547176, a: 1}
     - _RightColor2: {r: 0.9245283, g: 0.66993695, b: 0.082858644, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0, g: 0.44939613, b: 1, a: 1}
+    - _ShadowColor: {r: 0.13501245, g: 0.3880914, b: 0.6981132, a: 1}
     - _Sp_TilingParams: {r: 0, g: 0, b: 1, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _SpecularSurfaceParams: {r: 0, g: 0.35, b: 0.35, a: -0.05}

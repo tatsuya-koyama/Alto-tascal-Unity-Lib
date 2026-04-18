@@ -89,6 +89,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _AoIntensity: 0.35
     - _BillboardOn: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
@@ -153,10 +154,11 @@ Material:
     - _RotateSpeedX: 0
     - _RotateSpeedY: 0
     - _RotateSpeedZ: 0
+    - _SSRReflectivity: 0
     - _Saturation: 1
     - _ScreenSpaceSurfaceOn: 0
     - _ShadeContrast: 0.5
-    - _ShadowPower: 1
+    - _ShadowPower: 0.5
     - _Shininess: 0
     - _Smoothness: 0.5
     - _SmoothnessSource: 0

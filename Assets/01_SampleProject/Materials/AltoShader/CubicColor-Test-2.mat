@@ -42,6 +42,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColoredShadePower: 0.5
+    - _ShadowPower: 0.5
     m_Colors:
     - _BackColor1: {r: 0.9254902, g: 0.7176471, b: 0.8489402, a: 1}
     - _BackColor2: {r: 0.8396226, g: 0.13069573, b: 0.21359897, a: 1}
@@ -55,3 +56,4 @@ Material:
     - _RightColor2: {r: 1, g: 0.7758621, b: 0, a: 1}
     - _ShadowColor: {r: 0.26642358, g: 0, b: 0.6509434, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
