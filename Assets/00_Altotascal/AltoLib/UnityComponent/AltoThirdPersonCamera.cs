@@ -211,7 +211,6 @@ namespace AltoLib
             Vector3 fromPos = target.transform.position + lookPosOffset + _autoZoomPosOffset;
             fromPos.y -= detectWallYOffset;
             Vector3 lookDir = fromPos - _currentIdealPos;
-            lookDir = fromPos - _currentIdealPos;
             lookDir.Normalize();
 
             float idealDistance = Vector3.Distance(_currentIdealPos, fromPos);
