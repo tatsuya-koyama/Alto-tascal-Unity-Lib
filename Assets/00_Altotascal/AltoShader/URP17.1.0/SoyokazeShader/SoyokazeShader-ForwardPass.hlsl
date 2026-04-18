@@ -1,5 +1,5 @@
-﻿#ifndef SAKANA_SHADER_17_FORWARD_PASS_INCLUDED
-#define SAKANA_SHADER_17_FORWARD_PASS_INCLUDED
+﻿#ifndef SOYOKAZE_SHADER_17_FORWARD_PASS_INCLUDED
+#define SOYOKAZE_SHADER_17_FORWARD_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
@@ -8,11 +8,8 @@
 #include "../_SharedLogic/URPBridge-Lighting.hlsl"
 #include "../../Generic/AltoShaderUtil.hlsl"
 #include "../_SharedLogic/CustomEffect-Basic.hlsl"
-#include "../_SharedLogic/CustomEffect-CubicColor.hlsl"
+#include "../_SharedLogic/CustomEffect-Parallax.hlsl"
 #include "../_SharedLogic/CustomEffect-Dithering.hlsl"
-#include "../_SharedLogic/CustomEffect-Specular.hlsl"
-#include "../_SharedLogic/CustomEffect-UVWind.hlsl"
-#include "../_SharedLogic/CustomEffect-Wind.hlsl"
 
 //==============================================================================
 // Constants, and Vertex / Fragment inputs
@@ -66,8 +63,8 @@ struct Varyings
     float4 positionCS                  : SV_POSITION;
 
     //_____ AltoShader Custom _____
-    float3 normalVS   : TEXCOORD10;
-    float4 cubicColor : COLOR0;  // xyz : rgb, w: distance to camera
+    float3 viewDirTS : TEXCOORD10;
+    float4 workColor : COLOR0;  // xyz : rgb, w: distance to camera
     //^^^^^ AltoShader Custom ^^^^^
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -134,21 +131,9 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 //------------------------------------------------------------------------------
 
 half4 Alto_UniversalFragmentBlinnPhong(
-    Varyings input, InputData inputData, SurfaceData surfaceData, half3 cubicColor
+    Varyings input, InputData inputData, SurfaceData surfaceData
 )
 {
-    //_____ AltoShader Custom _____
-    UNITY_BRANCH
-    if (_MultiplyCubicDiffuseOn > 0)
-    {
-        surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * cubicColor, _CubicColorPower);
-    }
-    else
-    {
-        surfaceData.albedo = lerp(surfaceData.albedo, cubicColor, _CubicColorPower);
-    }
-    //^^^^^ AltoShader Custom ^^^^^
-
     #if defined(DEBUG_DISPLAY)
     half4 debugColor;
 
@@ -232,43 +217,34 @@ half4 Alto_UniversalFragmentBlinnPhong(
     half3 finalColor = Alto_CalculateFinalColor(lightingData, surfaceData.alpha).rgb;
 
     // 0 is shadow, 1 is lighted
-    half ao = lerp(1, originalAoFactor.indirectAmbientOcclusion, _AoIntensity);
-    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation * ao;
+    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation * originalAoFactor.indirectAmbientOcclusion;
+
+    UNITY_BRANCH
+    if (_ColoredShadePower > 0)
+    {
+        half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
+        lightLevel *= (1 - (1 - lightIntensity) * _ColoredShadePower);
+    }
 
     UNITY_BRANCH
     if (_ColoredShadowOn > 0)
     {
         half shadowLevel = (1 - lightLevel);
-        half3 aoColor = lerp(_ShadowColor, finalColor, ao);
-        finalColor = lerp(finalColor * ao, aoColor, _ShadowPower);
-        finalColor = lerp(finalColor, finalColor * _ShadowColor, shadowLevel * _ShadowPower);
-        finalColor = lerp(finalColor, finalColor + _ShadowColor, shadowLevel * _ColoredShadePower);
+        finalColor = lerp(finalColor, _ShadowColor * shadowLevel, shadowLevel * _ShadowPower);
     }
-
-    half specularValue = SampleSpecularValue(input.normalWS, input.positionWS, input.uv);
-
-#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
-    UNITY_BRANCH
-    if (_SpecularSurfaceOn > 0 || _WorldSpaceSurfaceOn > 0)
-    {
-        finalColor = ApplySpecularSurface(specularValue, finalColor);
-    }
-#endif
-
-    half4 rimColor = lerp(_RimColor, half4(cubicColor, 1), _CubicRimOn);
 
     UNITY_BRANCH
     if (_RimLightingOn > 0)
     {
-        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
-        finalColor += lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
+        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, _RimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        finalColor += rim;
     }
 
     UNITY_BRANCH
     if (_RimBurnOn > 0)
     {
-        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, 1 - rimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
-        finalColor -= lerp(rim, rim * specularValue * _RimSurfacePower, _RimSurfaceFade);
+        half3 rim = RimLight(inputData.viewDirectionWS, inputData.normalWS, 1 - _RimColor.rgb) * _RimColor.a * ((lightLevel + 1) / 2);
+        finalColor -= rim;
     }
 
     UNITY_BRANCH
@@ -292,34 +268,6 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     input.positionVS = TransformWorldToView(input.positionWS);
     input.positionCS = TransformWorldToHClip(input.positionWS);
 
-    //_____ AltoShader Custom _____
-    UNITY_BRANCH
-    if (_WindStrength > 0)
-    {
-        input.positionWS = AltoShared_WorldPosBlowingInWind(input.positionWS, positionOS);
-    }
-
-    input.positionVS = TransformWorldToView(input.positionWS);
-
-    UNITY_BRANCH
-    if (_BillboardOn > 0)
-    {
-        float2 scale = float2(
-            length(float3(UNITY_MATRIX_M[0].x, UNITY_MATRIX_M[1].x, UNITY_MATRIX_M[2].x)),
-            length(float3(UNITY_MATRIX_M[0].y, UNITY_MATRIX_M[1].y, UNITY_MATRIX_M[2].y))
-        );
-        input.positionCS = mul(
-            UNITY_MATRIX_P,
-            mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1))
-                + float4(positionOS.xy, 0, 0) * float4(scale.x, scale.y, 1, 1)
-        );
-    }
-    else
-    {
-        input.positionCS = TransformWorldToHClip(input.positionWS);
-    }
-    //^^^^^ AltoShader Custom ^^^^^
-
     float4 ndc = input.positionCS * 0.5f;
     input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
     input.positionNDC.zw = input.positionCS.zw;
@@ -330,9 +278,12 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
 VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
 {
     VertexNormalInputs tbn;
-    tbn.tangentWS = real3(1.0, 0.0, 0.0);
-    tbn.bitangentWS = real3(0.0, 1.0, 0.0);
+
+    // mikkts space compliant. only normalize when extracting normal at frag.
+    real sign = real(tangentOS.w) * GetOddNegativeScale();
     tbn.normalWS = TransformObjectToWorldNormal(normalOS);
+    tbn.tangentWS = real3(TransformObjectToWorldDir(tangentOS.xyz));
+    tbn.bitangentWS = real3(cross(tbn.normalWS, float3(tbn.tangentWS))) * sign;
     return tbn;
 }
 
@@ -367,11 +318,6 @@ Varyings LitPassVertexSimple(Attributes input)
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-    //_____ AltoShader Custom _____
-    // Rotate vertex and normal
-    AltoShared_RotatePosAndNormal(input.positionOS, input.normalOS);
-    //^^^^^ AltoShader Custom ^^^^^
 
     //-----------------------------------------------------
     VertexPositionInputs vertexInput = Alto_GetVertexPositionInputs(input.positionOS.xyz);
@@ -414,14 +360,35 @@ Varyings LitPassVertexSimple(Attributes input)
     #endif
 
     //_____ AltoShader Custom _____
+    // 視線ベクトルをタンジェント空間に変換
+    half3 viewDirWS2 = GetWorldSpaceNormalizeViewDir(vertexInput.positionWS);
+
     UNITY_BRANCH
-    if (_MatCapOn > 0)
+    if (_WorldSpaceUVOn > 0)
     {
-        output.normalVS = normalize(mul((float3x3)UNITY_MATRIX_V, output.normalWS));
+        half3 normalWS = normalInput.normalWS;
+        half dirX = step(0.5, abs(dot(normalWS, VecRight)));
+        half dirY = step(0.5, abs(dot(normalWS, VecTop)));
+        half dirZ = step(0.5, abs(dot(normalWS, VecBack)));
+        dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
+        dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
+
+        output.viewDirTS = float3(
+            viewDirWS2.y * dirZ + viewDirWS2.z * dirX + viewDirWS2.x * dirY,
+            viewDirWS2.x * dirZ + viewDirWS2.y * dirX + viewDirWS2.z * dirY,
+            dot(viewDirWS2, normalWS)
+        );
+    }
+    else
+    {
+        output.viewDirTS = float3(
+            dot(viewDirWS2, normalInput.tangentWS),
+            dot(viewDirWS2, normalInput.bitangentWS),
+            dot(viewDirWS2, normalInput.normalWS)
+        );
     }
 
-    output.cubicColor.rgb = CubicColor(input.normalOS, input.positionOS, normalInput.normalWS, output.positionWS);
-    output.cubicColor.w = length(vertexInput.positionVS) * step(sign(vertexInput.positionVS.z), 0);
+    output.workColor.w = length(vertexInput.positionVS) * step(sign(vertexInput.positionVS.z), 0);
     //^^^^^ AltoShader Custom ^^^^^
 
     return output;
@@ -437,21 +404,28 @@ inline void Alto_InitializeSimpleLitSurfaceData(Varyings input, out SurfaceData 
 
     //_____ AltoShader Custom _____
     float2 uv = input.uv;
-    half4 albedoAlpha;
 
     UNITY_BRANCH
-    if (_MatCapOn > 0)
+    if (_WorldSpaceUVOn > 0)
     {
-        float2 matcapUV = input.normalVS.xy * 0.5 + 0.5;
-        albedoAlpha = SampleAlbedoAlpha(matcapUV, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
+        uv = WorldSpaceUV(input.normalWS, input.positionWS, _BaseMap_ST);
     }
-    else
+
+    UNITY_BRANCH
+    if (_UVDistortionOn > 0)
     {
-        albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
+        float t = _Time.y * _UVDistortionParams.w;
+        uv.x += sin(uv.y * _UVDistortionParams.z + t) * _UVDistortionParams.x;
+        uv.y += cos(uv.x * _UVDistortionParams.z + t) * _UVDistortionParams.y;
     }
+
+    float height = SampleHeight(uv);
+    float windLevel = SampleWindTex(input.positionWS);
+    float2 uvWind = ComputeWindUVOffset(windLevel, input.positionWS, height);
+    uv = ParallaxUV_Simple(uv, height, input.viewDirTS) + uvWind;
     //^^^^^ AltoShader Custom ^^^^^
 
-    // half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
+    half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
     outSurfaceData.alpha = albedoAlpha.a * _BaseColor.a;
     outSurfaceData.alpha = AlphaDiscard(outSurfaceData.alpha, _Cutoff);
 
@@ -461,10 +435,15 @@ inline void Alto_InitializeSimpleLitSurfaceData(Varyings input, out SurfaceData 
     half4 specularSmoothness = SampleSpecularSmoothness(uv, outSurfaceData.alpha, _SpecColor, TEXTURE2D_ARGS(_SpecGlossMap, sampler_SpecGlossMap));
     outSurfaceData.metallic = 0.0; // unused
     outSurfaceData.specular = specularSmoothness.rgb;
-    outSurfaceData.smoothness = specularSmoothness.a;
+    // outSurfaceData.smoothness = specularSmoothness.a;
     outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap));
     outSurfaceData.occlusion = 1.0;
     outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+
+    //_____ AltoShader Custom _____
+    outSurfaceData.smoothness = specularSmoothness.a + lerp(0, windLevel, _WindSpecularPower);
+    outSurfaceData.albedo *= 1.0 - _WindAlbedoPower + (windLevel * height * 10 * _WindAlbedoPower);
+    //^^^^^ AltoShader Custom ^^^^^
 }
 
 // Used for StandardSimpleLighting shader
@@ -479,13 +458,10 @@ void LitPassFragmentSimple(
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-    //_____ AltoShader Custom _____
-    UNITY_BRANCH
-    if (_UvWindStrength > 0) { input.uv = AltoShared_UvWind(input.uv, input.positionWS); }
-    //^^^^^ AltoShader Custom ^^^^^
-
     SurfaceData surfaceData;
+    //_____ AltoShader Custom _____
     Alto_InitializeSimpleLitSurfaceData(input, surfaceData);
+    //^^^^^ AltoShader Custom ^^^^^
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
@@ -508,7 +484,7 @@ void LitPassFragmentSimple(
     UNITY_BRANCH
     if (_DitherCameraDistanceFrom > 0)
     {
-        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
+        DitheringByCameraDistance(input.positionCS, input.workColor.w, _DitherCameraDistanceFrom, _DitherCameraDistanceTo, _DitherMinAlpha);
     }
 
     UNITY_BRANCH
@@ -520,11 +496,11 @@ void LitPassFragmentSimple(
     UNITY_BRANCH
     if (_DitherCull > 0)
     {
-        DitheringByCameraDistance(input.positionCS, input.cubicColor.w, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
+        DitheringByCameraDistance(input.positionCS, input.workColor.w, _ProjectionParams.z - _DitherCull, _ProjectionParams.z, 0);
     }
     //^^^^^ AltoShader Custom ^^^^^
 
-    half4 color = Alto_UniversalFragmentBlinnPhong(input, inputData, surfaceData, input.cubicColor);
+    half4 color = Alto_UniversalFragmentBlinnPhong(input, inputData, surfaceData);
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
     color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(_Surface));

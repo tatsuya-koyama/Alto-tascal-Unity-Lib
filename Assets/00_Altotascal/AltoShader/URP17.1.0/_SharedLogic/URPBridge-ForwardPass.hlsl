@@ -108,12 +108,24 @@ VertexPositionInputs Alto_GetVertexPositionInputs(float3 positionOS)
     return input;
 }
 
-VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
+VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS)
 {
     VertexNormalInputs tbn;
     tbn.tangentWS = real3(1.0, 0.0, 0.0);
     tbn.bitangentWS = real3(0.0, 1.0, 0.0);
     tbn.normalWS = TransformObjectToWorldNormal(normalOS);
+    return tbn;
+}
+
+VertexNormalInputs Alto_GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
+{
+    VertexNormalInputs tbn;
+
+    // mikkts space compliant. only normalize when extracting normal at frag.
+    real sign = real(tangentOS.w) * GetOddNegativeScale();
+    tbn.normalWS = TransformObjectToWorldNormal(normalOS);
+    tbn.tangentWS = real3(TransformObjectToWorldDir(tangentOS.xyz));
+    tbn.bitangentWS = real3(cross(tbn.normalWS, float3(tbn.tangentWS))) * sign;
     return tbn;
 }
 

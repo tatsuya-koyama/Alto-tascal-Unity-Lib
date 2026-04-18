@@ -90,6 +90,7 @@ half  _GradRotate_B;
 half  _GradRotate_D;
 
 half  _ShadeContrast;
+half  _AoIntensity;
 half  _RimLightingOn;
 half  _RimBurnOn;
 half4 _RimColor;

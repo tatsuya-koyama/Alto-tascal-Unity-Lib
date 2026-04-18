@@ -6,6 +6,7 @@ Shader "Altotascal/URP 17.1.0/Sakana Shader"
     {
         // Custom props
         [ToggleOff] _BillboardOn("Billboard", Float) = 0.0
+        [ToggleOff] _MatCapOn("BaseMap as MatCap", Float) = 0.0
 
         _NoisePattern("Noise Pattern", 2D) = "white" {}
         _DitherPattern("Dithering Pattern", 2D) = "white" {}
@@ -70,6 +71,7 @@ Shader "Altotascal/URP 17.1.0/Sakana Shader"
         _GradRotate_D("Gradient Rotation (Bottom)", Range(0, 360)) = 0.0
 
         _ShadeContrast("Shade Contrast", Range(-1.0, 1.0)) = 0.5
+        _AoIntensity("AO Intensity", Range(0.0, 1.0)) = 1.0
         [ToggleOff] _RimLightingOn("Rim Lighting", Float) = 0.0
         [ToggleOff] _RimBurnOn("Rim Burn", Float) = 0.0
         [HDR] _RimColor("Rim Color", Color) = (1, 1, 1, 1)

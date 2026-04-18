@@ -5,12 +5,22 @@ using UnityEngine;
 
 namespace AltoLib.ShaderGUI
 {
-    public class SakanaShaderGUI : CubicColorGUIBase
+    public class SoyokazeShaderGUI : SimpleLitGUIBase
     {
         class CustomProperties : ICustomProperties
         {
-            public MaterialProperty billboardOn;
-            public MaterialProperty matCapOn;
+            public MaterialProperty worldSpaceUVOn;
+            public MaterialProperty heightMap;
+            public MaterialProperty heightScale;
+            public MaterialProperty windMap;
+            public MaterialProperty windMapScale;
+            public MaterialProperty windPower;
+            public MaterialProperty windDirectionX;
+            public MaterialProperty windDirectionZ;
+            public MaterialProperty windSpecularPower;
+            public MaterialProperty windAlbedoPower;
+            public MaterialProperty uvDistortionOn;
+            public MaterialProperty uvDistortionParams;
 
             public MaterialProperty noisePattern;
             public MaterialProperty ditherPattern;
@@ -22,28 +32,11 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty heightDitherYFrom;
             public MaterialProperty heightDitherHeight;
 
-            public MaterialProperty windStrength;
-            public MaterialProperty windSpeed;
-            public MaterialProperty windBigWave;
-            public MaterialProperty windRotateSpeed;
-
-            public MaterialProperty uvWindStrength;
-            public MaterialProperty uvWindSpeed;
-            public MaterialProperty uvWindGaleStrength;
-
-            public MaterialProperty rotateSpeedX;
-            public MaterialProperty rotateSpeedY;
-            public MaterialProperty rotateSpeedZ;
-
             public MaterialProperty shadeContrast;
-            public MaterialProperty aoIntensity;
             public MaterialProperty rimLightingOn;
             public MaterialProperty rimBurnOn;
             public MaterialProperty rimColor;
             public MaterialProperty rimPower;
-            public MaterialProperty rimSurfaceFade;
-            public MaterialProperty rimSurfacePower;
-            public MaterialProperty cubicRimOn;
             public MaterialProperty coloredShadowOn;
             public MaterialProperty shadowColor;
             public MaterialProperty shadowPower;
@@ -58,24 +51,20 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty heightFogYFrom;
             public MaterialProperty heightFogHeight;
 
-            public MaterialProperty specularSurfaceOn;
-            public MaterialProperty worldSpaceSurfaceOn;
-            public MaterialProperty sp_TilingParams;
-            public MaterialProperty sp_RScale;
-            public MaterialProperty sp_GScale;
-            public MaterialProperty sp_BScale;
-            public MaterialProperty sp_PreOffset;
-            public MaterialProperty sp_ValueScale;
-            public MaterialProperty sp_PostOffset;
-            public MaterialProperty sp_Hue;
-            public MaterialProperty sp_Saturate;
-
-            public MaterialProperty ssrReflectivity;
-
             public CustomProperties(MaterialProperty[] properties)
             {
-                billboardOn              = BaseShaderGUI.FindProperty("_BillboardOn", properties);
-                matCapOn                 = BaseShaderGUI.FindProperty("_MatCapOn", properties);
+                worldSpaceUVOn           = BaseShaderGUI.FindProperty("_WorldSpaceUVOn", properties);
+                heightMap                = BaseShaderGUI.FindProperty("_HeightMap", properties);
+                heightScale              = BaseShaderGUI.FindProperty("_HeightScale", properties);
+                windMap                  = BaseShaderGUI.FindProperty("_WindMap", properties);
+                windMapScale             = BaseShaderGUI.FindProperty("_WindMapScale", properties);
+                windPower                = BaseShaderGUI.FindProperty("_WindPower", properties);
+                windDirectionX           = BaseShaderGUI.FindProperty("_WindDirectionX", properties);
+                windDirectionZ           = BaseShaderGUI.FindProperty("_WindDirectionZ", properties);
+                windSpecularPower        = BaseShaderGUI.FindProperty("_WindSpecularPower", properties);
+                windAlbedoPower          = BaseShaderGUI.FindProperty("_WindAlbedoPower", properties);
+                uvDistortionOn           = BaseShaderGUI.FindProperty("_UVDistortionOn", properties);
+                uvDistortionParams       = BaseShaderGUI.FindProperty("_UVDistortionParams", properties);
 
                 noisePattern             = BaseShaderGUI.FindProperty("_NoisePattern", properties);
                 ditherPattern            = BaseShaderGUI.FindProperty("_DitherPattern", properties);
@@ -87,28 +76,11 @@ namespace AltoLib.ShaderGUI
                 heightDitherYFrom        = BaseShaderGUI.FindProperty("_HeightDitherYFrom", properties);
                 heightDitherHeight       = BaseShaderGUI.FindProperty("_HeightDitherHeight", properties);
 
-                windStrength             = BaseShaderGUI.FindProperty("_WindStrength", properties);
-                windSpeed                = BaseShaderGUI.FindProperty("_WindSpeed", properties);
-                windBigWave              = BaseShaderGUI.FindProperty("_WindBigWave", properties);
-                windRotateSpeed          = BaseShaderGUI.FindProperty("_WindRotateSpeed", properties);
-
-                uvWindStrength           = BaseShaderGUI.FindProperty("_UvWindStrength", properties);
-                uvWindSpeed              = BaseShaderGUI.FindProperty("_UvWindSpeed", properties);
-                uvWindGaleStrength       = BaseShaderGUI.FindProperty("_UvWindGaleStrength", properties);
-
-                rotateSpeedX             = BaseShaderGUI.FindProperty("_RotateSpeedX", properties);
-                rotateSpeedY             = BaseShaderGUI.FindProperty("_RotateSpeedY", properties);
-                rotateSpeedZ             = BaseShaderGUI.FindProperty("_RotateSpeedZ", properties);
-
                 shadeContrast            = BaseShaderGUI.FindProperty("_ShadeContrast", properties);
-                aoIntensity              = BaseShaderGUI.FindProperty("_AoIntensity", properties);
                 rimLightingOn            = BaseShaderGUI.FindProperty("_RimLightingOn", properties);
                 rimBurnOn                = BaseShaderGUI.FindProperty("_RimBurnOn", properties);
                 rimColor                 = BaseShaderGUI.FindProperty("_RimColor", properties);
                 rimPower                 = BaseShaderGUI.FindProperty("_RimPower", properties);
-                rimSurfaceFade           = BaseShaderGUI.FindProperty("_RimSurfaceFade", properties);
-                rimSurfacePower          = BaseShaderGUI.FindProperty("_RimSurfacePower", properties);
-                cubicRimOn               = BaseShaderGUI.FindProperty("_CubicRimOn", properties);
                 coloredShadowOn          = BaseShaderGUI.FindProperty("_ColoredShadowOn", properties);
                 shadowColor              = BaseShaderGUI.FindProperty("_ShadowColor", properties);
                 shadowPower              = BaseShaderGUI.FindProperty("_ShadowPower", properties);
@@ -122,20 +94,6 @@ namespace AltoLib.ShaderGUI
                 heightFogColor           = BaseShaderGUI.FindProperty("_HeightFogColor", properties);
                 heightFogYFrom           = BaseShaderGUI.FindProperty("_HeightFogYFrom", properties);
                 heightFogHeight          = BaseShaderGUI.FindProperty("_HeightFogHeight", properties);
-
-                specularSurfaceOn        = BaseShaderGUI.FindProperty("_SpecularSurfaceOn", properties);
-                worldSpaceSurfaceOn      = BaseShaderGUI.FindProperty("_WorldSpaceSurfaceOn", properties);
-                sp_TilingParams          = BaseShaderGUI.FindProperty("_Sp_TilingParams", properties);
-                sp_RScale                = BaseShaderGUI.FindProperty("_Sp_RScale", properties);
-                sp_GScale                = BaseShaderGUI.FindProperty("_Sp_GScale", properties);
-                sp_BScale                = BaseShaderGUI.FindProperty("_Sp_BScale", properties);
-                sp_PreOffset             = BaseShaderGUI.FindProperty("_Sp_PreOffset", properties);
-                sp_ValueScale            = BaseShaderGUI.FindProperty("_Sp_ValueScale", properties);
-                sp_PostOffset            = BaseShaderGUI.FindProperty("_Sp_PostOffset", properties);
-                sp_Hue                   = BaseShaderGUI.FindProperty("_Sp_Hue", properties);
-                sp_Saturate              = BaseShaderGUI.FindProperty("_Sp_Saturate", properties);
-
-                ssrReflectivity          = BaseShaderGUI.FindProperty("_SSRReflectivity", properties);
             }
 
             public object this[string propertyName]
@@ -147,10 +105,8 @@ namespace AltoLib.ShaderGUI
         }
         CustomProperties _customProperties;
         ShaderGUIUtil _util;
+        bool _showWindProps   = true;
         bool _showDitherProps     = true;
-        bool _showWindProps       = true;
-        bool _showUvWindProps    = true;
-        bool _showRotateProps     = true;
         bool _showShadingProps    = true;
         bool _showRimProps        = true;
         bool _showShadowProps     = true;
@@ -164,19 +120,21 @@ namespace AltoLib.ShaderGUI
             _util = new ShaderGUIUtil(_customProperties);
         }
 
-        protected override void DrawCustomPropAtTop()
+        public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
         {
-            _util.DrawToggle("Billboard", "billboardOn");
-            _util.DrawToggle("BaseMap as MatCap", "matCapOn");
-            DrawShadingProps();
-            DrawDitherProps();
-            DrawWindProps();
-            DrawUvWindProps();
-            DrawRotateProps();
+            base.OnGUI(materialEditorIn, properties);
+            CoreEditorUtils.DrawHeaderFoldout("AltoShader Params", true);
+            DrawAdditionalFoldouts();
         }
 
-        protected override void DrawCustomPropAtBottom()
+        public void DrawAdditionalFoldouts()
         {
+            GUIStyle labelStyle = new GUIStyle() { fontStyle = FontStyle.Bold };
+            labelStyle.normal.textColor = EditorStyles.label.normal.textColor;
+
+            DrawWindProps();
+            DrawShadingProps();
+            DrawDitherProps();
             DrawRimProps();
             DrawShadowProps();
             DrawHsvProps();
@@ -201,33 +159,22 @@ namespace AltoLib.ShaderGUI
 
         void DrawWindProps()
         {
-            _showWindProps = _util.Foldout(_showWindProps, "Wind Animation");
+            _showWindProps = _util.Foldout(_showWindProps, "Parallax Mapping");
             if (!_showWindProps) { return; }
 
-            _util.DrawSlider("Wind Strength", "windStrength", 0f, 10f);
-            _util.DrawSlider("Wind Speed", "windSpeed", 0f, 10f);
-            _util.DrawSlider("Wind Big Wave", "windBigWave", 0f, 10f);
-            _util.DrawSlider("Wind Rotate Speed", "windRotateSpeed", 0f, 10f);
-        }
+            _util.DrawToggle("World Space UV", "worldSpaceUVOn");
+            materialEditor.TextureProperty(_customProperties.heightMap, "Height Map (R)");
+            _util.DrawSlider("Height Scale", "heightScale", 0f, 1f);
+            materialEditor.TextureProperty(_customProperties.windMap, "Wind Map (R)");
+            _util.DrawSlider("Wind Map Scale", "windMapScale", 0f, 1000f);
+            _util.DrawSlider("Wind Power", "windPower", 0f, 1000f);
+            _util.DrawFloat("Wind Direction X", "windDirectionX");
+            _util.DrawFloat("Wind Direction Z", "windDirectionZ");
+            _util.DrawSlider("Wind Specular Power", "windSpecularPower", 0f, 1f);
+            _util.DrawSlider("Wind Albedo Power", "windAlbedoPower", 0f, 1f);
 
-        void DrawUvWindProps()
-        {
-            _showUvWindProps = _util.Foldout(_showUvWindProps, "UV Wind Animation");
-            if (!_showWindProps) { return; }
-
-            _util.DrawSlider("UV Wind Strength", "uvWindStrength", 0f, 10f);
-            _util.DrawSlider("UV Wind Speed", "uvWindSpeed", 0f, 10f);
-            _util.DrawSlider("UV Wind Gale Strength", "uvWindGaleStrength", 0f, 10f);
-        }
-
-        void DrawRotateProps()
-        {
-            _showRotateProps = _util.Foldout(_showRotateProps, "Rotate Animation");
-            if (!_showRotateProps) { return; }
-
-            _util.DrawSlider("Rotate Speed X", "rotateSpeedX", -20f, 20f);
-            _util.DrawSlider("Rotate Speed Y", "rotateSpeedY", -20f, 20f);
-            _util.DrawSlider("Rotate Speed Z", "rotateSpeedZ", -20f, 20f);
+            _util.DrawToggle("UV Distortion", "uvDistortionOn");
+            _util.DrawVector4("UV Distortion Params", "uvDistortionParams");
         }
 
         void DrawShadingProps()
@@ -235,21 +182,7 @@ namespace AltoLib.ShaderGUI
             _showShadingProps = _util.Foldout(_showShadingProps, "Basic Shading");
             if (!_showShadingProps) { return; }
 
-            _util.DrawSlider("SSR Reflectivity", "ssrReflectivity", 0f, 1f);
             _util.DrawSlider("Shade Contrast", "shadeContrast", -2f, 8f);
-            _util.DrawSlider("AO Intensity", "aoIntensity", 0f, 1f);
-            _util.DrawToggle("Specular Surface", "specularSurfaceOn");
-            _util.DrawToggle("World-Space Surface", "worldSpaceSurfaceOn");
-
-            _util.DrawVector4("[Sp] UV Tiling", "sp_TilingParams");
-            _util.DrawSlider("[Sp] R Scale", "sp_RScale", 0f, 3f);
-            _util.DrawSlider("[Sp] G Scale", "sp_GScale", 0f, 3f);
-            _util.DrawSlider("[Sp] B Scale", "sp_BScale", 0f, 3f);
-            _util.DrawSlider("[Sp] Pre Offset", "sp_PreOffset", -1f, 1f);
-            _util.DrawSlider("[Sp] Value Scale", "sp_ValueScale", -2f, 4f);
-            _util.DrawSlider("[Sp] Post Offset", "sp_PostOffset", -2f, 2f);
-            _util.DrawSlider("[Sp] Hue", "sp_Hue", 0f, 360f);
-            _util.DrawSlider("[Sp] Saturate", "sp_Saturate", -10f, 10f);
         }
 
         void DrawRimProps()
@@ -264,9 +197,6 @@ namespace AltoLib.ShaderGUI
             {
                 materialEditor.ColorProperty(_customProperties.rimColor, "Rim Color");
                 _util.DrawSlider("Rim Power", "rimPower", 0f, 8f);
-                _util.DrawSlider("Rim Surface Fade", "rimSurfaceFade", 0f, 1f);
-                _util.DrawSlider("Rim Surface Power", "rimSurfacePower", -10f, 10f);
-                _util.DrawToggle("Use Cubic Color as Rim", "cubicRimOn");
             }
             EditorGUI.EndDisabledGroup();
         }

@@ -28,12 +28,12 @@ half SampleSpecularValue(half3 normalWS, float3 positionWS, float2 uv)
         dirY = (dirX > 0 || dirZ > 0) ? 0 : dirY;
         dirZ = (dirX > 0 || dirY > 0) ? 0 : dirZ;
 
-        float2 screenPos = ((positionWS.yx * dirZ)
-                          + (positionWS.zy * dirX)
-                          + (positionWS.xz * dirY));
-        screenPos.xy -= _Sp_TilingParams.xy;
-        screenPos.xy /= _Sp_TilingParams.zw;
-        return ExtractSpecularChannel(screenPos);
+        float2 uvWS = ((positionWS.yx * dirZ)
+                     + (positionWS.zy * dirX)
+                     + (positionWS.xz * dirY));
+        uvWS -= _Sp_TilingParams.xy;
+        uvWS /= _Sp_TilingParams.zw;
+        return ExtractSpecularChannel(uvWS);
     }
 
     UNITY_BRANCH

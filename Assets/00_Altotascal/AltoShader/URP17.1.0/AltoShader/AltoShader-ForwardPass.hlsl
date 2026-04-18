@@ -230,20 +230,17 @@ half4 Alto_UniversalFragmentBlinnPhong(
     half3 finalColor = Alto_CalculateFinalColor(lightingData, surfaceData.alpha).rgb;
 
     // 0 is shadow, 1 is lighted
-    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation * originalAoFactor.indirectAmbientOcclusion;
-
-    UNITY_BRANCH
-    if (_ColoredShadePower > 0)
-    {
-        half lightIntensity = Alto_LightIntensity(mainLight.direction, inputData.normalWS);
-        lightLevel *= (1 - (1 - lightIntensity) * _ColoredShadePower);
-    }
+    half ao = lerp(1, originalAoFactor.indirectAmbientOcclusion, _AoIntensity);
+    half lightLevel = mainLight.distanceAttenuation * mainLight.shadowAttenuation * ao;
 
     UNITY_BRANCH
     if (_ColoredShadowOn > 0)
     {
         half shadowLevel = (1 - lightLevel);
-        finalColor = lerp(finalColor, _ShadowColor * shadowLevel, shadowLevel * _ShadowPower);
+        half3 aoColor = lerp(_ShadowColor, finalColor, ao);
+        finalColor = lerp(finalColor * ao, aoColor, _ShadowPower);
+        finalColor = lerp(finalColor, finalColor * _ShadowColor, shadowLevel * _ShadowPower);
+        finalColor = lerp(finalColor, finalColor + _ShadowColor, shadowLevel * _ColoredShadePower);
     }
 
     half specularValue = SampleSpecularValue(input.normalWS, input.positionWS, input.uv);

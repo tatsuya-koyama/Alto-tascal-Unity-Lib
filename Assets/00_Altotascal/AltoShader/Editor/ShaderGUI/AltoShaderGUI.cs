@@ -40,6 +40,7 @@ namespace AltoLib.ShaderGUI
             public MaterialProperty rotateSpeedZ;
 
             public MaterialProperty shadeContrast;
+            public MaterialProperty aoIntensity;
             public MaterialProperty rimLightingOn;
             public MaterialProperty rimBurnOn;
             public MaterialProperty rimColor;
@@ -115,6 +116,7 @@ namespace AltoLib.ShaderGUI
                 rotateSpeedZ             = BaseShaderGUI.FindProperty("_RotateSpeedZ", properties);
 
                 shadeContrast            = BaseShaderGUI.FindProperty("_ShadeContrast", properties);
+                aoIntensity              = BaseShaderGUI.FindProperty("_AoIntensity", properties);
                 rimLightingOn            = BaseShaderGUI.FindProperty("_RimLightingOn", properties);
                 rimBurnOn                = BaseShaderGUI.FindProperty("_RimBurnOn", properties);
                 rimColor                 = BaseShaderGUI.FindProperty("_RimColor", properties);
@@ -263,6 +265,7 @@ namespace AltoLib.ShaderGUI
 
             _util.DrawSlider("SSR Reflectivity", "ssrReflectivity", 0f, 1f);
             _util.DrawSlider("Shade Contrast", "shadeContrast", -2f, 8f);
+            _util.DrawSlider("AO Intensity", "aoIntensity", 0f, 1f);
             _util.DrawToggle("Specular Surface", "specularSurfaceOn");
             _util.DrawToggle("World-Space Surface", "worldSpaceSurfaceOn");
 
