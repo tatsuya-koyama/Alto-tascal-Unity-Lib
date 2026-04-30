@@ -15,6 +15,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     renderPassEvent: 600
+  _ssrShader: {fileID: 4800000, guid: 0d8a2872e95e84ea497758148a66a712, type: 3}
 --- !u!114 &-2763811329134318311
 MonoBehaviour:
   m_ObjectHideFlags: 0

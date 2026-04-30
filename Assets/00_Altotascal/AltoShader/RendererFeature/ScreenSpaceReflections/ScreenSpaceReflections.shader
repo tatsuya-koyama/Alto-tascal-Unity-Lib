@@ -74,12 +74,16 @@ Shader "Hidden/AltoShader/ScreenSpaceReflections"
         float rawDepth = SampleSceneDepth(uv);
         #if UNITY_REVERSED_Z
         if (rawDepth < 0.0001) { return half4(0, 0, 0, 0); }
+        float ndcDepth = rawDepth;
         #else
         if (rawDepth > 0.9999) { return half4(0, 0, 0, 0); }
+        // OpenGL 系（非 reversed-Z 系）では ComputeWorldSpacePosition() に渡す深度は
+        // NDC 空間である必要があり、[0..1] -> [-1..1] に補正する必要がある
+        float ndcDepth = lerp(UNITY_NEAR_CLIP_VALUE, 1.0, rawDepth);
         #endif
 
         // 深度からワールド座標を再構築
-        float3 worldPos = ComputeWorldSpacePosition(uv, rawDepth, UNITY_MATRIX_I_VP);
+        float3 worldPos = ComputeWorldSpacePosition(uv, ndcDepth, UNITY_MATRIX_I_VP);
 
         // DepthNormals パスで作成された法線テクスチャからワールド法線と SSR マスクを取得
         // * ノーマルの alpha チャンネルが 0 なら SSR の処理をスキップする仕様

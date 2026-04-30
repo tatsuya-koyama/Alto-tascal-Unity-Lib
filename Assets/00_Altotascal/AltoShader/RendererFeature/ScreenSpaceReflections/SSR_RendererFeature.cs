@@ -6,8 +6,6 @@ namespace AltoLib.Rendering
 {
     public class SSR_RendererFeature : ScriptableRendererFeature
     {
-        const string ShaderName = "Hidden/AltoShader/ScreenSpaceReflections";
-
         [System.Serializable]
         public class Settings
         {
@@ -16,19 +14,22 @@ namespace AltoLib.Rendering
         }
         public Settings settings = new();
 
+        // ビルドからシェーダがストリップされないようにシリアライズ指定
+        // （Always Included Shaders に含めるのでもよいけど）
+        [SerializeField] Shader _ssrShader;
+
         SSR_RenderPass _ssrPass;
         Material _ssrMaterial;
 
         public override void Create()
         {
-            var shader = Shader.Find(ShaderName);
-            if (shader == null)
+            if (_ssrShader == null)
             {
-                Debug.LogWarning($"[SSR] Shader not found: {ShaderName}");
+                Debug.LogWarning("[SSR] Shader not assigned.");
                 return;
             }
 
-            _ssrMaterial = CoreUtils.CreateEngineMaterial(shader);
+            _ssrMaterial = CoreUtils.CreateEngineMaterial(_ssrShader);
             _ssrPass = new SSR_RenderPass(_ssrMaterial, settings.renderPassEvent);
         }
 
