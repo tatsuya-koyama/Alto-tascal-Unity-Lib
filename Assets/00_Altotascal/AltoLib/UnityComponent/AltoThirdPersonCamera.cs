@@ -42,6 +42,7 @@ namespace AltoLib
         [SerializeField] public Vector3 autoZoomLookPosOffset = new Vector3(0, 2f, 0);
 
         [SerializeField] public float shakePower = 0f;
+        [SerializeField] public float polarAngleOffset = 0f;
 
         [SerializeField] public bool drawDebug = true;
 
@@ -49,6 +50,7 @@ namespace AltoLib
         Vector3 _currentLookPos;
         Vector2 _currentAngleMove;
         float _currentDistanceMove;
+        float _currentPolarAngle;
 
         // 操作対象以外を見る制御用
         Vector3 _otherLookPos;
@@ -103,6 +105,7 @@ namespace AltoLib
         void Start()
         {
             _currentLookPos = target.transform.position + lookPosOffset;
+            _currentPolarAngle = polarAngle;
         }
 
         void LateUpdate()
@@ -145,8 +148,13 @@ namespace AltoLib
             float angleX = azimuthAngle - (_currentAngleMove.x * angleMoveSensitivity.x);
             azimuthAngle = Mathf.Repeat(angleX, 360f);
 
-            float angleY = polarAngle + (_currentAngleMove.y * angleMoveSensitivity.y);
-            polarAngle = Mathf.Clamp(angleY, minPolarAngle, maxPolarAngle);
+            float angleY = _currentPolarAngle + (_currentAngleMove.y * angleMoveSensitivity.y);
+            _currentPolarAngle = Mathf.Clamp(
+                angleY,
+                minPolarAngle - polarAngleOffset,
+                maxPolarAngle - polarAngleOffset
+            );
+            polarAngle = _currentPolarAngle + polarAngleOffset;
         }
 
         void UpdateDistance()
