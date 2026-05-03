@@ -2,6 +2,9 @@
 #define ALTO_17_KIRAKIRA_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#if defined(LOD_FADE_CROSSFADE)
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
 #include "../_SharedLogic/URPBridge-Lighting.hlsl"
 #include "../_SharedLogic/URPBridge-ForwardPass.hlsl"
 #include "../../Generic/AltoShaderUtil.hlsl"
