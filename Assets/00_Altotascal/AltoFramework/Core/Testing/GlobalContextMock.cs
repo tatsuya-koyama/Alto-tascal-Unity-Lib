@@ -21,6 +21,8 @@ namespace AltoFramework.Testing
 
         public IObjectPoolHub objectPoolHub { get; private set; }
 
+        public ISceneObjectRegistry sceneObjectRegistry { get; private set; }
+
         GameObject _gameObject;
 
         public void Init(IBootConfig bootConfig = null)
@@ -50,6 +52,8 @@ namespace AltoFramework.Testing
             tweenerHub = new TweenerHub(sceneDirector, timeKeeper);
 
             objectPoolHub = new ObjectPoolHub(sceneDirector, null);
+
+            sceneObjectRegistry = new SceneObjectRegistry(sceneDirector);
 
             bootConfig.OnGameBoot();
         }

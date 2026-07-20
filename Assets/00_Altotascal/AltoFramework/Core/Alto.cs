@@ -73,6 +73,11 @@ namespace AltoFramework
 
         public static bool HasSceneContext => (SceneContext != null);
 
+        public static ISceneObjectRegistry SceneObjectRegistry
+        {
+            get { return Context.sceneObjectRegistry; }
+        }
+
         /// <summary>
         ///   Returns wrapped frame delta time.
         /// </summary>

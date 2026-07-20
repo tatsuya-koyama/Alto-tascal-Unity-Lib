@@ -83,6 +83,10 @@ namespace AltoFramework
 
         public void Clear()
         {
+            foreach (var obj in _pool)
+            {
+                GameObject.Destroy(obj.gameObject);
+            }
             _pool.Clear();
         }
 

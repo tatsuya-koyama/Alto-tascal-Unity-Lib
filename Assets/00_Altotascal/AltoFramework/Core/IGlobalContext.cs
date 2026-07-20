@@ -18,6 +18,8 @@
 
         IObjectPoolHub objectPoolHub { get; }
 
+        ISceneObjectRegistry sceneObjectRegistry { get; }
+
         void Init(IBootConfig bootConfig = null);
     }
 }

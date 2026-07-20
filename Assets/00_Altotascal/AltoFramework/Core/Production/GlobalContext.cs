@@ -20,16 +20,15 @@ namespace AltoFramework.Production
 
         public IObjectPoolHub objectPoolHub { get; private set; }
 
+        public ISceneObjectRegistry sceneObjectRegistry { get; private set; }
+
         GameObject _contextGameObj;
         GameObject _audioSourceGameObj;
         GameObject _poolingGameObj;
 
         public void Init(IBootConfig bootConfig = null)
         {
-            if (bootConfig == null)
-            {
-                bootConfig = new DefaultBootConfig();
-            }
+            bootConfig ??= new DefaultBootConfig();
 
             _contextGameObj     = new GameObject("AltoGlobalContext");
             _audioSourceGameObj = new GameObject("AltoAudioSource");
@@ -62,6 +61,8 @@ namespace AltoFramework.Production
             tweenerHub = new TweenerHub(sceneDirector, timeKeeper);
 
             objectPoolHub = new ObjectPoolHub(sceneDirector, _poolingGameObj.transform);
+
+            sceneObjectRegistry = new SceneObjectRegistry(sceneDirector);
 
             bootConfig.OnGameBoot();
         }
