@@ -83,6 +83,7 @@ Unity ゲーム開発を少し快適にする開発ツール系エディタ拡�
 - [UniTask](https://github.com/Cysharp/UniTask) 2.4.1
 - Addressables 2.6.0
 - Universal RP 17.3.0
+- Unity Mathematics 1.3.3
 
 
 ## 作者サイト
