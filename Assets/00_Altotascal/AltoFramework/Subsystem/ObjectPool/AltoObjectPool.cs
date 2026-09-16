@@ -15,11 +15,13 @@ namespace AltoFramework
 
     public class AltoObjectPool<T> : IAltoObjectPool where T : PoolableBehaviour
     {
-        public int reservedNum { get; private set; } = 0;
-
         GameObject _original;
         Transform _parentTransform;
-        Stack<T> _pool = new Stack<T>();
+        Stack<T> _pool = new();
+        HashSet<T> _allObjects = new();
+
+        public int ReservedNum => _allObjects.Count;
+        public int RemainCount => _pool.Count;
 
         public AltoObjectPool(GameObject original, Transform parentTransform, int reserveNum = 64)
         {
@@ -51,7 +53,7 @@ namespace AltoFramework
             {
                 obj = Create();
                 Alto.Log.Info($"[AltoObjectPool] Pool ({typeof(T)}) is empty"
-                    + $" (now total is <color=#{CustomLogger.COLOR_WARN}>{ this.reservedNum }</color>)");
+                    + $" (now total is <color=#{CustomLogger.COLOR_WARN}>{ this.ReservedNum }</color>)");
             }
 
             obj.gameObject.SetActive(true);
@@ -70,6 +72,9 @@ namespace AltoFramework
 
         public void Return(T obj)
         {
+            // Clear 後、破棄がフレーム終端で確定する前に貸出先から返却される場合がある
+            if (obj == null || !_allObjects.Contains(obj)) { return; }
+
             CheckMultipleReturn(obj);
             obj.gameObject.SetActive(false);
             obj.OnReturnToPool();
@@ -83,16 +88,13 @@ namespace AltoFramework
 
         public void Clear()
         {
-            foreach (var obj in _pool)
+            foreach (var obj in _allObjects)
             {
+                if (obj == null) { continue; }
                 GameObject.Destroy(obj.gameObject);
             }
             _pool.Clear();
-        }
-
-        public int RemainCount
-        {
-            get { return _pool.Count; }
+            _allObjects.Clear();
         }
 
         //----------------------------------------------------------------------
@@ -105,7 +107,7 @@ namespace AltoFramework
             var obj = newObj.GetComponent<T>();
             obj.OnCreate();
             obj.SetPool(this);
-            ++this.reservedNum;
+            _allObjects.Add(obj);
             return obj;
         }
 
