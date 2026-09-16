@@ -12,10 +12,13 @@ namespace AltoLib
     public class MasterDataCsvImporter
     {
         /// <summary>
-        /// csv からマスタデータのインポートを行う。
-        /// AssetPostprocessor の OnPostprocessAllAssets で使用する想定。
+        /// AssetPostprocessor が検知したアセットから対象の csv を抽出し、
+        /// マスタデータのインポートを行う。
         ///
         /// 【使用例】
+        /// ・以下のようなコードを置くと、対象の csv ファイル更新時に
+        ///   ScriptableObject にインポートする機構が作れる：
+        ///
         /// public class YourImporter : AssetPostprocessor
         ///     static void OnPostprocessAllAssets(
         ///         string[] importedAssets,
@@ -25,7 +28,10 @@ namespace AltoLib
         ///     )
         ///     {
         ///         MasterDataCsvImporter.Import(
-        ///             importedAssets, @"Assets/.../(.*)\.csv", "Assets/Resources/MasterData", GetDataType
+        ///             importedAssets,
+        ///             @"Assets/.../(.*)\.csv",        // インポート対象とする csv のパスパターン
+        ///             "Assets/Resources/MasterData",  // インポート先の ScriptableObject を置く場所
+        ///             GetDataType
         ///         );
         ///     }
         ///
@@ -36,14 +42,9 @@ namespace AltoLib
         ///     }
         /// }
         ///
-        /// ・事前にインポート先の ScriptableObject を作成しておく必要がある
-        /// ・基本的に各種ファイル名、クラス名はデータごとに揃えておく規約。
-        ///   （Unity の ScriptableObject がファイル名・クラス名を一致させておく必要があることにも起因）
-        ///   例えばデータのクラス名が HogeDataTable : MasterDataTable<HogeMaster> の場合、
-        ///     * クラス実装のファイル名 : HogeDataTable.cs
-        ///     * csv ファイル : HogeDataTable.csv
-        ///     * 読み込み先の ScriptableObject : HogeDataTable.asset
-        ///   とする
+        /// ※ csv のソースが Google スプレッドシートであるなら、Unity Editor 上で動く
+        ///    専用のインポーターが使える。（その場合上記のコードは必要ない）
+        ///    詳しくは以下を参照： AltoLib/Editor/MasterData/README.md
         /// </summary>
         public static void Import(
             string[] importedAssets, string csvPathPattern, string dataPath,
@@ -61,7 +62,10 @@ namespace AltoLib
             }
         }
 
-        static void ImportCsv(
+        /// <summary>
+        /// 指定した csv からマスタデータのインポートを行う。
+        /// </summary>
+        public static bool ImportCsv(
             string csvPath, string dataName, string dataPath,
             Func<string, Type> dataTypeGetter
         )
@@ -73,28 +77,40 @@ namespace AltoLib
             if (data == null)
             {
                 Debug.LogError($"Master data ScriptableObject not exist : { destDataPath }");
-                return;
+                return false;
             }
 
             var type = dataTypeGetter(dataName);
             if (type == null)
             {
                 Debug.LogError($"Type reflection failed : { dataName }");
-                return;
+                return false;
             }
             MethodInfo method = type.GetMethod("Import");
             if (method == null)
             {
                 Debug.LogError($"Method reflection failed");
-                return;
+                return false;
             }
 
-            var csvLines = LoadCsvFile(csvPath);
-            method.Invoke(data, new object[]{ csvLines });
+            try
+            {
+                var csvLines = LoadCsvFile(csvPath);
+                method.Invoke(data, new object[]{ csvLines });
 
-            EditorUtility.SetDirty(data);
-            AssetDatabase.SaveAssets();
-            Debug.Log($"<color=#33ee00>Master data import succeeded :</color> { dataName }");
+                EditorUtility.SetDirty(data);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"<color=#33ee00>Master data import succeeded :</color> { dataName }");
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Exception cause = exception is TargetInvocationException && exception.InnerException != null
+                    ? exception.InnerException
+                    : exception;
+                Debug.LogError($"Master data import failed : { dataName }\n{ cause }");
+                return false;
+            }
         }
 
         static List<string> LoadCsvFile(string csvPath)
