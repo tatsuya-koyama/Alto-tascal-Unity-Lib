@@ -19,7 +19,7 @@ namespace AltoEditor
         }
 
         Vector2 _scrollView;
-        bool _highlightRecent;
+        bool _highlightRecent = true;
 
         const string DefaultColor = "292929";
 
